@@ -1,0 +1,1322 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.prime.com.tr/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:segundaclaveparametros="http://bci.cl/infraestructura.web/seguridad/segundaclave"
+    xmlns:segundaclave="http://java.sun.com/jsf/composite/segundaclave">
+
+    <f:metadata>
+        <f:event listener="#{renovacionMultilineaViewMB.cargarDatosBasicos}" type="preRenderView" />
+    </f:metadata>      
+
+    <h:head>
+        <f:loadBundle
+            basename="#{resolutorResourceBundleMB.obtieneResourceBundle('cl.bci.aplicaciones.productos.servicios.multilinea.multilinea')}"
+            var="msg" />
+            <h:outputStylesheet library="Webbci/pyme/css"                              name="multilinea.css"/>
+            <h:outputStylesheet library="Webbci/common/css"                            name="common.css"/>
+            <h:outputStylesheet library="Webbci/#{portalMB.atributosWeb.estiloCss}css" name="canal.css" />
+            <h:outputStylesheet library="Webbci/common/css"                            name="calendar.css"  />
+            <h:outputStylesheet library="Webbci/common/css"                            name="jquery.fancybox-1.3.4.css"/>   
+            
+            <h:outputScript library="Webbci/common/js" name="libreriaBci.js" target="head" />
+            
+            <h:outputScript library="pyme/js/javascript"                                 name="jquery-1.7.1.min.js" target="head"/>   
+            <h:outputScript library="Webbci/common/js"                                 name="jquery.fancybox-1.3.4.js" target="head"/>  
+            <h:outputScript library="Webbci/pyme/js"                                   name="multilinea.js" />
+            <h:outputScript library="Webbci/pyme/js"                                   name="jquery-ui.min.js" target="head"/>
+            <h:outputScript library="Webbci/common/js"                                 name="calendarioNuevo.js" target="head"/>
+            <h:outputScript library="Webbci/common/js"                                 name="jquery.tooltip.min.js" target="head"/>
+            <script type="text/javascript">
+                var setPasoWizard = function(paso){
+	                jQuery('#pasosWizard .bot_tf_01').find('span').removeClass('activo');
+	                jQuery('#pasosWizard .bot_tf_02').find('span').removeClass('activo');
+	                jQuery('#pasosWizard .bot_tf_03').find('span').removeClass('activo');
+	                jQuery('#pasosWizard .bot_tf_04').find('span').removeClass('activo');
+	                jQuery('#pasosWizard .bot_tf_0' + paso).find('span').addClass('activo');
+                }
+            </script> 
+
+            <script type="text/javascript">
+                var natDays = [<ui:repeat value="#{renovacionMultilineaViewMB.listaFeriados.keySet().toArray()}" var="feriado">"<h:outputText value="#{renovacionMultilineaViewMB.listaFeriados.get(feriado)}"/>",</ui:repeat>]
+                var segurosDirecto = new Array();
+                var segurosAval = new Array();
+                var flagDps = "";
+                var dpsDirectoOk = true;
+                var dpsAvalOk = true;
+                var rutAvalDPS = 0;
+                var dvAvalDPS= 0;
+                
+                function cargarDps() {
+                    document.getElementById("bot_03").disabled = false;
+                    var contDir = 0;
+                    var contInd = 0;
+                    var codigoSeguro;
+                    var tieneDps;
+                    if (#{renovacionMultilineaViewMB.requierenDPS} > 0){
+                        <ui:repeat rendered="#{not empty renovacionMultilineaViewMB.segurosObtenidos}" value="#{renovacionMultilineaViewMB.segurosObtenidos}" var="item">
+                                <ui:fragment rendered="#{item.codFactorRiesgoRcc == 'DPS' and item.indVigencia == 'S'}">
+                                  <ui:fragment rendered="#{item.codClfRentabilidadRcc == 'DIR'}">
+                                            dpsDirectoOk = false;
+                                            document.getElementById('linkDirecto').style.display = 'block';
+                                            segurosDirecto[contDir] = #{item.idSeguro}+'|#{item.glosaTipoSeguro} | #{item.montoSeguro}';
+                                            contDir++;
+                                   </ui:fragment>
+                                   <ui:fragment rendered="#{item.codClfRentabilidadRcc == 'IND'}">
+                                            dpsDirectoOk = false;
+                                            document.getElementById('linkAval').style.display = 'block'; 
+                                            if  (#{item.numClienteRcc} > 0){
+                                                rutAvalDPS = #{item.numClienteRcc};
+                                                dvAvalDPS =  #{item.vrfClienteRcc};
+                                            }
+                                            segurosAval[contInd] = #{item.idSeguro}+'|#{item.glosaTipoSeguro} | #{item.montoSeguro}';
+                                            contInd++;
+                                         </ui:fragment>
+                                   </ui:fragment>
+                        </ui:repeat>
+                    }
+                }
+               
+                var ventanaDSP  = null;
+                
+                function abreVentana(theURL, winName, w, h, features) {
+                    LeftPosition=(screen.width)?(screen.width-w)/2:100;
+                    TopPosition=(screen.height)?(screen.height-h)/2:100;
+                    if (TopPosition > 30) TopPosition=TopPosition-30;
+                    features = features + ',top=' + TopPosition + ',left=' + LeftPosition;
+                    ventanaDSP = window.open(theURL,winName,features);
+                }
+                
+                //<![CDATA[
+               
+                $('#region').addClass('select_150'); 
+                $('#region').removeClass('obligatorio'); 
+                           
+                function levantaDps(tipoDeudor) {
+                      flagDps = tipoDeudor;
+                      var parametros="";
+                      var montoCreditoDps = "#{renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.valorRenovado}";
+                      parametros+="&rutContratante="+"#{clienteMB.rut}";
+                      parametros+="&dvContratante="+"#{clienteMB.digitoVerif}"; 
+                      parametros+="&codigoProducto="+"#{renovacionMultilineaViewMB.tipoDeCreditoSeleccionado}";
+                      parametros+="&ejecutivo= "+"#{renovacionMultilineaViewMB.codigoEjecutivo}" ;//ejecutivo
+                      
+                      if (tipoDeudor=='DIR'){
+                          parametros+="&rut="  +  "#{clienteMB.rut}";
+                          parametros+="&dig="   +      "#{clienteMB.digitoVerif}"; 
+                          for(i = 0; i < segurosDirecto.length; i++) {
+                                  parametros+="&segurosDPS=" +segurosDirecto[i] ;
+                          }
+                          
+                        }
+                    
+                      if (tipoDeudor=='IND'){
+                    	  parametros+="&rut="+ rutAvalDPS;
+                          parametros+="&dig="+ dvAvalDPS; 
+                          
+                          for(i = 0; i < segurosAval.length; i++) {
+                              parametros+="&segurosDPS=" +segurosAval[i] ;
+                          }
+                        }
+                    
+                      parametros+="&montoCredito="+   montoCreditoDps.replace(/\./g, '');  //datos credito
+                      parametros+="&cainroOperacion="    +  "#{renovacionMultilineaViewMB.caiOperacion}";  //datos credito
+                      parametros+="&iicnroOperacion="    +   "#{renovacionMultilineaViewMB.iicOperacion}" ;  //datos credito
+                      parametros+="&nroOperacion="    +      "#{renovacionMultilineaViewMB.caiOperacion}#{renovacionMultilineaViewMB.iicOperacion}"        ;  //datos credito
+                      parametros+="&plazo="                 +      "#{renovacionMultilineaViewMB.cuotaSeleccionada}"   ;  //datos credito
+                      parametros+="&tipoPlazo="+ "#{renovacionMultilineaViewMB.tipoDePlazo}"; //datos credito
+                      parametros+="&vigenciaDesde="  +      "#{renovacionMultilineaViewMB.fechaVencimientoSeleccionada}";   //datos credito
+                      parametros+="&vigenciaHasta="   +      "#{renovacionMultilineaViewMB.fechaVencimientoSeleccionada}"  ;  //datos credito
+                      parametros+="&paginaOrigen=RenovacionMultilinea"; //nombre desde donde llamaron a action
+                      parametros+="&paginaRetorno=preguntasSeguros";
+                      parametros+="&moneda=" + "#{renovacionMultilineaViewMB.codMoneda}";
+                      abreVentana('/workstationwls/declaracionpersonalsalud/enespera.jsp?path=/workstationwls/declaracionpersonalsalud&servlet=buscarPreguntas.do' + parametros, 'DPS', '640', '480', 'resizable=yes,scrollbars=yes');
+                      
+                }
+                
+                function respuestaDPS(codigoAutorizacion, estado, glosaResultado, nroDPS, nroFolio, nroPoliza, porcSobrePrima, boton) {
+                      estado =  'AC';
+                      boton =  'A';
+                      glosaResultado = "error";
+                    // el parametro estado es el que indica "AC" "PE" "RE"  aceptado, pendiente, rechazado respectivamente.
+                      if (flagDps == 'DIR' && (estado=='AC' || estado=='PE')){
+                            document.getElementById("linkDirecto").style.display = 'none';
+                            dpsDirectoOk = true;
+                           
+                       }
+                       if (flagDps == 'IND' && (estado=='AC' || estado=='PE')){
+                             document.getElementById("linkAval").style.display = 'none';
+                             dpsAvalOk = true;
+                        }   
+                        
+                      if (flagDps == 'DIR' &&  (estado=='RE' || (estado=='AC' && glosaResultado != '' ))){
+                            document.getElementById("linkDirecto").style.display = 'none';
+                             dpsDirectoOk = false;
+                             if (boton=='A'){
+                                dpsDirectoOk = true;
+                             }
+                             if (boton=='R'){
+                                document.getElementById("rechazoCliente").style.display = 'block';
+                                if (document.getElementById("bot_03") != undefined){
+                                    document.getElementById("bot_03").disabled = true;
+                                }
+                                
+                             }    
+                             if (estado=='RE'){
+                               document.getElementById("rechazoSer").style.display = 'block';
+                                if (document.getElementById("bot_03") != undefined){                   
+                                   document.getElementById("bot_03").disabled = true;
+                                }
+                             }           
+                       }
+                      if (flagDps == 'IND' &&  (estado=='RE' || (estado=='AC' && glosaResultado != '' ))){
+                             document.getElementById("linkAval").style.display = 'none';
+                              dpsAvalOk = false;
+                             if (boton=='A'){
+                               dpsAvalOk = true;
+                             }
+                             if (boton=='R'){
+                                document.getElementById("rechazoCliente").style.display = 'block';
+                                if (document.getElementById("bot_03") != undefined){                   
+                                   document.getElementById("bot_03").disabled = true;
+                                }
+                             }      
+                             if (estado=='RE'){
+                               document.getElementById("rechazoSer").style.display = 'block';
+                                if (document.getElementById("bot_03") != undefined){                   
+                                   document.getElementById("bot_03").disabled = true;
+                                }
+                             }                                    
+                        }               
+                    return;
+                }
+                
+                function validaLink(){
+                    if (document.getElementById("linkAval").style.display == 'block' || document.getElementById("rechazoSer").style.display == 'block' ||  document.getElementById("rechazoCliente").style.display == 'block'){
+                        return false;
+                    }
+                    return true;
+                }
+                
+                 function fnVinculoAccesoDirecto(idServicio) {
+                    location.href ='/cl/bci/aplicaciones/pyme/menu/cargaOpciones.jsf?idServicio='
+                            + idServicio;
+                }
+                
+                //]]>
+                
+                //<![CDATA[
+                 $(document).ready(function(){
+                     $(".lightbox").fancybox({
+                         'width'             : 500,
+                         'height'            : 500,
+                         'overlayColor'      : '#F5F5F5'
+                     });
+                    $('.tooltip').tooltip({ 
+                        track: true,
+                        delay: 0,
+                        showURL: false,
+                        showBody: " - ",
+                        fade: 250
+                    });
+
+                    var paso = #{renovacionMultilineaViewMB.paso};
+                    if (paso == 2) {
+                      mostrarCalendario();
+                    }
+                    else if (paso == 3){
+                      mostrarCalendario2();
+                    }
+                 });
+                 
+                 function mostrarCalendario2(){ 
+                        var d = new Date();
+                        var fInicio = new Date();
+                        var fFin    = new Date();
+                        var diasVencimiento = parseInt(document.getElementById('cantidadDiasVencimiento3').value);
+                        var diasVencimientoIni = parseInt(document.getElementById('cantidadDiasVencimiento4').value);
+                        fInicio.setTime(d.getTime()+diasVencimientoIni*24*60*60*1000);      
+                        fFin.setTime(d.getTime()+diasVencimiento*24*60*60*1000);        
+                        $(".calendar_hasDatepicker").datepicker({
+                            minDate: fInicio,
+                            maxDate: fFin,
+                            selectOtherMonths: true,
+                            firstDay: 1,
+                            beforeShowDay: noWeekendsOrHolidaysAndLastDays, 
+                            numberOfMonths: 2,
+                            hideIfNoPrevNext: true,
+                            dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','S&aacute;'],
+                            monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+                            dateFormat: 'dd-mm-yy'
+                        });
+                        $('.calendar_hasDatepicker').datepicker('option', 'minDate', new Date(fInicio));
+                        $('.calendar_hasDatepicker').datepicker('option', 'maxDate', new Date(fFin));
+                 } 
+                
+                 function nationalDays(date) {
+                     for(i=0; i < natDays.length; i++) {
+                         if (natDays[i] != null){
+                             if (date.getDate() == parseInt(natDays[i].substring(0,2),10) && date.getMonth() == parseInt(natDays[i].substring(2,4),10) - 1) {
+                                 return [false, '', 'No laboral ' +''];
+                             }
+                         }
+                     }
+                     return [true, ''];
+                 } 
+                 
+                 function noWeekendsEndDays(date){
+                     var day = date.getDay();
+                     var dayMonth = date.getDate();
+                          return [ (dayMonth < 25) && (day > 0 && day < 6), ''];
+                 }
+                 
+                 function noWeekendsOrHolidaysAndLastDays(date) {
+                     var noWeekend = noWeekendsEndDays(date);
+                     
+                     if (noWeekend[0]) { 
+                         return nationalDays(date);
+                     } 
+                     else {
+                         return noWeekend;
+                     }
+                 }
+                 
+                 function mostrarCalendario(){ 
+                        var d = new Date();
+                        var fInicio = new Date();
+                        var fFin    = new Date();
+                        var diasVencimiento = parseInt(document.getElementById('cantidadDiasVencimiento').value);
+                        var diasVencimientoIni = parseInt(document.getElementById('cantidadDiasVencimiento2').value);
+                        var fechaIni = parseInt(document.getElementById('fechaVencimientoRenov').value);
+                        
+                        if (fInicio.getTime() > fechaIni) {
+                            fInicio.setTime(d.getTime()+diasVencimientoIni*24*60*60*1000);
+                        }
+                        else {
+                        	 fInicio.setTime(fechaIni+diasVencimientoIni*24*60*60*1000);
+                        }
+                        fFin.setTime(d.getTime()+diasVencimiento*24*60*60*1000);        
+                        $(".calendar_hasDatepicker").datepicker({
+                            minDate: fInicio,
+                            maxDate: fFin,
+                            selectOtherMonths: true,
+                            firstDay: 1,
+                            beforeShowDay: noWeekendsOrHolidaysAndLastDays,
+                            numberOfMonths: 2,
+                            hideIfNoPrevNext: true,
+                            dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','S&aacute;'],
+                            monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+                            dateFormat: 'dd-mm-yy'
+                        });
+                        $('.calendar_hasDatepicker').datepicker('option', 'minDate', new Date(fInicio));
+                        $('.calendar_hasDatepicker').datepicker('option', 'maxDate', new Date(fFin));
+                 } 
+                 
+                 function mostrarMensajeCondiciones(){
+                     document.getElementById("terminosCreditos").className = 'mostrar';
+                      document.getElementById("panelCondiciones").style.display = 'block';
+                 }
+                 
+                 function modificarValoresRenovacion(){
+                      document.getElementById('bot_11').className='bot_02';
+                      document.getElementById('bot_10').className='bot_02 noMostrar';
+                      document.getElementById('bot_03').className='bot_02 noMostrar';
+                      document.getElementById('volverModificacion').className='bot_01'; 
+                      document.getElementById('numero_cuotas2').className='noMostrar';
+                      document.getElementById('numero_cuotas5').className='col_130';
+                      if (document.getElementById('tipo_credito2').value == "AVC010"){        
+                          document.getElementById('panelCuotas2').className='noMostrar';
+                    }
+                    else if (document.getElementById('tipo_credito2').value == "AVC721") {
+                        document.getElementById('panelCuotas2').className='mostrar';
+                    }   
+                      document.getElementById('tipo_credito2').className='noMostrar';   
+                      document.getElementById('tipo_credito5').className='col_130';  
+                      document.getElementById('fecha_vencimiento2').className='noMostrar';   
+                      document.getElementById('fecha_vencimiento5').className='calendar_hasDatepicker hasDatepicker';  
+                 }
+                 
+                 
+                 var habilitaBotonesRecalcula = true;
+                 function validacionesPaso1Renovacion(){
+                     var tipoCredito = document.getElementById('tipo_credito').value;
+                     var fechaVencimiento = document.getElementById('fecha_vencimiento').value;
+                     if (tipoCredito == "000"){
+                          document.getElementById('tipo_credito').className='obligatorioSelect';  
+                         return false;
+                     }
+                     else {
+                           document.getElementById('tipo_credito').className='col_180';  
+                     }       
+                     
+                     if (fechaVencimiento == "" || fechaVencimiento == "Ingrese Fecha"){ 
+                           document.getElementById('fecha_vencimiento').value ="Ingrese Fecha";
+                          return false;
+                     
+                     }
+                     return true;
+                 }
+                 
+                  //]]>
+            </script>   
+
+            <script type="text/javascript">
+                jQuery(document).ready(function(){
+                    jQuery("#tablaRenovacion_paginatorbottom").append('<div class="canal-venta-descripcion float_right"><span class="float_right ico_credito_por_vencer txt_11">Crédito por vencer</span></div>');
+                });
+            </script>
+            
+            <script type="text/javascript">
+            //<![CDATA[
+            jQuery(document).ready(function(){
+                jQuery('.ui-paginator-rpp-options > option').each(function(i,k) {
+				    var cItem = $(this);
+                    var label = cItem.text();
+                    var value = cItem.attr('value');
+                    cItem.text('Mostrar ' + value + ' Movimientos' );
+                });
+            });
+            //]]>
+            </script>
+
+
+        <!--[if IE 7]>
+        <script src="/resources/Webbci/empresa/js/dd_roundies.js"></script>
+        <script>
+            DD_roundies.addRule('.borde_ie_10', 10);
+        </script>
+        <![endif]-->
+        <!--[if IE 8]>
+            <script src="/resources/Webbci/empresa/js/jquery_roundies.js"></script>
+            <script>
+                $(".borde_ie_10").corner("10px");
+            </script>
+            <![endif]-->
+    </h:head>
+
+    <body>
+        <div id="content"> 
+            <h:form action="#" id="formulario" prependId="false">
+                <!--EN ESTE DIV SE CARGA EL CONTENIDO DE LOS ICONOS SEGUN EVENTO ONCLICK--> 
+                <div class="iconos_inteligentes iconos_top" style="display: none;"></div>
+
+                <h2 class="encabezado"><h:outputText value="#{msg.txtTituloRns}" /></h2>
+
+                <h:panelGroup styleClass="cont_servicios" layout="block">   
+                    <h:panelGroup styleClass="mensaje_informacion borde_ie_10" layout="block" rendered="#{renovacionMultilineaViewMB.paso eq 1}">
+                        <p>
+                            <strong><h:outputText value="#{msg.txtClienteRns}" /><br /></strong>
+                            <h:outputText value="#{msg.txtMsgAlerta1Rns}" />
+                        </p>
+                        <p>
+                            <h:outputText value="#{msg.txtMsgAlerta4Rns}" />
+                        </p>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block">
+                        <h3><h:outputText value="#{msg.txtSubTituloRns}" rendered="#{renovacionMultilineaViewMB.paso eq 1}"/></h3>
+                        
+                        <h:panelGroup id="srvPaso0" layout="block" styleClass="fondo" rendered="#{renovacionMultilineaViewMB.paso eq -1}">
+                            <script>
+                                $(document).ready(function() {
+	                                jQuery('#srvPaso0').append(jQuery('#footerTexts'));
+	                                jQuery('#srvPaso0').prepend(jQuery('#pasosWizard'));
+	                                setPasoWizard('1');
+                                });     
+                            </script>
+                            <div class="clear"></div>
+                            
+                            <h:panelGroup styleClass="mensaje_alerta borde_ie_10" layout="block">
+                                <p>
+                                  <strong>#{msg.estimadoCliente}:</strong>
+                                </p>
+                                <h:outputText  rendered="#{!renovacionMultilineaViewMB.esErrorGenerico}" value="#{renovacionMultilineaViewMB.mensajeError}"/>
+                                <p>
+                                    <h:panelGroup  rendered="#{renovacionMultilineaViewMB.esErrorGenerico}" layou="block">
+                                        <strong>#{msg.errorGeneralMain} </strong>#{msg.errorGeneralMain2}
+                                    </h:panelGroup>
+                                </p> 
+                            </h:panelGroup>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="srvPaso1" layout="block" styleClass="fondo" rendered="#{renovacionMultilineaViewMB.paso eq 1}">
+                            <script>
+                                $(document).ready(function() {
+                                jQuery('#srvPaso1').append(jQuery('#footerTexts'));
+                                jQuery('#srvPaso1').prepend(jQuery('#pasosWizard'));
+                                setPasoWizard('1');
+                                });     
+                            </script>
+                            <div class="clear"></div>
+                            
+                            <h:panelGroup styleClass="mensaje_alerta borde_ie_10" layout="block" rendered="#{!renovacionMultilineaViewMB.horaRenovacion}">
+                                <p>
+                                    <strong><h:outputText value="#{msg.txtClienteRns}" /><br /></strong>
+                                    <h:outputText value="#{msg.txtMsgAlerta4Rns}" />
+                                </p>
+                            </h:panelGroup>
+                                                      
+                            <h:panelGroup styleClass="mensaje_alerta borde_ie_10" layout="block" rendered="#{not empty renovacionMultilineaViewMB.datosRenovacion.operaciones and renovacionMultilineaViewMB.horaRenovacion and !renovacionMultilineaViewMB.tieneMandato }">
+                                <p>
+                                    <h:outputText value="#{msg.txtAdvSinMandato1}"/>&nbsp;
+                            		<h:outputText value="#{renovacionMultilineaViewMB.nombreFantasia}&nbsp;" rendered="#{renovacionMultilineaViewMB.nombreFantasia}" ></h:outputText>
+									<h:outputText value="#{renovacionMultilineaViewMB.razonSocial}&nbsp;" rendered="#{!renovacionMultilineaViewMB.nombreFantasia}" ></h:outputText>
+                            		<h:outputText value="#{msg.txtAdvSinMandato2}"/>
+                                </p>
+                            </h:panelGroup>
+                            
+                            <h:panelGroup styleClass="mensaje_alerta borde_ie_10" layout="block" rendered="#{empty renovacionMultilineaViewMB.datosRenovacion.operaciones and renovacionMultilineaViewMB.horaRenovacion}">
+                                <p>
+                                    <strong><h:outputText value="#{msg.txtClienteRns}" /><br /></strong>
+                                    <h:outputText value="#{msg.txtRenovacionNoCreditos}" />
+                                </p>
+                            </h:panelGroup>
+                            
+                            <h:panelGroup layout="block" class="fondo_borde_gris borde_ie_10 creditos" rendered="#{not empty renovacionMultilineaViewMB.datosRenovacion.operaciones and renovacionMultilineaViewMB.horaRenovacion and renovacionMultilineaViewMB.tieneMandato}"> 
+                                <p:dataTable value="#{renovacionMultilineaViewMB.datosRenovacion.operaciones}"  emptyMessage="#{msg.sinRegistros}" var="detalleCredito"
+                                    id="tablaRenovacion" styleClass="tabla_datos tablesorter" width="100%" border="0" cellspacing="0" cellpadding="0" 
+                                    paginator="true" paginatorPosition="bottom" 
+                                    paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                    rows="10" rowsPerPageTemplate="10,20,25"
+                                    selection="#{renovacionMultilineaViewMB.operacionSeleccionada}"
+                                    >
+                                    
+                                    <p:column style="width:2%" styleClass="align_center" selectionMode="single">
+                                        <f:facet name="header"></f:facet>
+                                    </p:column>
+                                    <p:column style="width:16%;" styleClass="align_center" sortBy="#{detalleCredito.numOperacion}" >
+                                        <f:facet name="header">#{msg.txtNumOperacionRns}</f:facet>
+                                        <h:outputText value="#{detalleCredito.idOperacion}&nbsp;"></h:outputText>
+                                        <h:outputText value="#{detalleCredito.numOperacion}"><f:convertNumber minIntegerDigits = "8" pattern = "############"/></h:outputText> 
+                                    </p:column>
+
+                                    <p:column style="width:16%;" styleClass="align_center" sortBy="#{detalleCredito.glosaTipoOperacion}">
+                                        <f:facet name="header">#{msg.txtTipoCreditoRns}</f:facet>
+                                        <h:outputText value="#{detalleCredito.glosaTipoOperacion}">
+                                        </h:outputText>
+                                    </p:column>
+
+                                    <p:column style="width:16%;" styleClass="align_center" sortBy="#{detalleCredito.saldoValorFinal}">
+                                        <f:facet name="header">#{msg.txtMontoSolicitadoRns}</f:facet>
+                                        <h:outputText value="#{detalleCredito.montoCredito}">
+                                            <f:convertNumber pattern="$###,###,###"/>
+                                        </h:outputText>
+                                    </p:column>
+
+                                    <p:column style="width:16%;" styleClass="align_center">
+                                        <f:facet name="header">#{msg.txtVencimientoRns}</f:facet>
+                                        <h:panelGroup rendered="#{detalleCredito.fecVencimiento2 gt renovacionMultilineaViewMB.today}">
+                                                <h:outputText value="#{detalleCredito.fecVencimiento2}"><f:convertDateTime pattern="dd/MM/yyyy" /></h:outputText>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{detalleCredito.fecVencimiento2 lt renovacionMultilineaViewMB.today}">
+                                            <strong class="txt_destacado ico_credito_por_vencer">
+                                                 <h:outputText value="#{detalleCredito.fecVencimiento2}"><f:convertDateTime pattern="dd/MM/yyyy" /></h:outputText>
+                                            </strong>
+                                        </h:panelGroup>
+                                        
+                                    </p:column>
+
+                                </p:dataTable>
+                            </h:panelGroup>
+                            <div id="muestraErrorOperacion" class="noMostrar">
+							<div class="mensaje_checkbox">
+							         <div class="mensaje_error"> <h:outputText value="#{msg.txtNoSeleccionOperacion}"/></div>
+							</div>
+							</div>
+                            <p class="botones">
+                                <h:commandButton  styleClass="bot_02" title="#{msg.txtBotonRenovarRns}" value="#{msg.txtBotonRenovarRns}" onclick="return validaSeleccionOperacion();" action="#{renovacionMultilineaViewMB.iniciarSimulacion}" rendered="#{not empty renovacionMultilineaViewMB.datosRenovacion.operaciones and renovacionMultilineaViewMB.horaRenovacion and renovacionMultilineaViewMB.tieneMandato}" />  
+                            </p>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="srvPaso2" layout="block" styleClass="fondo" rendered="#{renovacionMultilineaViewMB.paso eq 2}">
+                            <script>
+                                $(document).ready(function() {
+                                jQuery('#srvPaso2').append(jQuery('#footerTexts'));
+                                jQuery('#srvPaso2').prepend(jQuery('#pasosWizard'));
+                                setPasoWizard('2');
+                                });                                 
+                            </script>
+                            
+                            <div class="clear"></div>
+                            <h:panelGroup layout="block" class="fondo_borde_gris borde_ie_10 creditos">
+                                <h:panelGroup layout="block" class="fila">
+                                    <h:panelGroup layout="block" class="col_left">
+                                        <p>#{msg.txtOperacionRenovarRns}</p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" class="col_right">
+                                        <p>
+                                            <strong class="txt_destacado">
+                                                #{renovacionMultilineaViewMB.operacionSeleccionada.idOperacion}&nbsp;#{renovacionMultilineaViewMB.operacionSeleccionada.numOperacion}
+                                            </strong>
+                                        </p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+
+                                <h:panelGroup layout="block" class="fila">
+                                    <h:panelGroup layout="block" class="col_left">
+                                        <p>#{msg.txtMontoDeudaRns}</p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" class="col_right">
+                                        <p>
+                                            <strong class="txt_destacado">
+                                                <h:outputText value="#{renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.valorRenovado + renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.totalPagado}">
+                                                    <f:convertNumber pattern="$###,###,###"/>
+                                                </h:outputText> 
+                                            </strong>
+                                        </p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+
+                                <h:panelGroup layout="block" class="fila">
+                                    <h:panelGroup layout="block" class="col_left">
+                                        <p>#{msg.txtMontoCapitalRns}</p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" class="col_right">
+                                        <p>
+                                            <strong class="txt_destacado">
+                                                <h:outputText value="#{renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.valorCapital}">
+                                                    <f:convertNumber pattern="$###,###,###"/>
+                                                </h:outputText> 
+                                            </strong>
+                                            <br />
+                                            
+                                        </p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                                
+                                <h:panelGroup layout="block" class="fila">
+                                    <h:panelGroup layout="block" class="col_left">
+                                        <p>#{msg.txtValorAPagarRns}</p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" class="col_right">
+                                        <p>
+                                            <strong class="txt_destacado">
+                                                <h:outputText value="#{renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.totalPagado}">
+                                                    <f:convertNumber pattern="$###,###,###"/>
+                                                </h:outputText> 
+                                            </strong>
+                                            <br />
+                                            <span class="notas">#{msg.txtInteresesImpuestos}</span>
+                                        </p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                                
+                                <h:panelGroup layout="block" class="fila">
+                                    <h:panelGroup layout="block" class="col_left">
+                                        <p>#{msg.txtCuentaCargoRns}</p>
+                                    </h:panelGroup>
+                                    
+                                    <h:panelGroup layout="block" class="col_right">
+                                        <p><strong class="txt_destacado">
+                                            <h:outputText value="#{renovacionMultilineaViewMB.cuentasCorrientesYPrimas[0].value}">
+                                            </h:outputText> 
+                                        </strong>
+                                        </p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+
+                                <h:panelGroup layout="block" class="fila">
+                                    <h:panelGroup layout="block" class="col_left">
+                                        <p>#{msg.txtMontoCreditoRns}</p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" class="col_right">
+                                        <p>
+                                            <strong class="txt_destacado">
+                                                <h:outputText value="#{renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.valorRenovado}">
+                                                    <f:convertNumber pattern="$###,###,###"/>
+                                                </h:outputText> 
+                                            </strong>
+                                        </p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+
+                                <h:panelGroup layout="block" styleClass="fila">
+                                    <h:panelGroup layout="block" styleClass="col_left">
+                                        <label for="tipo_credito"><h:outputText value="#{msg.txtTipoRenovacionRns}"/>:</label>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" styleClass="col_right">
+                                        <p>
+                                            <h:selectOneMenu name="tipo_credito"
+                                                id="tipo_credito"
+                                                value="#{renovacionMultilineaViewMB.tipoDeCreditoSeleccionado}"
+                                                styleClass="col_180" onchange="mostrarCuotas(this.value,1);quitarBordeError();">
+                                                <f:ajax  listener="#{renovacionMultilineaViewMB.cambiarValoresTipoCredito}" render="numero_cuotas fechaMaximaPrimerVencimiento cantidadDiasVencimiento cantidadDiasVencimiento2 fechaVencimientoRenov" onevent="function(data) { if (data.status === 'success') { mostrarCalendario()} }" />
+                                                <f:selectItem itemValue="000" itemLabel="Seleccione..." />
+                                                <f:selectItems
+                                                    value="#{renovacionMultilineaViewMB.tiposDeCreditos}"/>
+                                            </h:selectOneMenu> 
+                                            <h:inputHidden id="cantidadDiasVencimiento" value="#{renovacionMultilineaViewMB.diasTopePrimerVencimiento}"  />
+                                            <h:inputHidden id="cantidadDiasVencimiento2" value="#{renovacionMultilineaViewMB.diasIniPrimerVencimiento}"  />
+                                            <h:inputHidden id="fechaVencimientoRenov" value="#{renovacionMultilineaViewMB.operacionSeleccionada.fecVencimiento2.time}"  />
+                                            
+                                        </p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+
+                                <h:panelGroup id="panelCuotas" layout="block" styleClass="fila numero_cuotas" style="display:block;">
+                                    <h:panelGroup layout="block" styleClass="col_left">
+                                        <p><label for="numero_cuotas"><h:outputText value="#{msg.numeroCuotas}"/>:</label></p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" styleClass="col_right">
+                                        <p>
+                                            <h:selectOneMenu name="numero_cuotas"
+                                                id="numero_cuotas"
+                                                value="#{renovacionMultilineaViewMB.cuotaSeleccionada}"
+                                                styleClass="col_130"
+                                                onchange="quitarBordeErrorCuotas();">
+                                                <f:selectItem itemValue="0" itemLabel="Seleccione..." />
+                                                <f:selectItems  value="#{renovacionMultilineaViewMB.cuotas}" />
+                                            </h:selectOneMenu> 
+                                        </p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+
+                                <h:panelGroup layout="block" styleClass="fila txt_fecha">
+                                    <h:panelGroup layout="block" styleClass="col_left">
+                                        <p><label for="fecha_vencimiento"><h:outputText value="#{msg.fechaPrimerVencimiento}"/>:</label></p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" styleClass="col_right">
+                                        <p><h:inputText  id="fecha_vencimiento" name="fecha_vencimiento" onfocus="quitarMensaje(this);" styleClass="calendar_hasDatepicker" value="#{renovacionMultilineaViewMB.fechaVencimientoSeleccionada}"/></p>
+                                        <p class="condiciones"><h:outputText value="#{msg.fechaMaximaPrimer}"/><br /><h:outputText value="#{msg.vencimiento}"/>: <h:outputText id="fechaMaximaPrimerVencimiento" value="#{renovacionMultilineaViewMB.fechaMaximaPrimerVencimiento}" /></p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </h:panelGroup>
+                            <p class="botones">
+                                <h:commandButton  id="bot_02" styleClass="bot_02" title="#{msg.txtBotonSimularRns}" value="#{msg.txtBotonSimularRns}" action="#{renovacionMultilineaViewMB.mostrarCondicionesCredito}"  onclick="return validacionesPaso1Renovacion();">  
+                                </h:commandButton>
+                            </p>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="srvPaso3" styleClass="fondo" layout="block" rendered="#{renovacionMultilineaViewMB.paso eq 3}">
+                            <script>
+                                $(document).ready(function() {
+                                jQuery('#srvPaso3').append(jQuery('#footerTexts'));
+                                jQuery('#srvPaso3').prepend(jQuery('#pasosWizard'));
+                                setPasoWizard('3');
+                                });                                 
+                            </script>   
+                            <div class="clear"></div>
+                            <h:panelGroup layout="block"  class="fondo_borde_gris simulador borde_ie_10">
+                                <!--COLUMNA-->
+                                <h:panelGroup layout="block"  class="columna">
+                                    <h:panelGroup layout="block"  class="fondo_simulador borde_ie_10">
+                                        <p>
+                                            <label class="destacado"><h:outputText value="#{msg.montoSolicitado}"/>:</label>
+                                            <span class="col_right destacado">
+                                                <h:outputText id="montoSolicitado" value="#{renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.valorRenovado}">
+                                                <f:convertNumber pattern="$ ###,###,###"/>
+                                                </h:outputText> 
+                                            </span>
+                                        </p>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup layout="block"  class="fondo_simulador borde_ie fila_02">
+                                        <p>
+                                            <label for="tipo_credito"><strong><h:outputText value="#{msg.tipoDeCredito}"/>:</strong></label>
+                                            <h:selectOneMenu name="tipo_credito2"
+                                                id="tipo_credito2"
+                                                disabled="true" >
+                                                <f:selectItems
+                                                    value="#{renovacionMultilineaViewMB.tiposDeCreditosAmostrar}"/>
+                                            </h:selectOneMenu>      
+                                            <h:selectOneMenu name="tipo_credito5"
+                                                id="tipo_credito5"
+                                                value="#{renovacionMultilineaViewMB.tipoDeCreditoSeleccionado}"
+                                                styleClass="col_180 noMostrar" onchange="mostrarCuotas(this.value,2);">
+                                                <f:ajax  listener="#{renovacionMultilineaViewMB.cambiarValoresTipoCredito}" render="fechaMaximaPrimerVencimiento2 cantidadDiasVencimiento3 cantidadDiasVencimiento4" onevent="function(data) { if (data.status === 'success') { mostrarCalendario2()} }" />
+                                                <f:selectItems
+                                                    value="#{renovacionMultilineaViewMB.tiposDeCreditos}"/>
+                                            </h:selectOneMenu> 
+                                            <h:inputHidden id="cantidadDiasVencimiento3" value="#{renovacionMultilineaViewMB.diasTopePrimerVencimiento}"  />
+                                            <h:inputHidden id="cantidadDiasVencimiento4" value="#{renovacionMultilineaViewMB.diasIniPrimerVencimiento}"  /> 
+                                            <h:inputHidden id="fechaMaximaPrimerVencimiento2" value="#{renovacionMultilineaViewMB.fechaMaximaPrimerVencimiento}" />                              
+                                        </p>
+                                        <h:panelGroup id="panelCuotas2">
+                                            <p class="numero_cuotas"><label for="numero_cuotas"><strong><h:outputText value="#{msg.numeroCuotas}"/>:</strong></label>
+                                                <h:outputText  id="numero_cuotas2" name="numero_cuotas2" disabled="disabled" styleClass="off solo_numeros2"  value="#{renovacionMultilineaViewMB.cuotaSeleccionada}"/>
+                                                <h:selectOneMenu name="numero_cuotas5"
+                                                    id="numero_cuotas5"
+                                                    value="#{renovacionMultilineaViewMB.cuotaSeleccionada}"
+                                                    styleClass="noMostrar">
+                                                    <f:selectItems
+                                                        value="#{renovacionMultilineaViewMB.cuotasMod}" />
+                                                </h:selectOneMenu> 
+                                            </p>
+                                        </h:panelGroup>       
+                                        <p class="txt_fecha">
+                                            <label for="fecha_vencimiento"><strong><h:outputText value="#{msg.fechaPagoPrimeraCuota}"/>:</strong></label>
+                                            <h:inputText id="fecha_vencimiento2" name="fecha_vencimiento2"  styleClass="off calendar_hasDatepicker" disabled="true" value="#{renovacionMultilineaViewMB.fechaVencimientoSeleccionada}" />
+                                            <h:inputText  id="fecha_vencimiento5" name="fecha_vencimiento5" onfocus="quitarMensaje(this);" styleClass="calendar_hasDatepicker noMostrar" value="#{renovacionMultilineaViewMB.fechaVencimientoSeleccionada}"/>
+                                        </p>
+                                    </h:panelGroup>
+                                    <h4><h:outputText value="#{msg.txtSeguros}"/> <span class="texto_titulo"><h:outputText value="#{msg.txtSeleccioneProteccion}"/></span></h4>
+                                    <h:panelGroup layout="block"  class="fondo_simulador borde_ie fila_03">
+                                        <h:dataTable value="#{renovacionMultilineaViewMB.segurosObtenidos}" var="paquete" id="tablaSeguros" width="100%" styleClass="tabla_no_border" >
+                                            <h:column>
+                                                <p>
+                                                    <label for="proteccion_0">
+                                                        <strong>
+                                                            <h:outputText  value="#{paquete.glosaTipoSeguro}"/>
+                                                        </strong>
+                                                    </label>
+                                                    <span class="col_right">
+                                                        <h:selectBooleanCheckbox value="#{paquete.checkeado}" disabled="#{paquete.deshabilitado}" onclick="cambiarValoresPorSeguros();"/>
+                                                        <h:outputText  value="#{paquete.montoSeguro}">  <f:convertNumber currencySymbol="$ " type="currency" locale="es_CL"/> </h:outputText>
+                                                        <h:panelGroup layout="block" rendered="#{paquete.requiereDPS}">
+                                                            <a href="javascript:;" onclick="javascript:doLink('#{clienteMB.rut}', #{clienteMB.digitoVerif}, '#{paquete.codClfRentabilidadRcc}', '#{paquete.codigoSubConcepto}${paquete.indCobro}');"> <h:outputText value=" **" /></a >
+                                                        </h:panelGroup>
+                                                        <span class="detalle"><a href="#;" class="txt_condiciones tooltip" title="#{msg[msg.mensajeSeguro.concat(paquete.codigoSubConcepto)]}">#{msg.info}</a></span> 
+                                                    </span>
+                                                </p>
+                                            </h:column>
+                                        </h:dataTable>
+                                        <br/>
+                                        <a href="javascript:levantaDps('DIR')" id="linkDirecto" style="color:#568FB6;font-weight:bold;display:none;">#{msg.dpsDirecto}</a>
+                                        <a href="javascript:levantaDps('IND')" id="linkAval"  style="color:#568FB6;font-weight:bold;display:none;">#{msg.dpsIndirecto}</a>
+                                        <a id="rechazoSer" style="color:red;font-weight:bold;display:none;">#{msg.dpsRechazada}</a>
+                                        <a id="rechazoCliente" style="color:red;font-weight:bold;display:none;">#{msg.dpsAceptada}</a>
+                                        <h:outputText value="#{msg.dpsAdvertencia}" rendered="#{renovacionMultilineaViewMB.requierenDPS > 0}"/>
+                                        <br/>
+                                        <br/>
+                                        <p class="normativa">
+                                            <a href="https://bciimg.bci.cl/medios/pdf/Normativa_Seguros.pdf" target="_blank">
+                                                <strong><h:outputText value="#{msg.normativaSeguros}"/></strong>
+                                            </a>
+                                        </p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                                <!--END COLUMNA-->
+                                <!--COLUMNA-->
+                                <h:panelGroup layout="block"  styleClass="columna">
+                                    <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                                        <p><span class="col_left destacado"><h:outputText value="#{msg.valorCuota}"/>:</span><span class="col_right destacado">$ <h:outputText id="valorCuota" name="valorCuota" disabled="disabled" value="#{renovacionMultilineaViewMB.valorCuota}"> <f:convertNumber pattern = "#,###"/> </h:outputText></span></p>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie fila_02">
+                                        <p><span class="col_left"><strong><h:outputText value="#{msg.tasaInteresEspecial}"/>:</strong></span><span class="col_right"><h:outputText id="tasaInteresInternet" name="tasaInteresInternet" disabled="disabled" value="#{renovacionMultilineaViewMB.tasaInteresInternet}"> <f:convertNumber pattern = "0.00"/> </h:outputText>%</span></p>
+                                        <p></p>
+                                        <p></p>
+                                    </h:panelGroup>
+                                    <h4><h:outputText value="#{msg.detalleCredito}"/></h4>
+                                    <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie fila_03">
+                                        <p>
+                                            <span class="col_left">
+                                                <strong><h:outputText value="#{msg.montoFinalCredito}"/>:</strong>
+                                            </span>
+                                            <span class="col_right destacado">
+                                                <h:outputText  id="monto_solicitado2" name="monto_solicitado2" disabled="disabled"   value="#{renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.valorRenovado}">
+                                                    <f:convertNumber pattern="$ ###,###,###"/>
+                                                </h:outputText>
+                                            </span>
+                                        </p>
+                                        <p class="txt_condiciones tooltip" title="#{msg.montoCAE}">
+                                            <h:outputText value="#{msg.costoTotalCredito}"/>: 
+                                            <h:outputText  id="montoFinalCredito2" name="montoFinalCredito2" disabled="disabled" value="#{renovacionMultilineaViewMB.costoFinalCredito}">
+                                                <f:convertNumber pattern="$ ###,###,###"/>
+                                            </h:outputText>
+                                            <br/> 
+                                        </p>
+                                        <p>
+                                            <span class="col_left"><h:outputText value="intereses e impuestos"/>:</span>
+                                            <span class="col_right">
+                                                <h:outputText  id="impuestos" name="impuestos" disabled="disabled"   value="#{renovacionMultilineaViewMB.impuestos + renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.totalPagado}">
+                                                    <f:convertNumber pattern="$ ###,###,###"/>
+                                                </h:outputText>
+                                            </span>
+                                        </p>
+                                        
+                                        <p>
+                                            <span class="col_left"><h:outputText value="#{msg.segurosIncluidos}"/>:</span>
+                                            <span class="col_right">
+                                                <h:outputText  id="segurosIncluidos" name="segurosIncluidos" value="#{renovacionMultilineaViewMB.montoTotalSegurosSeleccionados}">
+                                                    <f:convertNumber pattern="$ ###,###,###"/>
+                                                </h:outputText>
+                                            </span>
+                                        </p>
+		                                <p>
+		                                      <span class="col_left"><h:outputText value="#{msg.gastosNotariales}"/>:</span>
+		                                      <span class="col_right">
+		                                           $ <h:outputText  id="gastos" name="gastos" disabled="disabled" value="#{renovacionMultilineaViewMB.gastosNotariales}">
+		                                                <f:convertNumber pattern = "#,###"/>
+		                                            </h:outputText>
+		                                      </span>
+		                                    </p>
+                                        <p>
+                                            <span class="col_left"><strong><h:outputText value="= Total a pagar"/>:</strong></span>
+                                            <span class="col_right destacado">
+                                                <h:outputText id="totalPagar" name="totalPagar" disabled="disabled" value="#{renovacionMultilineaViewMB.montoTotalSegurosSeleccionados + renovacionMultilineaViewMB.impuestos + renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.totalPagado}">
+                                                    <f:convertNumber pattern="$ ###,###,###"/>
+                                                </h:outputText> 
+                                            </span>
+                                            <span class="notas col_left">#{msg.conCargoCuentaCorriente}</span>
+                                        </p>
+                                        
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                                <!--END COLUMNA-->
+                            </h:panelGroup>
+                            <!--end fondo gris-->
+                            <p class="botones">
+                                <h:commandButton  id="bot_11" styleClass="bot_02 noMostrar" title="Recalcular" value="Recalcular" action="#{renovacionMultilineaViewMB.mostrarCondicionesCredito}" />
+                                <button id="bot_10" type="button" onclick="modificarValoresRenovacion();" title="#{msg.modificarSimulacion}" class="bot_modificar bot_02 width_140">#{msg.modificarSimulacion}</button>
+                                <h:commandButton  id="bot_03" styleClass="bot_02" title="Continuar" value="Continuar" action="#{renovacionMultilineaViewMB.continuarRenovacion}" onclick="return validaLink();"/>
+                                <h:commandButton id="volverModificacion"  title="Volver" styleClass="bot_01 noMostrar" value="Volver" />
+                            </p>
+                            <script>cargarDps();</script>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="srvPaso4" styleClass="fondo" layout="block" rendered="#{renovacionMultilineaViewMB.paso eq 4}">
+                            <script>
+                                $(document).ready(function() {
+                                jQuery('#srvPaso4').append(jQuery('#footerTexts'));
+                                jQuery('#srvPaso4').prepend(jQuery('#pasosWizard'));
+                                setPasoWizard('3');
+                                });                                 
+                            </script>
+                            <div class="clear"></div>
+
+                            <h:panelGroup layout="block"  styleClass="fondo_borde_gris simulador borde_ie_10">
+                                <!--COLUMNA-->
+                                <h:panelGroup layout="block"  styleClass="columna fila_01" style="height: 485px;">
+                                    <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10 sin_margen">
+                                        <p><span class="col_left destacado"><h:outputText value="#{msg.montoSolicitado}"/>:</span><span class="col_right destacado">$ <h:outputText  id="montoFinalCredito3" name="montoFinalCredito3" disabled="disabled"   value="#{renovacionMultilineaViewMB.montoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                                        <p><label for="tipo_credito"><strong><h:outputText value="#{msg.tipoDeCredito}"/>:</strong></label><h:outputText styleClass="tipo_credito" value="#{renovacionMultilineaViewMB.tipoDeCreditoSeleccionado eq 'AVC721' ? 'Cuota fija tasa fija' : 'Un vencimiento tasa fija'}"/></p>
+                                        <p class="numero_cuotas"><label for="numero_cuotas"><strong><h:outputText value="#{msg.numeroCuotas}"/>:</strong></label><h:outputText  id="numero_cuotas3" name="numero_cuotas3" disabled="disabled" styleClass="off solo_numeros2"  value="#{renovacionMultilineaViewMB.tipoDeCreditoSeleccionado eq 'AVC721' ? renovacionMultilineaViewMB.cuotaSeleccionada : 1}"/></p>
+                                        <p class="txt_fecha"><label for="fecha_vencimiento"><strong><h:outputText value="#{msg.fechaPagoPrimeraCuota}"/>:</strong></label><h:inputText id="fecha_vencimiento3" name="fecha_vencimiento3"  styleClass="off calendar_hasDatepicker" disabled="true" value="#{renovacionMultilineaViewMB.fechaVencimientoSeleccionada}" /></p>
+                                    </h:panelGroup>
+                                    <h4><h:outputText value="#{msg.detalleCredito}"/></h4>
+                                    <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                                        <p><span class="col_left destacado"><h:outputText value="#{msg.cuotaMensual}"/>:</span><span class="col_right destacado">$ <h:outputText id="valorCuota2" name="valorCuota2" disabled="disabled" value="#{renovacionMultilineaViewMB.valorCuota}"> <f:convertNumber pattern = "#,###"/> </h:outputText></span></p>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                                        <p>
+                                            <span class="col_left">
+                                                <strong><h:outputText value="#{msg.montoFinalCredito}"/>:</strong>
+                                            </span>
+                                            <span class="col_right destacado">
+                                                <h:outputText  id="monto_solicitado3" name="monto_solicitado3" disabled="disabled"   value="#{renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.valorRenovado}">
+                                                    <f:convertNumber pattern="$ ###,###,###"/>
+                                                </h:outputText>
+                                            </span>
+                                        </p>
+                                        <p class="txt_condiciones tooltip" title="#{msg.montoCAE}">
+                                            <h:outputText value="#{msg.costoTotalCredito}"/>: 
+                                            <h:outputText  id="montoFinalCredito4" name="montoFinalCredito4" disabled="disabled" value="#{renovacionMultilineaViewMB.costoFinalCredito}">
+                                                <f:convertNumber pattern="$ ###,###,###"/>
+                                            </h:outputText>
+                                            <br/> 
+                                        </p>
+                                        <p>
+                                            <span class="col_left"><h:outputText value="#{msg.txtInteresesImpuestos}"/>:</span>
+                                            <span class="col_right">
+                                                <h:outputText  id="impuestos3" name="impuestos3" disabled="disabled"   value="#{renovacionMultilineaViewMB.impuestos + renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.totalPagado}">
+                                                    <f:convertNumber pattern="$ ###,###,###"/>
+                                                </h:outputText>
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <span class="col_left"><h:outputText value="#{msg.segurosIncluidos}"/>:</span>
+                                            <span class="col_right">
+                                                <h:outputText  id="segurosIncluidos4" name="segurosIncluidos4" value="#{renovacionMultilineaViewMB.montoTotalSegurosSeleccionados}">
+                                                    <f:convertNumber pattern="$ ###,###,###"/>
+                                                </h:outputText>
+                                            </span>
+                                        </p>
+                                         <p>
+		                                      <span class="col_left"><h:outputText value="#{msg.gastosNotariales}"/>:</span>
+		                                      <span class="col_right">
+		                                           $ <h:outputText  id="gastos2" name="gastos2" disabled="disabled" value="#{renovacionMultilineaViewMB.gastosNotariales}">
+		                                                <f:convertNumber pattern = "#,###"/>
+		                                            </h:outputText>
+		                                      </span>
+		                                    </p>
+
+                                        <p>
+                                            <span class="col_left"><strong>= <h:outputText value="#{msg.totalPagar}"/>:</strong></span>
+                                            <span class="col_right destacado">
+                                                <h:outputText id="totalPagar2" name="totalPagar2" disabled="disabled" value="#{renovacionMultilineaViewMB.montoTotalSegurosSeleccionados + renovacionMultilineaViewMB.impuestos + renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.totalPagado}">
+                                                    <f:convertNumber pattern="$ ###,###,###"/>
+                                                </h:outputText> 
+                                            </span>
+                                            <span class="notas col_left">#{msg.conCargoCuentaCorriente}</span>
+                                        </p>
+
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                                <!--END COLUMNA-->
+
+                                <!--COLUMNA-->
+                                <h:panelGroup layout="block"  styleClass="columna con_altura fila_01 borde_ie_10" style="height: 485px;">
+                                    <h:panelGroup layout="block"  styleClass="formulario">
+                                        <p><strong>¿<h:outputText value="#{msg.dondeDeseaAbono}"/>?</strong></p>
+                                        <p>
+                                            <h:selectOneMenu id="cuentaAbono" value="#{renovacionMultilineaViewMB.cuentaSeleccionadaAbono}" onblur="quitaBordeError(this);" styleClass="select_230">
+                                                <f:selectItem itemLabel="Seleccione Cuenta Corriente" itemValue="0" selected="selected"/>
+                                                <f:selectItems value = '#{renovacionMultilineaViewMB.cuentasCorrientesYPrimas}'/>
+                                            </h:selectOneMenu>
+                                            <!-- <h:inputHidden id="cuentaAbonoFinal" value ="#{renovacionMultilineaViewMB.cuentaSeleccionadaAbono}"/> -->
+                                        </p>
+                                        <p><strong>¿<h:outputText value="#{msg.dondeDeseaCargo}"/>?</strong></p>
+                                        <p>
+                                            <h:selectOneMenu id="cuentaCargo" value="#{renovacionMultilineaViewMB.cuentaSeleccionadaCargo}" onblur="quitaBordeError(this);" styleClass="select_230">
+                                                <f:selectItem itemLabel="Seleccione Cuenta Corriente" itemValue="0" selected="selected"/>
+                                                <f:selectItems value = '#{renovacionMultilineaViewMB.cuentasCorrientesYPrimas}'/>
+                                            </h:selectOneMenu>
+                                            <!-- <h:inputHidden id="cuentaCargoFinal" value ="#{renovacionMultilineaViewMB.cuentaSeleccionadaCargo}"/> -->
+                                        </p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                                <!--END COLUMNA-->
+                                <h:panelGroup id="acepto_condicionesPG" layout="block" rendered="#{renovacionMultilineaViewMB.mostrarCondicionesMandato}" >
+				                    <p class="checkbox">
+				                        <h:selectBooleanCheckbox id="acepto_condiciones_mandato" onclick="borrarErrorCheck()"  onfocus="borrarErrorCheck();" onblur="borrarErrorCheck();" value="#{renovacionMultilineaViewMB.aceptaCondicionesMandato}" />
+				                        <label for="acepto_condiciones_mandato">
+				                           <h:outputText value="#{msg.txtCondicionesMandato}"/>
+				                        </label>
+				                    </p>
+				                </h:panelGroup>
+                                <h:panelGroup id="disclaimer_renovacion" layout="block" rendered="#{renovacionMultilineaViewMB.mostrarCondicionesMandato}" >
+						           <div class="mensajes_de_alerta borde_ie_10">
+								      <p>#{msg.tituloResponsabilidadAvalista}</p>
+								      <textarea name="message" rows="8" cols="80">#{renovacionMultilineaViewMB.disclaimerMandato}</textarea>
+								   </div>
+			                     </h:panelGroup>
+			                     				                
+                                <div id="muestraError" class="noMostrar">
+                                    <div  class="mensaje_checkbox">
+                                        <div class="mensaje_error"><h:outputText value="#{msg.noHaAceptadoCondiciones}"/>:
+                                        <h:outputText value="#{msg.declaroConocerAceptar}"/>.</div>
+                                    </div>
+                                </div>
+                                <h:panelGroup id="acepto_condiciones_mandato_error" layout="block" rendered="#{renovacionMultilineaViewMB.mostrarCondicionesMandato}" >
+				                     <div id="muestraErrorMandato" class="noMostrar">
+				                         <div  class="mensaje_checkbox">
+				                             <div class="mensaje_error"><h:outputText value="#{msg.noHaAceptadoCondicionesMandato}"/></div>
+				                         </div>
+				                     </div>
+			                     </h:panelGroup>
+                            </h:panelGroup>
+                            <!--end fondo gris-->
+                            <h:panelGroup layout="block" styleClass="multipass">
+                                <p class="botones">
+                                    <segundaclave:metodoAutenticacion id="segundaclave" servicio="RenovacionMultilinea"
+                                        layout="vertical"
+                                        bindingComponent="renovacionMultilineaViewMB.segundaClaveAplicativo"
+                                        textoButtonAction="Autorizar"
+                                        textoButtonRetorno="Cancelar"
+                                        destinoButtonAction="#{renovacionMultilineaViewMB.cursarRenovacion}"
+                                        destinoButtonOnclick="return antesDeCursarRenovacion()"
+                                        destinoButtonRetornoOnclick="retornoClave()"
+                                        esPrimefaces="false"
+                                        mensaje="">
+                                    </segundaclave:metodoAutenticacion>   
+
+                                    <h:panelGroup layout="block" styleClass="mensaje_activar" rendered="#{not empty facesContext.messageList}">
+                                        <h:messages showSummary="false" showDetail="true" layout="table" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-left:0px"/>
+                                    </h:panelGroup>
+                                </p>
+                            </h:panelGroup>
+                        </h:panelGroup>
+
+
+                        <!--  Cuarto click -->
+                        <h:panelGroup id="srvPaso5" styleClass="fondo" layout="block" rendered="#{renovacionMultilineaViewMB.paso eq 5}">
+                            <script>
+                                $(document).ready(function() {
+                                jQuery('#srvPaso5').append(jQuery('#footerTexts'));
+                                jQuery('#srvPaso5').prepend(jQuery('#pasosWizard'));
+                                setPasoWizard('3');
+                                });                                 
+                            </script>   
+                            <div class="clear"></div>
+
+                            <h:panelGroup layout="block"  styleClass="fondo_borde_gris simulador borde_ie_10">
+                                <!--COLUMNA-->
+                                <h:panelGroup layout="block"  styleClass="columna fila_01" style="height: 460px;">
+                                    <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10 sin_margen">
+                                        <p><span class="col_left destacado"><h:outputText value="#{msg.montoSolicitado}"/>:</span><span class="col_right destacado"><h:outputText  id="monto_solicitado4" name="monto_solicitado4" disabled="disabled" value="#{renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.valorRenovado}"><f:convertNumber pattern = "$#,###"/></h:outputText></span></p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                                        <p><label for="tipo_credito"><strong><h:outputText value="#{msg.tipoDeCredito}"/>:</strong></label><h:outputText styleClass="tipo_credito" value="#{renovacionMultilineaViewMB.tipoDeCreditoSeleccionado eq 'AVC721' ? 'Cuota fija tasa fija' : 'Un vencimiento tasa fija'}"/></p>                                             
+                                        <p class="numero_cuotas"><label for="numero_cuotas"><strong><h:outputText value="#{msg.numeroCuotas}"/>:</strong></label><h:outputText  id="numero_cuotas4" name="numero_cuotas4" disabled="disabled" styleClass="off solo_numeros2"  value="#{renovacionMultilineaViewMB.cuotaSeleccionada}"/></p>
+                                        <p class="txt_fecha"><label for="fecha_vencimiento"><strong><h:outputText value="#{msg.fechaPagoPrimeraCuota}"/>:</strong></label><h:inputText id="fecha_vencimiento4" name="fecha_vencimiento4"  styleClass="off calendar_hasDatepicker" disabled="true" value="#{renovacionMultilineaViewMB.fechaVencimientoSeleccionada}" /></p>
+                                    </h:panelGroup>
+                                    <h4><h:outputText value="#{msg.detalleCredito}"/></h4>
+                                    <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                                        <p><span class="col_left destacado"><h:outputText value="#{msg.cuotaMensual}"/>:</span><span class="col_right destacado">$ <h:outputText id="valorCuota3" name="valorCuota3" disabled="disabled" value="#{renovacionMultilineaViewMB.valorCuota}"> <f:convertNumber pattern = "#,###"/> </h:outputText></span></p>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                                        <p><span class="col_left">+ <h:outputText value="#{msg.impuestos}"/>:</span><span class="col_right">$<h:outputText  id="impuestos4" name="impuestos4" disabled="disabled"   value="#{renovacionMultilineaViewMB.impuestos}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                                        <p><span class="col_left">+ <h:outputText value="#{msg.segurosIncluidos}"/>:</span><span class="col_right">$<h:outputText  id="segurosIncluidos3" name="segurosIncluidos3"   value="#{renovacionMultilineaViewMB.montoTotalSegurosSeleccionados}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                                        <p><span class="col_left">+<h:outputText value="#{msg.gastosNotariales}"/>:</span> <span class="col_right">$ <h:outputText  id="gastos3" name="gastos3" disabled="disabled" value="#{renovacionMultilineaViewMB.gastosNotariales}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                                        <p><span class="col_left">= <strong>#{msg.montoFinalCredito}:</strong></span><span class="col_right destacado">$ <h:outputText  id="montoFinalCredito5" name="montoFinalCredito5" disabled="disabled"   value="#{renovacionMultilineaViewMB.montoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                                        <p class="txt_condiciones tooltip" title="#{msg.montoCAE}">#{msg.costoTotalCredito}: <h:outputText  id="montoFinalCredito6" name="montoFinalCredito6" disabled="disabled"   value="#{renovacionMultilineaViewMB.costoFinalCredito}"><f:convertNumber pattern = "$#,###"/></h:outputText><br/>#{msg.cargaAnualEquivalente}: % <h:outputText  id="factorCae3" name="factorCae3" disabled="disabled"   value="#{renovacionMultilineaViewMB.factorCae}"><f:convertNumber pattern = "0.00"/></h:outputText> </p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                                <!--END COLUMNA-->
+                                <!--COLUMNA-->
+                                <h:panelGroup layout="block"  styleClass="columna con_altura fila_01 borde_ie_10" style="height: 460px;">
+                                    <h:panelGroup layout="block" styleClass="fondo_simulador formulario_simulador">
+                                        <p>
+                                            <strong>#{msg.txtStatusClienteMisCreditos}</strong>
+                                        </p>
+                                        <p>#{msg.paraPoderContinuar}:</p>
+                                        <h:panelGroup layout="block" styleClass="cont_formulario">
+                                            <p>
+                                                <label for="cod_telefono">
+                                                    <strong>#{msg.telefono}</strong>
+                                                </label>
+                                                <h:inputText id="cod_telefono" styleClass="solo_numeros caja_30"  maxlength="3" onkeypress="return soloNumeros(event)" name="cod_telefono" value="#{renovacionMultilineaViewMB.codTelefonoCliente}" />
+                                                -
+                                                <h:inputText id="telefono_fijo" styleClass="solo_numeros caja_115" maxlength="12"  onkeypress="return soloNumeros(event)" name="telefono_fijo" value="#{renovacionMultilineaViewMB.telefonoCliente}"/>
+                                            </p>
+                                            <p>
+                                                <label for="cod_celular">
+                                                    <strong>#{msg.telefonoCelular}</strong>
+                                                </label>
+                                                <h:inputText id="cod_celular" styleClass="solo_numeros caja_30" maxlength="3" onkeypress="return soloNumeros(event)" name="cod_celular" value="#{renovacionMultilineaViewMB.codCelularCliente}"/>
+                                                -
+                                                <h:inputText id="telefono_movil" styleClass="solo_numeros caja_115" maxlength="12" onkeypress="return soloNumeros(event)" name="telefono_movil" value="#{renovacionMultilineaViewMB.celularCliente}"/>
+                                            </p>
+                                            <p>
+                                                <label for="email">
+                                                    <strong>#{msg.mail}</strong>
+                                                </label>
+                                                <h:inputText id="email" styleClass="caja_140" name="email" onfocus="quitarMensaje(this);" value="#{renovacionMultilineaViewMB.emailCliente}"  />
+                                            </p>
+                                            <p>
+                                                <label for="email2">
+                                                    <strong>#{msg.confirmarMail}</strong>
+                                                </label>
+                                                <h:inputText id="email2" styleClass="caja_140" name="email2" onfocus="quitarMensaje(this)"/>
+                                            </p>
+                                            <h:panelGroup id="combox" layout="block" >  
+                                                <p>
+                                                    <label for="region">
+                                                        <strong>#{msg.region}</strong>
+                                                    </label>
+                                                    <h:selectOneMenu id="region"  styleClass="select_150 col_180" name="region" value="#{renovacionMultilineaViewMB.codigoRegion}">
+                                                        <f:ajax execute="@this" render="@none" />
+                                                        <f:ajax execute="@none" render="combox"/>  
+                                                        <f:selectItems value = "#{renovacionMultilineaViewMB.regiones}"/>
+                                                    </h:selectOneMenu>
+                                                    <h:inputHidden id="codRegionOculto" value="#{renovacionMultilineaViewMB.codigoRegion}"  />
+                                                    <h:inputHidden id="regionOculta" value="#{renovacionMultilineaViewMB.regionCliente}"  />
+                                                </p>
+                                                <p>
+                                                    <label for="comuna">
+                                                        <strong>#{msg.comuna}</strong>
+                                                    </label>
+                                                    <h:selectOneMenu id="comuna" onchange="quitarEstiloError();" value="#{renovacionMultilineaViewMB.codigoComuna}">
+                                                        <f:selectItem itemValue="000" itemLabel="Seleccione..." />
+                                                        <f:selectItems value = "#{renovacionMultilineaViewMB.comunas}"/>
+                                                    </h:selectOneMenu>
+                                                      <h:inputHidden id="comunaOculta" value="#{renovacionMultilineaViewMB.comunaCliente}"  />    
+                                                </p>
+                                            </h:panelGroup>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+
+                                </h:panelGroup>
+                                <!--END COLUMNA-->
+                            </h:panelGroup>
+                            <p class="botones">
+                                <h:commandButton id="volverCuartoClic"  title="Volver" styleClass="bot_01" value="Volver" action="#{renovacionMultilineaViewMB.volverPaso(1)}"/>
+                                <h:commandButton  id="enviarSolicitud" styleClass="bot_02" title="#{msg.enviarSolicitud}" value="#{msg.enviarSolicitud}" onclick="return validarSolicitud();" action="#{renovacionMultilineaViewMB.enviarSolicitud}" />
+                            </p>
+                            <!--end fondo gris-->
+                        </h:panelGroup>
+                        <!-- Fin cuarto click -->
+
+                        <h:panelGroup id="srvPaso6" styleClass="fondo" layout="block" rendered="#{renovacionMultilineaViewMB.paso eq 6}">
+                            <script>
+                                $(document).ready(function() {
+                                jQuery('#srvPaso6').append(jQuery('#footerTexts'));
+                                jQuery('#srvPaso6').prepend(jQuery('#pasosWizard'));
+                                setPasoWizard('4');
+                                });                                 
+                            </script>   
+                            <div class="clear"></div>
+                            
+                            <h:panelGroup layout="block"  styleClass="fondo_borde_gris simulador borde_ie_10">
+                                <h:panelGroup layout="block" styleClass="form_comprobante">
+                                    <p>#{msg.estimadoCliente}: </p>
+                                        <h:panelGroup layout="block" rendered="#{renovacionMultilineaViewMB.resultadoFirmaAvance eq 1}">
+                                          <p> #{msg.txtSuCredito}  <strong>#{renovacionMultilineaViewMB.caiOperacion}#{renovacionMultilineaViewMB.iicOperacion}</strong> #{msg.txtPor} <strong>$<h:outputText  disabled="disabled"   value="#{renovacionMultilineaViewMB.montoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText></strong> #{msg.txtFueAbonado} <h:outputText  disabled="disabled"   value="#{renovacionMultilineaViewMB.cuentaSeleccionadaAbono}"/>. </p>
+                                        </h:panelGroup>
+                                        <h:panelGroup layout="block" rendered="#{renovacionMultilineaViewMB.resultadoFirmaAvance eq 0}">
+                                          <p> #{msg.resultadoFirma1} <strong>#{renovacionMultilineaViewMB.caiOperacion}#{renovacionMultilineaViewMB.iicOperacion}</strong> #{msg.txtPor} <strong>$<h:outputText  disabled="disabled"   value="#{renovacionMultilineaViewMB.montoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText></strong> #{msg.txtSeEncuentraPendiente}(<a href="#;" onclick="window.location.href='vistaCreditosPorFirmar.jsf'" ><strong>#{msg.verPendientesFirma}</strong></a>). </p>
+                                        </h:panelGroup>
+                                        <h:panelGroup layout="block" rendered="#{renovacionMultilineaViewMB.resultadoFirmaAvance != 1 and renovacionMultilineaViewMB.resultadoFirmaAvance != 0}">
+                                          <p> #{msg[msg.resultadoFirma.concat(renovacionMultilineaViewMB.resultadoFirmaAvance)]} <strong>#{renovacionMultilineaViewMB.caiOperacion}#{renovacionMultilineaViewMB.iicOperacion}</strong> por <strong>$<h:outputText  disabled="disabled"   value="#{renovacionMultilineaViewMB.montoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText></strong> (<a href="#;" onclick="window.location.href='vistaCreditosPorFirmar.jsf'" ><strong>#{msg.verPendientesFirma}</strong></a>). </p>
+                                        </h:panelGroup>
+                                    <h:panelGroup layout="block" styleClass="col_150 display_inline">
+                                        <p><strong>#{msg.txtResumenDelCredito}</strong><br />
+                                        <span class="detalle">
+                                            <h:commandLink value="#{msg.detalles}" actionListener="#{renovacionMultilineaViewMB.resumenCredito(renovacionMultilineaViewMB.caiOperacion, renovacionMultilineaViewMB.iicOperacion)}" />
+                                        </span></p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" styleClass="col_150 display_inline">
+                                        <p><strong>#{msg.txtCalendarioPago}</strong><br />
+                                        <span class="detalle">
+                                            <h:commandLink value="#{msg.detalles}" actionListener="#{renovacionMultilineaViewMB.calendarioPago(renovacionMultilineaViewMB.caiOperacion, renovacionMultilineaViewMB.iicOperacion)}" />
+                                        </span></p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" styleClass="col_150 display_inline">
+                                        <p><strong>#{msg.txtDetalleSeguros}</strong><br />
+                                        <span class="detalle">
+                                            <h:commandLink value="#{msg.detalles}" actionListener="#{renovacionMultilineaViewMB.detalleSeguros()}" />                          
+                                        </span>
+                                    </p>
+                                </h:panelGroup>
+                                <p class="herramientas_fondos">
+                                    <span class="herramienta_pdf"><h:commandLink value="#{msg.detalles}" actionListener="#{renovacionMultilineaViewMB.generarComprobanteCargaPDF}"/>#{msg.txtGuardar}</span>
+                                    <span class="herramienta_imprimir"><a onclick="window.print();" title="#{msg.txtdescImprimirMisCreditos}" href="#;">+</a>#{msg.txtdescImprimirMisCreditos}</span> </p>
+                                    <h:panelGroup styleClass="clear"></h:panelGroup>
+                                </h:panelGroup> 
+                            </h:panelGroup>
+                            <p class="botones"><button  class="bot_02 width_140" type="button" title="#{msg.txtIrCuentaCorriente}" 
+                            onclick="fnVinculoAccesoDirecto('saldos_ult_mov ');"><h:outputText value="#{msg.txtIrCuentaCorriente}"/> </button><button type="button" title="#{msg.txtVerPendientesFirma}" class="bot_02 width_140" onclick="window.location.href='vistaCreditosPorFirmar.jsf'">#{msg.txtVerPendientesFirma}</button></p>
+                        </h:panelGroup>
+
+                        <!-- Respuesta del correo -->
+                        <h:panelGroup id="srvPaso7" styleClass="fondo" layout="block" rendered="#{renovacionMultilineaViewMB.paso eq 7}"> 
+                            <script>
+                                $(document).ready(function() {
+                                jQuery('#srvPaso4').append(jQuery('#footerTexts'));
+                                jQuery('#srvPaso4').prepend(jQuery('#pasosWizard'));
+                                setPasoWizard('4');
+                                });                                 
+                            </script>   
+                            <div class="clear"></div>
+                            
+                            
+                            <h:panelGroup layout="block" styleClass="mensaje_alerta borde_ie_10">
+                                <p>#{msg.estimadoCliente}:</p>
+                                <p>
+                                    #{msg.suSolicituFueIngresada}, <strong>#{msg.unEjecutivoComercial}</strong> #{msg.paraAtenderSuSolicitud}
+                                </p>
+                            </h:panelGroup>
+                            <h:panelGroup  layout="block" styleClass="fondo_borde_gris simulador borde_ie_10">
+                                <h:panelGroup layout="block" styleClass="col_100 float_right">
+                                    <p class="herramientas_fondos"> <span class="herramienta_pdf"><h:commandLink value="#{msg.detalles}" actionListener="#{renovacionMultilineaViewMB.generarComprobanteCargaPDF}"/><h:outputText value="#{msg.txtGuardar}"/></span><span class="herramienta_imprimir"><a onclick="window.print();" title="Imprimir" href="#;">+</a><h:outputText value="#{msg.txtImprimir}"/></span> </p>
+                                </h:panelGroup>
+
+                                <h4 class="txt_oscuro"><h:outputText value="#{msg.txtResumenSimulacion}"/>:</h4>
+                                <h:panelGroup  layout="block" styleClass="clear"></h:panelGroup>
+                                <!--COLUMNA-->
+                                <h:panelGroup layout="block" styleClass="columna">
+                                    <h:panelGroup layout="block" styleClass="fondo_simulador borde_ie_10">
+                                        <p>
+                                            <label class="destacado"><h:outputText value="#{msg.montoSolicitado}"/>:</label><span
+                                            class="col_right destacado">$ <h:outputText value="#{renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.valorRenovado}"><f:convertNumber pattern = "#,###"/></h:outputText></span>
+                                        </p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" styleClass="fondo_simulador borde_ie_10 fila_01">
+                                        <p>
+                                            <label for="tipo_credito"><strong><h:outputText value="#{msg.tipoDeCredito}"/>:</strong></label><span class="col_right"><h:outputText value="#{renovacionMultilineaViewMB.tipoDeCreditoSeleccionado eq 'AVC721' ? 'Cuota fija tasa fija' : 'Un vencimiento tasa fija'}"/></span>
+                                        </p>
+                                        <p class="numero_cuotas">
+                                            <label for="numero_cuotas"><strong><h:outputText value="#{msg.numeroCuotas}"/>:</strong></label><span class="col_right"><h:outputText value="#{renovacionMultilineaViewMB.cuotaSeleccionada}" /></span>
+                                        </p>
+                                        <p class="txt_fecha">
+                                            <label for="fecha_vencimiento">
+                                                <strong><h:outputText value="#{msg.fechaPagoPrimeraCuota}"/>:</strong>
+                                            </label>
+                                            <span class="col_right"> 
+                                                <h:outputText id="fecha_vencimiento9" name="fecha_vencimiento9"  disabled="true" value="#{renovacionMultilineaViewMB.fechaVencimientoSeleccionada}" />
+                                            </span>
+                                        </p>
+                                        <p></p>
+                                        <p></p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                                <!--END COLUMNA-->
+                                <!--COLUMNA-->
+                                <h:panelGroup layout="block" styleClass="columna">
+                                    <h:panelGroup layout="block" styleClass="fondo_simulador borde_ie_10">
+                                        <p>
+                                            <span class="col_left destacado"><h:outputText value="#{msg.valorCuota}"/>:</span><span
+                                            class="col_right destacado">$ <h:outputText id="valorCuota9" name="valorCuota9" disabled="disabled" value="#{renovacionMultilineaViewMB.valorCuota}"><f:convertNumber pattern = "#,###"/></h:outputText></span>
+                                        </p>
+                                    </h:panelGroup>
+                                    <h:panelGroup layout="block" styleClass="fondo_simulador borde_ie_10 fila_01">
+                                        <p><span class="col_left"><strong><h:outputText value="#{msg.montoSolicitado}"/>:</strong></span><span class="col_right destacado">$ <h:outputText  id="monto_solicitado9" name="monto_solicitado2" disabled="disabled"   value="#{renovacionMultilineaViewMB.operacionSeleccionadaCancelacion.valorRenovado}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                                        <p><span class="col_left">+ <h:outputText value="#{msg.impuestos}"/>:</span><span class="col_right">$<h:outputText  id="impuestos2" name="impuestos" disabled="disabled"   value="#{renovacionMultilineaViewMB.impuestos}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                                        <p><span class="col_left">+ <h:outputText value="#{msg.segurosIncluidos}"/>:</span><span class="col_right">$<h:outputText  id="segurosIncluidos2" name="segurosIncluidos2"   value="#{renovacionMultilineaViewMB.montoTotalSegurosSeleccionados}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                                        <p><span class="col_left">+<h:outputText value="#{msg.gastosNotariales}"/>:</span> <span class="col_right">$ <h:outputText  id="gastos4" name="gastos4" disabled="disabled" value="#{renovacionMultilineaViewMB.gastosNotariales}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                                        <p><span class="col_left"><strong>= <h:outputText value="#{msg.montoFinalCredito}"/>:</strong></span><span class="col_right destacado">$ <h:outputText  id="montoFinalCredito9" name="montoFinalCredito" disabled="disabled"   value="#{renovacionMultilineaViewMB.montoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                                        <p class="txt_condiciones tooltip" title="#{msg.montoCAE}"><h:outputText value="#{msg.costoTotalCredito}"/>: $ <h:outputText  id="montoFinalCredito10" name="montoFinalCredito2" disabled="disabled"   value="#{renovacionMultilineaViewMB.costoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText><br/><h:outputText value="#{msg.cargaAnualEquivalente}"/>: % <h:outputText  id="factorCae9" name="factorCae" disabled="disabled"   value="#{renovacionMultilineaViewMB.factorCae}"><f:convertNumber pattern = "0.00"/></h:outputText></p>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                                <!--END COLUMNA-->
+                            </h:panelGroup>
+                            <!--end fondo gris-->
+                            <p class="botones">
+                              <button  class="bot_02 width_140" type="button" title="#{msg.txtIrCuentaCorriente}" 
+                              onclick="fnVinculoAccesoDirecto('saldos_ult_mov ');"><h:outputText value="#{msg.txtIrCuentaCorriente}"/> </button>
+                            </p>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                    <h:panelGroup  id="footerTexts" styleClass="mensaje_informacion borde_ie_10" layout="block">
+                        <p><h:outputText value="#{msg.txtMsgFooterTitleRns}"/></p>
+                        <p><h:outputText value="#{msg.txtMsgFooterpunto1Rns}"/></p>
+                        <p>
+                            <h:outputText value="#{msg.txtMsgFooterpunto2_1Rns}"/>
+                            #{renovacionMultilineaViewMB.descuentoVencimiento}
+                            <h:outputText value="#{msg.txtMsgFooterpunto2_2Rns}"/>
+                        </p>
+                    </h:panelGroup>
+                    <h:panelGroup  id="pasosWizard" layout="block">
+                        <ul class="pasos_transferencia avances">
+                            <li class="bot_tf_01"><span class="activo">1</span><h:outputText value="#{msg.txtPaso1Rns}" /></li>
+                            <li class="bot_tf_02"><span>2</span><h:outputText value="#{msg.txtPaso2Rns}" /></li>
+                            <li class="bot_tf_03"><span>3</span><h:outputText value="#{msg.txtPaso3Rns}" /></li>
+                            <li class="bot_tf_04"><span>4</span><h:outputText value="#{msg.txtPaso4Rns}" /></li>
+                        </ul>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <h:panelGroup styleClass="fondo_bottom" layout="block">&nbsp;</h:panelGroup>
+                <h:panelGroup layout="block" id="terminosCreditos" styleClass="noMostrar">
+                    <ui:include src="terminosCondiciones.xhtml"/>
+                </h:panelGroup> 
+                <h:panelGroup layout="block" id="resumenCredito" styleClass="#{renovacionMultilineaViewMB.muestraResumen ? 'mostrar' : 'noMostrar' }">
+                    <ui:include src="resumenCreditoRenovacion.xhtml"/>
+                </h:panelGroup> 
+                <h:panelGroup layout="block" id="calendarioPago" styleClass="#{renovacionMultilineaViewMB.muestraCalendario ? 'mostrar' : 'noMostrar' }">
+                    <ui:include src="calendarioPagoRenovacion.xhtml"/>
+                </h:panelGroup>     
+                <h:panelGroup layout="block" id="detalleSeguros" styleClass="#{renovacionMultilineaViewMB.muestraSeguros ? 'mostrar' : 'noMostrar' }">
+                    <ui:include src="detalleSeguros.xhtml"/>
+                </h:panelGroup> 
+            </h:form>
+        </div>
+        <!--END DIV CONTENT-->
+    </body>
+</html>
+<!--
+/***************************************************************************************************************
+* Archivo:             vistaRenovacionMultilinea.xhtml
+* Descripción          Vista que se utiliza para la simulación y posible curse de una renovación multilínea
+* Path                 /cl/bci/aplicaciones/productos/servicios/multilinea/
+* " Todos los derechos reservados por Banco de Crédito e Inversiones."              
+* Historia Cambios
+*
+* versión      fecha                autor                                               cambios
+* =======   ==========    ===================================================        ==================================================
+*   1.0     17/02/2015    Eduardo Pérez (BEE) - Jimmy Muñoz D. (ing.Soft.BCI)        versión inicial.
+*   1.1     07/01/2016    Eduardo Pérez (BEE) - Jimmy Muñoz D. (ing.Soft.BCI)        Se modifica presentación de valores de simulación.
+*   1.2     25/02/2016    Eduardo Pérez (BEE) - Felipe Ojeda   (ing.Soft.BCI)        Se agrega seteo para atributos de correo.
+*   1.3     25/02/2016    Eduardo Pérez (BEE) - Felipe Ojeda   (ing.Soft.BCI)         Se agrega lógica de mandatos.
+*   1.4     19/05/2016    Manuel Escarate (BEE) - Pablo Paredes  (ing.Soft.BCI)       Se agregan atributos para DPS y mensaje error al no seleccionar operacion.
+*   1.5     12/08/2016    Manuel Escarate (BEE) - Felipe Ojeda (ing.Soft.BCI)         Se agrega valor del gasto notarial, además se agrega disclaimer. 
+*
+****************************************************************************************************************/
+ -->

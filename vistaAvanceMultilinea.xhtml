@@ -1,0 +1,1062 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.prime.com.tr/ui"
+    xmlns:segundaclaveparametros="http://bci.cl/infraestructura.web/seguridad/segundaclave"
+    xmlns:segundaclave="http://java.sun.com/jsf/composite/segundaclave">
+<h:head>
+    <title>BCI Corporativo</title>
+    <h:outputStylesheet library="Webbci/pyme/css"                              name="multilinea.css"/>
+    <h:outputStylesheet library="Webbci/common/css"                            name="common.css"/>
+    <h:outputStylesheet library="Webbci/common/css"                            name="calendar.css"  />
+    <h:outputStylesheet library="Webbci/#{portalMB.atributosWeb.estiloCss}css" name="canal.css" />
+    <h:outputStylesheet library="Webbci/common/css"                            name="jquery.fancybox-1.3.4.css"/>   
+    <h:outputScript library="primefaces"                                       name="jquery/jquery.js" target="head" /> 
+    <h:outputScript library="Webbci/common/js"                                 name="jquery-ui.min.js" target="head"/>     
+    <h:outputScript library="Webbci/common/js"                                 name="jquery.fancybox-1.3.4.js" target="head"/>  
+    <h:outputScript library="Webbci/pyme/js"                                   name="multilinea.js" />
+    <h:outputScript library="Webbci/common/js"                                 name="calendarioNuevo.js" target="head"/>
+    <h:outputScript library="Webbci/common/js"                                 name="jquery.tooltip.min.js" target="head"/>
+    <script type="text/javascript">
+    var natDays = [<ui:repeat value="#{avanceCreditosMultilineaViewMB.listaFeriados.keySet().toArray()}" var="feriado">"<h:outputText value="#{avanceCreditosMultilineaViewMB.listaFeriados.get(feriado)}"/>",</ui:repeat>]
+    var segurosDirecto = new Array();
+    var segurosAval = new Array();
+    var flagDps = "";
+    var dpsDirectoOk = true;
+    var dpsAvalOk = true;
+    var rutAvalDPS = 0;
+    var dvAvalDPS= 0;
+    
+    function cargarDps() {
+        document.getElementById("bot_03").disabled = false;
+        var contDir = 0;
+        var contInd = 0;
+        var codigoSeguro;
+        var tieneDps;
+        if (#{avanceCreditosMultilineaViewMB.requierenDPS} > 0){
+            <ui:repeat rendered="#{not empty avanceCreditosMultilineaViewMB.segurosObtenidos}" value="#{avanceCreditosMultilineaViewMB.segurosObtenidos}" var="item">
+                    <ui:fragment rendered="#{item.codFactorRiesgoRcc == 'DPS' and item.indVigencia == 'S'}">
+                      <ui:fragment rendered="#{item.codClfRentabilidadRcc == 'DIR'}">
+                                dpsDirectoOk = false;
+                                document.getElementById('linkDirecto').style.display = 'block';
+                                segurosDirecto[contDir] = #{item.idSeguro}+'|#{item.glosaTipoSeguro} | #{item.montoSeguro}';
+                                contDir++;
+                       </ui:fragment>
+                       <ui:fragment rendered="#{item.codClfRentabilidadRcc == 'IND'}">
+                                dpsDirectoOk = false;
+                                document.getElementById('linkAval').style.display = 'block'; 
+                                if  (#{item.numClienteRcc} > 0){
+                                	rutAvalDPS = #{item.numClienteRcc};
+                                	dvAvalDPS =  #{item.vrfClienteRcc};
+                                }
+                                segurosAval[contInd] = #{item.idSeguro}+'|#{item.glosaTipoSeguro} | #{item.montoSeguro}';
+                                contInd++;
+                             </ui:fragment>
+                       </ui:fragment>
+            </ui:repeat>
+        }
+    }
+   
+    var ventanaDSP  = null;
+    
+    function abreVentana(theURL, winName, w, h, features) {
+        LeftPosition=(screen.width)?(screen.width-w)/2:100;
+        TopPosition=(screen.height)?(screen.height-h)/2:100;
+        if (TopPosition > 30) TopPosition=TopPosition-30;
+        features = features + ',top=' + TopPosition + ',left=' + LeftPosition;
+        ventanaDSP = window.open(theURL,winName,features);
+    }
+    
+    //<![CDATA[
+    function levantaDps(tipoDeudor) {
+          flagDps = tipoDeudor;
+          var parametros="";
+          var montoCreditoDps = "#{avanceCreditosMultilineaViewMB.montoSolicitado}";
+          
+          parametros+="&rutContratante="+"#{clienteMB.rut}";
+          parametros+="&dvContratante="+"#{clienteMB.digitoVerif}"; 
+          parametros+="&codigoProducto="+"#{avanceCreditosMultilineaViewMB.tipoDeCreditoSeleccionado}";
+          parametros+="&ejecutivo= "+"#{avanceCreditosMultilineaViewMB.codigoEjecutivo}" ;//ejecutivo
+          
+          if (tipoDeudor=='DIR'){
+              parametros+="&rut="  +  "#{clienteMB.rut}";
+              parametros+="&dig="   +      "#{clienteMB.digitoVerif}"; 
+              for(i = 0; i < segurosDirecto.length; i++) {
+                      parametros+="&segurosDPS=" +segurosDirecto[i] ;
+              }
+              
+            }
+        
+          if (tipoDeudor=='IND'){
+              parametros+="&rut="+ rutAvalDPS;
+              parametros+="&dig="+ dvAvalDPS; 
+              
+              for(i = 0; i < segurosAval.length; i++) {
+                  parametros+="&segurosDPS=" +segurosAval[i] ;
+              }
+            }
+          parametros+="&montoCredito=" + montoCreditoDps.replace(/\./g, '');
+          parametros+="&cainroOperacion="    +  "#{avanceCreditosMultilineaViewMB.caiOperacion}";  //datos credito
+          parametros+="&iicnroOperacion="    +   "#{avanceCreditosMultilineaViewMB.iicOperacion}" ;  //datos credito
+          parametros+="&nroOperacion="    +      "#{avanceCreditosMultilineaViewMB.caiOperacion}#{avanceCreditosMultilineaViewMB.iicOperacion}"        ;  //datos credito
+          parametros+="&plazo="                 +      "#{avanceCreditosMultilineaViewMB.cuotaSeleccionada}"   ;  //datos credito
+          parametros+="&tipoPlazo="           +      "#{avanceCreditosMultilineaViewMB.tipoDePlazo}";  //datos credito
+          parametros+="&vigenciaDesde="  +      "#{avanceCreditosMultilineaViewMB.fechaVencimientoSeleccionada}";   //datos credito
+          parametros+="&vigenciaHasta="   +      "#{avanceCreditosMultilineaViewMB.fechaVencimientoSeleccionada}"  ;  //datos credito
+          parametros+="&paginaOrigen=AvanceMultilinea"; //nombre desde donde llamaron a action
+          parametros+="&paginaRetorno=preguntasSeguros";
+          parametros+="&moneda=" + "#{avanceCreditosMultilineaViewMB.codMoneda}";
+          abreVentana('/workstationwls/declaracionpersonalsalud/enespera.jsp?path=/workstationwls/declaracionpersonalsalud&servlet=buscarPreguntas.do' + parametros, 'DPS', '640', '480', 'resizable=yes,scrollbars=yes');
+    }
+    
+    function respuestaDPS(codigoAutorizacion, estado, glosaResultado, nroDPS, nroFolio, nroPoliza, porcSobrePrima, boton) {
+        // el parametro estado es el que indica "AC" "PE" "RE"  aceptado, pendiente, rechazado respectivamente.
+         if (flagDps == 'DIR' && (estado=='AC' || estado=='PE')){
+                document.getElementById("linkDirecto").style.display = 'none';
+                dpsDirectoOk = true;
+               
+           }
+           if (flagDps == 'IND' && (estado=='AC' || estado=='PE')){
+                 document.getElementById("linkAval").style.display = 'none';
+                 dpsAvalOk = true;
+            }   
+            
+          if (flagDps == 'DIR' &&  (estado=='RE' || (estado=='AC' && glosaResultado != '' ))){
+                document.getElementById("linkDirecto").style.display = 'none';
+                 dpsDirectoOk = false;
+                 if (boton=='A'){
+                    dpsDirectoOk = true;
+                 }
+                 if (boton=='R'){
+                    document.getElementById("rechazoCliente").style.display = 'block';
+                    if (document.getElementById("bot_03") != undefined){
+                        document.getElementById("bot_03").disabled = true;
+                    }
+                    
+                 }    
+                 if (estado=='RE'){
+                   document.getElementById("rechazoSer").style.display = 'block';
+                    if (document.getElementById("bot_03") != undefined){                   
+                       document.getElementById("bot_03").disabled = true;
+                    }
+                 }           
+           }
+          if (flagDps == 'IND' &&  (estado=='RE' || (estado=='AC' && glosaResultado != '' ))){
+                 document.getElementById("linkAval").style.display = 'none';
+                  dpsAvalOk = false;
+                 if (boton=='A'){
+                   dpsAvalOk = true;
+                 }
+                 if (boton=='R'){
+                    document.getElementById("rechazoCliente").style.display = 'block';
+                    if (document.getElementById("bot_03") != undefined){                   
+                       document.getElementById("bot_03").disabled = true;
+                    }
+                 }      
+                 if (estado=='RE'){
+                   document.getElementById("rechazoSer").style.display = 'block';
+                    if (document.getElementById("bot_03") != undefined){                   
+                       document.getElementById("bot_03").disabled = true;
+                    }
+                 }                                    
+            }               
+        return;
+    }
+    
+    function validaLink(){
+        
+        if (document.getElementById("tipo_credito2")){
+            if (document.getElementById("tipo_credito2") == "AVC010"){
+                if (document.getElementById("cuotaEnviada")) document.getElementById("cuotaEnviada").value="1";
+            }
+        }
+        if (document.getElementById("tipo_credito5")){
+            if (document.getElementById("tipo_credito5") == "AVC010"){
+                if (document.getElementById("cuotaEnviada")) document.getElementById("cuotaEnviada").value="1";
+            }
+        }
+        if (document.getElementById("linkAval").style.display == 'block' || document.getElementById("rechazoSer").style.display == 'block' ||  document.getElementById("rechazoCliente").style.display == 'block'){
+        	seteaPopUp();
+        	return false;
+        }
+        return true;
+    }
+    
+    function fnVinculoAccesoDirecto(idServicio) {
+        location.href ='/cl/bci/aplicaciones/pyme/menu/cargaOpciones.jsf?idServicio='
+                + idServicio;
+    }
+    
+    //]]>
+    
+    //<![CDATA[
+     $(document).ready(function(){
+         $(".lightbox").fancybox({
+             'width'             : 500,
+             'height'            : 500,
+             'overlayColor'      : '#F5F5F5'
+         });
+        $('.tooltip').tooltip({ 
+            track: true,
+            delay: 0,
+            showURL: false,
+            showBody: " - ",
+            fade: 250
+        });
+
+        var paso = #{avanceCreditosMultilineaViewMB.paso};
+        if (paso == 0) {
+          mostrarCalendario();
+        }
+        else if (paso == 1){
+          mostrarCalendario2();
+        }
+     });
+     
+     function mostrarCalendario2(){ 
+            var d = new Date();
+            var fInicio = new Date();
+            var fFin    = new Date();
+            var diasVencimiento = parseInt(document.getElementById('cantidadDiasVencimiento3').value);
+            var diasVencimientoIni = parseInt(document.getElementById('cantidadDiasVencimiento4').value);
+            fInicio.setTime(d.getTime()+diasVencimientoIni*24*60*60*1000);      
+            fFin.setTime(d.getTime()+diasVencimiento*24*60*60*1000);        
+            $(".calendar_hasDatepicker").datepicker({
+                minDate: fInicio,
+                maxDate: fFin,
+                selectOtherMonths: true,
+                firstDay: 1,
+                beforeShowDay: noWeekendsOrHolidaysAndLastDays, 
+                numberOfMonths: 2,
+                hideIfNoPrevNext: true,
+                dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','S&aacute;'],
+                monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+                dateFormat: 'dd-mm-yy'
+            });
+            $('.calendar_hasDatepicker').datepicker('option', 'minDate', new Date(fInicio));
+            $('.calendar_hasDatepicker').datepicker('option', 'maxDate', new Date(fFin));
+     } 
+    
+     function nationalDays(date) {
+         for(i=0; i < natDays.length; i++) {
+             if (natDays[i] != null){
+                 if (date.getDate() == parseInt(natDays[i].substring(0,2),10) && date.getMonth() == parseInt(natDays[i].substring(2,4),10) - 1) {
+                     return [false, '', 'No laboral ' +''];
+                 }
+             }
+         }
+         return [true, ''];
+     }   
+     
+     function noWeekendsEndDays(date){
+         var day = date.getDay();
+         var dayMonth = date.getDate();
+              return [ (dayMonth < 25) && (day > 0 && day < 6), ''];
+     }
+     
+     function noWeekendsOrHolidaysAndLastDays(date) {
+         var noWeekend = noWeekendsEndDays(date);
+         
+         if (noWeekend[0]) { 
+             return nationalDays(date);
+         } 
+         else {
+             return noWeekend;
+         }
+     }
+     
+     function mostrarCalendario(){ 
+            var d = new Date();
+            var fInicio = new Date();
+            var fFin    = new Date();
+            var diasVencimiento = parseInt(document.getElementById('cantidadDiasVencimiento').value);
+            var diasVencimientoIni = parseInt(document.getElementById('cantidadDiasVencimiento2').value);
+            fInicio.setTime(d.getTime()+diasVencimientoIni*24*60*60*1000);      
+            fFin.setTime(d.getTime()+diasVencimiento*24*60*60*1000);        
+            $(".calendar_hasDatepicker").datepicker({
+                minDate: fInicio,
+                maxDate: fFin,
+                selectOtherMonths: true,
+                firstDay: 1,
+                beforeShowDay: noWeekendsOrHolidaysAndLastDays,
+                numberOfMonths: 2,
+                hideIfNoPrevNext: true,
+                dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','S&aacute;'],
+                monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+                dateFormat: 'dd-mm-yy'
+            });
+            $('.calendar_hasDatepicker').datepicker('option', 'minDate', new Date(fInicio));
+            $('.calendar_hasDatepicker').datepicker('option', 'maxDate', new Date(fFin));
+     } 
+      //]]>
+    </script>   
+</h:head>
+<h:body>
+    <f:event listener="#{avanceCreditosMultilineaViewMB.iniciarAvance}" type="preRenderView" />
+    <h:outputScript target="head">
+        $ = jQuery;
+    </h:outputScript>
+	 <h:form id="formVolverFirMulti" prependId="false">
+       <h:commandButton id="botonCerrar" class="cerrar" value="#{msg.cerrar}"
+                            style="display:none;"  action="#{avanceCreditosMultilineaViewMB.volverPaso(0)}">
+       </h:commandButton>
+     </h:form>
+    <h:form id="formulario" prependId="false">
+        <f:loadBundle
+            basename="#{resolutorResourceBundleMB.obtieneResourceBundle('cl.bci.aplicaciones.productos.servicios.multilinea.multilinea')}"
+            var="msg" />
+        <h:panelGroup layout="block" id="content">
+            <h:panelGroup layout="block" rendered="#{avanceCreditosMultilineaViewMB.paso eq -1}">              
+             <h:panelGroup layout="block" styleClass="estado_oferta">
+                   <h:outputText value="#{msg.ofertaCrediticia}"/>: <h:outputText styleClass="oferta_crediticia #{avanceCreditosMultilineaViewMB.estiloOfertaCrediticia}" value="#{avanceCreditosMultilineaViewMB.ofertaCrediticia}"/> 
+            </h:panelGroup>
+            <h2 class="encabezado"><h:outputText value="#{msg.condicionesCredito}"/></h2>
+                <h:panelGroup layout="block" styleClass="cont_servicios">
+                    <h3>
+                        <span class="texto_titulo"><h:outputText
+                                value="#{msg.simuleCondicionesCredito}" /></span>
+                    </h3>
+                    <h:panelGroup layout="block" styleClass="fondo">
+                        <ul class="pasos_transferencia">
+                            <li class="bot_tf_01"><span class="activo">1</span>
+                            <h:outputText value="#{msg.condicionesCredito}" /></li>
+                            <li class="bot_tf_02"><span>2</span>
+                            <h:outputText value="#{msg.txtPaso3Rns}" /></li>
+                            <li class="bot_tf_03"><span>3</span>
+                            <h:outputText value="#{msg.comprobante}" /></li>
+                        </ul>
+                        <h:panelGroup layout="block" styleClass="clear"></h:panelGroup>
+                        <h:panelGroup layout="block"                            styleClass="mensaje_alerta borde_ie_10">
+                            <p>
+                                <strong>#{msg.estimadoCliente}:</strong>
+                            </p>
+							<h:outputText  rendered="#{!avanceCreditosMultilineaViewMB.esErrorGenerico}" value="#{avanceCreditosMultilineaViewMB.mensajeError}"/>
+                            <p>
+							<h:panelGroup  rendered="#{avanceCreditosMultilineaViewMB.esErrorGenerico}" layou="block">
+                            <strong>#{msg.errorGeneralMain} </strong>#{msg.errorGeneralMain2}
+							</h:panelGroup>
+                            </p>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <div class="fondo_bottom">  </div>
+            </h:panelGroup>
+            <h:panelGroup id="paso1" layout="block" rendered="#{avanceCreditosMultilineaViewMB.paso eq 0}">
+            <h:panelGroup layout="block" styleClass="estado_oferta"> <p class="txt_condiciones tooltip" title="#{msg[msg.mensajeTooltipOferta.concat(avanceCreditosMultilineaViewMB.estiloOfertaCrediticia)]}"><h:outputText value="#{msg.ofertaCrediticia}"/>: <h:outputText styleClass="oferta_crediticia #{avanceCreditosMultilineaViewMB.estiloOfertaCrediticia}" value="#{avanceCreditosMultilineaViewMB.ofertaCrediticia}"/></p></h:panelGroup>
+            <h2 class="encabezado"><h:outputText value="#{msg.condicionesCredito}"/></h2>
+                <div class="cont_servicios">
+                <h3><span class="texto_titulo"><h:outputText value="#{msg.simuleCondicionesCredito}"/></span></h3>
+                </div> 
+                <h:panelGroup layout="block" styleClass="fondo">
+                    <ul class="pasos_transferencia">
+                        <li class="bot_tf_01"><span class="activo">1</span><h:outputText value="#{msg.condicionesCredito}"/> </li>
+                        <li class="bot_tf_02"><span>2</span><h:outputText value="#{msg.confirmacionSeguridad}"/></li>
+                        <li class="bot_tf_03"><span>3</span><h:outputText value="#{msg.comprobante}"/></li>
+                    </ul>
+                    <!--END PASOS TRANSFERENCIA-->
+                    <h:panelGroup layout="block" styleClass="clear"> </h:panelGroup>
+                    <h:panelGroup layout="block" styleClass="fondo_borde_gris borde_ie_10 creditos">
+                        <h:panelGroup layout="block" styleClass="monto_disponible borde_ie_10" rendered="#{avanceCreditosMultilineaViewMB.tieneMultilineaMonto}">
+                            <p><h:outputText value="#{msg.montoDisponibleLinea}"/>: $  
+                                <h:outputText value="#{avanceCreditosMultilineaViewMB.montoDisponible}">
+                                     <f:convertNumber pattern = "#,###"/> 
+                                </h:outputText>
+                            </p>
+                         </h:panelGroup>
+                         <h:panelGroup layout="block" styleClass="mensaje_informacion borde_ie_10" rendered="#{!avanceCreditosMultilineaViewMB.tieneMultilineaMonto}">
+                            <p>
+                            <h:outputText value="#{msg.estimadoCliente}"/>:
+                            <br/>
+                           <h:outputText value="#{msg.suEmpresaNoPoseeMontoDisponible}"/>.
+                            </p>
+                         </h:panelGroup>
+
+                         <h:panelGroup layout="block" styleClass="mensaje_informacion borde_ie_10" rendered="#{!avanceCreditosMultilineaViewMB.tieneMandato and avanceCreditosMultilineaViewMB.tieneMultilineaMonto}">
+                            <p>
+                            <h:outputText value="#{msg.txtAdvSinMandato1}"/>&nbsp;
+                            <h:outputText value="#{avanceCreditosMultilineaViewMB.nombreFantasia}" rendered="#{avanceCreditosMultilineaViewMB.nombreFantasia}" ></h:outputText>
+							<h:outputText value="#{avanceCreditosMultilineaViewMB.razonSocial}" rendered="#{!avanceCreditosMultilineaViewMB.nombreFantasia}" ></h:outputText>
+                            &nbsp;
+                            <h:outputText value="#{msg.txtAdvSinMandato2}"/>
+                            </p>
+                         </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="fila">
+                            <h:panelGroup layout="block" styleClass="col_left">
+                                <label for="tipo_credito"><h:outputText value="#{msg.tipoDeCredito}"/>:</label>
+                             </h:panelGroup>
+                            <h:panelGroup layout="block" styleClass="col_right">
+                                <p>
+                                  <h:selectOneMenu name="tipo_credito"
+                                                id="tipo_credito"
+                                                value="#{avanceCreditosMultilineaViewMB.tipoDeCreditoSeleccionado}"
+                                                styleClass="col_180" onchange="mostrarCuotas(this.value,1,#{avanceCreditosMultilineaViewMB.tieneMultilineaMonto});quitarBordeError();">
+                                                <f:ajax  listener="#{avanceCreditosMultilineaViewMB.cambiarValoresTipoCredito}" render="fechaMaximaPrimerVencimiento montoMinimoParaCursar montoMaximoParaCursar cantidadDiasVencimiento cantidadDiasVencimiento2 numero_cuotas" onevent="function(data) { if (data.status === 'success') { mostrarCalendario()} }" />
+                                                <f:selectItem itemValue="000" itemLabel="Seleccione..." />
+                                                <f:selectItems
+                                                    value="#{avanceCreditosMultilineaViewMB.tiposDeCreditos}"/>
+                                  </h:selectOneMenu> 
+                                    <h:inputHidden id="montoMaximoParaCursar" value="#{avanceCreditosMultilineaViewMB.montoMaximoParaCursar}">
+                                          <f:convertNumber pattern = "#,###"/>
+                                    </h:inputHidden>    
+                                    <h:inputHidden id="cantidadDiasVencimiento" value="#{avanceCreditosMultilineaViewMB.diasTopePrimerVencimiento}"  />
+                                    <h:inputHidden id="cantidadDiasVencimiento2" value="#{avanceCreditosMultilineaViewMB.diasIniPrimerVencimiento}"  />
+                            </p>
+                             </h:panelGroup>
+                         </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="fila">
+                            <h:panelGroup layout="block" styleClass="col_left">
+                                <label for="monto_credito"><h:outputText value="#{msg.montoDeseaSolicitar}"/>:</label>
+                             </h:panelGroup>
+                            <h:panelGroup layout="block" styleClass="col_right">
+                                <p>
+                                   <h:inputText id="monto_credito" name="monto_credito"   onkeyup="separador_de_miles(this,this.value.charAt(this.value.length-1))" onfocus="quitarMensaje(this);" onblur="validarMonto(this);" styleClass="col_130" value="#{avanceCreditosMultilineaViewMB.montoSolicitado}" />
+                                   <h:inputHidden id="montoFormateado" value="#{avanceCreditosMultilineaViewMB.montoSolicitado}" />
+                                </p>
+                                <p class="condiciones"><h:outputText value="#{msg.montoMinimo}"/>
+                                     $ <h:outputText id="montoMinimoParaCursar" value="#{avanceCreditosMultilineaViewMB.montoMinimoParaCursar}">  
+                                        <f:convertNumber pattern = "#,###"/>
+                                    </h:outputText> 
+                                 </p>
+                             </h:panelGroup>
+                         </h:panelGroup>
+                        <h:panelGroup id="panelCuotas" layout="block" styleClass="fila numero_cuotas" style="display:block;">
+                            <h:panelGroup layout="block" styleClass="col_left">
+                                <p><label for="numero_cuotas"><h:outputText value="#{msg.numeroCuotas}"/>:</label></p>
+                             </h:panelGroup>
+                            <h:panelGroup layout="block" styleClass="col_right">
+                                <p>
+                                <h:selectOneMenu name="numero_cuotas"
+                                                id="numero_cuotas"
+                                                value="#{avanceCreditosMultilineaViewMB.cuotaSeleccionada}"
+                                                styleClass="col_130"
+                                                onchange="quitarBordeErrorCuotas();">
+                                              <f:selectItem itemValue="0" itemLabel="Seleccione..." />
+                                               <f:selectItems
+                                                    value="#{avanceCreditosMultilineaViewMB.cuotas}" />
+                                  </h:selectOneMenu> 
+                                </p>
+                             </h:panelGroup>
+                         </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="fila txt_fecha">
+                            <h:panelGroup layout="block" styleClass="col_left">
+                                <p><label for="fecha_vencimiento"><h:outputText value="#{msg.fechaPrimerVencimiento}"/>:</label></p>
+                             </h:panelGroup>
+                            <h:panelGroup layout="block" styleClass="col_right">
+                                <p><h:inputText  id="fecha_vencimiento" name="fecha_vencimiento" onfocus="quitarMensaje(this);" styleClass="calendar_hasDatepicker" value="#{avanceCreditosMultilineaViewMB.fechaVencimientoSeleccionada}"/></p>
+                                <p class="condiciones"><h:outputText value="#{msg.fechaMaximaPrimer}"/><br /><h:outputText value="#{msg.vencimiento}"/>: <h:outputText id="fechaMaximaPrimerVencimiento" value="#{avanceCreditosMultilineaViewMB.fechaMaximaPrimerVencimiento}" /></p>
+                             </h:panelGroup>
+                         </h:panelGroup>
+                     </h:panelGroup>
+                    <!--end fondo gris-->
+                    <p class="botones">
+                      <h:commandButton  id="bot_02" styleClass="bot_02" title="Simular" value="Simular" action="#{avanceCreditosMultilineaViewMB.mostrarCondicionesCredito}" onclick="return validacionesPaso1();" />  
+                    </p>
+                          <h:panelGroup layout="block" styleClass="mensaje_informacion borde_ie_10">
+                            <p><h:outputText value="#{msg.txtMsgFooterTitleAvc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto1Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto2Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto3Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto4Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto5Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto6Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto7Avc}"/> </p>
+                         </h:panelGroup>
+                 </h:panelGroup>
+                <!--end div class fondo-->
+            <!--end cont_servicios-->
+            <h:panelGroup layout="block" styleClass="fondo_bottom">&nbsp; </h:panelGroup>
+          </h:panelGroup>   
+        <h:panelGroup id="paso2" layout="block" rendered="#{avanceCreditosMultilineaViewMB.paso eq 1}">
+       
+        <h2 class="encabezado"><h:outputText value="#{msg.financiamientoLinea}"/></h2>
+        <h:panelGroup layout="block"  class="cont_servicios">
+            <h3>&nbsp;</h3>
+            <h:panelGroup layout="block"  class="fondo">
+                <ul class="pasos_transferencia">
+                    <li class="bot_tf_01"><span class="activo">1</span><h:outputText value="#{msg.condicionesCredito}"/> </li>
+                    <li class="bot_tf_02"><span>2</span><h:outputText value="#{msg.confirmacionSeguridad}"/></li>
+                    <li class="bot_tf_03"><span>3</span><h:outputText value="#{msg.comprobante}"/></li>
+                </ul>
+                <!--END PASOS TRANSFERENCIA-->
+                <h:panelGroup layout="block"  class="clear"> </h:panelGroup>
+                <h:panelGroup layout="block"  class="fondo_borde_gris simulador borde_ie_10">
+                    <!--COLUMNA-->
+                    <h:panelGroup layout="block"  class="columna">
+                        <h:panelGroup layout="block"  class="fondo_simulador borde_ie_10">
+                            <p><label class="destacado"><h:outputText value="#{msg.txtMontoDelCredito}"/>:</label>
+                             <span class="col_right destacado">
+                                   $ <h:outputText  id="monto_solicitado" name="monto_solicitado" disabled="disabled"  value="#{avanceCreditosMultilineaViewMB.montoSolicitado}"/>
+                                    <h:inputText id="monto_creditoMod" name="monto_creditoMod"   onkeyup="separador_de_miles(this,this.value.charAt(this.value.length-1))" onfocus="quitarMensaje(this);" onblur="validarMonto2(this);" styleClass="col_130 noMostrar" value="#{avanceCreditosMultilineaViewMB.montoSolicitado}" />
+                                    <h:inputHidden id="montoFormateado2" value="#{avanceCreditosMultilineaViewMB.montoSolicitado}" />
+                             </span>
+                            </p>
+                         </h:panelGroup>
+                        <h:panelGroup layout="block"  class="fondo_simulador borde_ie fila_02">
+                            <p><label for="tipo_credito"><strong><h:outputText value="#{msg.tipoDeCredito}"/>:</strong></label>
+                                  <h:selectOneMenu name="tipo_credito2"
+                                                id="tipo_credito2"
+                                                 disabled="true" >
+                                         <f:selectItems value="#{avanceCreditosMultilineaViewMB.tiposDeCreditosAmostrar}"/>
+                                  </h:selectOneMenu>        
+                                    <h:selectOneMenu name="tipo_credito5"
+                                                id="tipo_credito5"
+                                                value="#{avanceCreditosMultilineaViewMB.tipoDeCreditoSeleccionado}"
+                                                styleClass="col_180 noMostrar" onchange="mostrarCuotas(this.value,2,#{avanceCreditosMultilineaViewMB.tieneMultilineaMonto});seteaCuotaSeleccionada(this.value);">
+                                                <f:ajax  listener="#{avanceCreditosMultilineaViewMB.cambiarValoresTipoCredito}" render="fechaMaximaPrimerVencimiento2 montoMinimoParaCursar2 montoMaximoParaCursar2 cantidadDiasVencimiento3 cantidadDiasVencimiento4" onevent="function(data) { if (data.status === 'success') { mostrarCalendario2()} }" />
+                                                <f:selectItems
+                                                    value="#{avanceCreditosMultilineaViewMB.tiposDeCreditos}"/>
+                                  </h:selectOneMenu> 
+                                  <h:inputHidden id="cantidadDiasVencimiento3" value="#{avanceCreditosMultilineaViewMB.diasTopePrimerVencimiento}"  />
+                                  <h:inputHidden id="cantidadDiasVencimiento4" value="#{avanceCreditosMultilineaViewMB.diasIniPrimerVencimiento}"  />   
+                                  <h:inputHidden id="montoMinimoParaCursar2" value="#{avanceCreditosMultilineaViewMB.montoMinimoParaCursar}" >
+                                        <f:convertNumber pattern = "#,###"/>
+                                  </h:inputHidden>      
+                                 
+                                  <h:inputHidden id="montoMaximoParaCursar2" value="#{avanceCreditosMultilineaViewMB.montoMaximoParaCursar}">
+                                            <f:convertNumber pattern = "#,###"/>
+                                  </h:inputHidden>      
+                                  <h:inputHidden id="fechaMaximaPrimerVencimiento2" value="#{avanceCreditosMultilineaViewMB.fechaMaximaPrimerVencimiento}" />                                
+                            </p>
+                             <h:panelGroup id="panelCuotas2">
+                               <p class="numero_cuotas"><label for="numero_cuotas"><strong><h:outputText value="#{msg.numeroCuotas}"/>:</strong></label>
+                                  <h:outputText  id="numero_cuotas2" name="numero_cuotas2" disabled="disabled" styleClass="off solo_numeros2"  value="#{avanceCreditosMultilineaViewMB.cuotaSeleccionada}"/>
+                                    <h:selectOneMenu name="numero_cuotas5"
+                                                    id="numero_cuotas5"
+                                                    value="#{avanceCreditosMultilineaViewMB.cuotaSeleccionada}"
+                                                    styleClass="noMostrar" onchange="seteaCuotaDesdeCuota(this.value);">
+                                                   <f:selectItems
+                                                        value="#{avanceCreditosMultilineaViewMB.cuotasMod}" />
+                                      </h:selectOneMenu> 
+                                  </p>
+                           </h:panelGroup>        
+                            <p class="txt_fecha">
+                                 <label for="fecha_vencimiento"><strong><h:outputText value="#{msg.fechaPagoPrimeraCuota}"/>:</strong></label>
+                                 <h:inputText id="fecha_vencimiento2" name="fecha_vencimiento2"  styleClass="off calendar_hasDatepicker" disabled="true" value="#{avanceCreditosMultilineaViewMB.fechaVencimientoSeleccionada}" />
+                                 <h:inputText  id="fecha_vencimiento5" name="fecha_vencimiento5" onfocus="quitarMensaje(this);" styleClass="calendar_hasDatepicker noMostrar" value="#{avanceCreditosMultilineaViewMB.fechaVencimientoSeleccionada}"/>
+                           </p>
+                         </h:panelGroup>
+                        <h4><h:outputText value="#{msg.txtSeguros}"/> <span class="texto_titulo"><h:outputText value="#{msg.txtSeleccioneProteccion}"/></span></h4>
+                        <h:panelGroup layout="block"  class="fondo_simulador borde_ie fila_03">
+                                <h:dataTable value="#{avanceCreditosMultilineaViewMB.segurosObtenidos}" var="paquete" id="tablaSeguros" width="100%" styleClass="tabla_no_border">
+                                    <h:column>
+                                       <p><label for="proteccion_0">
+                                           <strong>
+                                               <h:outputText  value="#{paquete.glosaTipoSeguro}"/>
+                                           </strong>
+                                           </label>
+                                           <span class="col_right">
+                                             <h:selectBooleanCheckbox  id="checkSeguros" styleClass="checkEstilo"  value="#{paquete.checkeado}"  disabled="#{paquete.deshabilitado}" onclick="cambiarValoresPorSeguros();"/>
+                                             <h:outputText  value="#{paquete.montoSeguro}">  <f:convertNumber currencySymbol="$ " type="currency" locale="es_CL"/> </h:outputText>
+                                             <span class="detalle"><a href="#;" class="txt_condiciones tooltip" title="#{msg[msg.mensajeSeguro.concat(paquete.codigoSubConcepto)]}">#{msg.info}</a></span> 
+                                       </span>
+                                       </p>
+                                    </h:column>
+                                </h:dataTable>
+                                <br/>
+                                  <a href="javascript:levantaDps('DIR')" id="linkDirecto" style="color:#568FB6;font-weight:bold;display:none;">#{msg.dpsDirecto}</a>
+                                  <a href="javascript:levantaDps('IND')" id="linkAval"  style="color:#568FB6;font-weight:bold;display:none;">#{msg.dpsIndirecto}</a>
+                                  <a id="rechazoSer" style="color:red;font-weight:bold;display:none;">#{msg.dpsRechazada}</a>
+                                  <a id="rechazoCliente" style="color:red;font-weight:bold;display:none;">#{msg.dpsAceptada}</a>
+                                  <h:outputText value="#{msg.dpsAdvertencia}" rendered="#{avanceCreditosMultilineaViewMB.requierenDPS > 0}"/>
+                              <br/>
+                              <br/>
+                        <p class="normativa">
+                        <a href="https://bciimg.bci.cl/medios/pdf/Normativa_Seguros.pdf" target="_blank">
+                        <strong><h:outputText value="#{msg.normativaSeguros}"/></strong>
+                        </a>
+                        </p>
+                         </h:panelGroup>
+                     </h:panelGroup>
+                    <!--END COLUMNA-->
+                    <!--COLUMNA-->
+                    <h:panelGroup layout="block"  styleClass="columna">
+                        <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                            <p><span class="col_left destacado"><h:outputText value="#{msg.valorCuota}"/>:</span><span class="col_right destacado">$ <h:outputText id="valorCuota" name="valorCuota" disabled="disabled" value="#{avanceCreditosMultilineaViewMB.valorCuota}"> <f:convertNumber pattern = "#,###"/> </h:outputText></span></p>
+                         </h:panelGroup>
+                        
+                        <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie fila_02">
+                            <!--
+                            <p><span class="col_left"><strong><h:outputText value="#{msg.tasaInteresMensual}"/>:</strong></span><span class="col_right line_through">2.45%</span></p>
+                            -->
+                            <p><span class="col_left"><strong><h:outputText value="#{msg.tasaInteresEspecial}"/>:</strong></span><span class="col_right"><h:outputText id="tasaInteresInternet" name="tasaInteresInternet" disabled="disabled" value="#{avanceCreditosMultilineaViewMB.tasaInteresInternet}"> <f:convertNumber pattern = "0.00"/> </h:outputText>%</span></p>
+                            <p></p>
+                            <p></p>
+                        </h:panelGroup>
+                        <h4><h:outputText value="#{msg.detalleCredito}"/></h4>
+                        <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie fila_03">
+                            <p><span class="col_left"><strong><h:outputText value="#{msg.montoSolicitado}"/>:</strong></span><span class="col_right destacado">$ <h:outputText  id="montoFinalCredito" name="montoFinalCredito" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.montoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                            <p><span class="col_left">+ <h:outputText value="#{msg.impuestos}"/>:</span><span class="col_right">$ <h:outputText  id="impuestos" name="impuestos" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.impuestos}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                            <p><span class="col_left">+ <h:outputText value="#{msg.segurosIncluidos}"/>:</span><span class="col_right">$ <h:outputText  id="segurosIncluidos" name="segurosIncluidos"   value="#{avanceCreditosMultilineaViewMB.montoTotalSegurosSeleccionados}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                            <p><span class="col_left">+ <h:outputText value="#{msg.gastosNotariales}"/>:</span><span class="col_right">$ <h:outputText  id="gastos" name="gastos" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.gastosNotariales}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                          <p><span class="col_left"><strong>= <h:outputText value="#{msg.montoFinalCredito}"/>:</strong></span><span class="col_right destacado">$ <h:outputText  id="monto_solicitado2" name="monto_solicitado2" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.montoSolicitado}"/></span></p>
+						  <p class="txt_condiciones tooltip" title="#{msg.montoCAE}"><h:outputText value="#{msg.costoTotalCredito}"/>: $ <h:outputText  id="montoFinalCredito2" name="montoFinalCredito2" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.costoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText><br/><h:outputText value="#{msg.cargaAnualEquivalente}"/>: <h:outputText  id="factorCae" name="factorCae" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.factorCae}"><f:convertNumber pattern = "#,###"/></h:outputText> %</p>
+                         </h:panelGroup>
+                     </h:panelGroup>
+                    <!--END COLUMNA-->
+                  </h:panelGroup>
+                <!--end fondo gris-->
+                <p class="botones">
+                    <h:inputHidden id="cuotaEnviada" value="#{avanceCreditosMultilineaViewMB.cuotaSeleccionada}"/>
+                    <h:commandButton  id="bot_11" styleClass="bot_02 noMostrar" title="Recalcular" value="Recalcular" action="#{avanceCreditosMultilineaViewMB.mostrarCondicionesCredito}" onclick="return validacionesPaso2();" />
+                    <button id="bot_10" type="button" onclick="modificarValores();" title="#{msg.modificarSimulacion}" class="bot_modificar bot_02 width_140">#{msg.modificarSimulacion}</button>
+                    <h:commandButton  id="bot_03" styleClass="bot_02" title="Continuar" value="Continuar" action="#{avanceCreditosMultilineaViewMB.continuarAvance}" onclick="return validaLink();"/>
+                    <h:commandButton id="volverModificacion"  title="Volver" styleClass="bot_01 noMostrar" value="Volver" action="#{avanceCreditosMultilineaViewMB.volverPaso(0)}"/>
+                </p>
+                     <h:panelGroup layout="block" styleClass="mensaje_informacion borde_ie_10">
+                        <p><h:outputText value="#{msg.txtMsgFooterTitleAvc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto1Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto2Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto3Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto4Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto5Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto6Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto7Avc}"/> </p>
+                     </h:panelGroup>
+              </h:panelGroup>       
+           </h:panelGroup>
+              <script>cargarDps();</script>
+              <h:panelGroup layout="block" styleClass="fondo_bottom">&nbsp; </h:panelGroup>
+                <div  class="iconos_inteligentes iconos_middle" style="display: none;">
+ 
+                </div>  
+        </h:panelGroup>
+        <h:panelGroup id="paso3" layout="block" rendered="#{avanceCreditosMultilineaViewMB.paso eq 2}" >
+        <h2 class="encabezado"><h:outputText value="#{msg.financiamientoLinea}"/></h2>
+            <h:panelGroup layout="block" styleClass="cont_servicios_multilinea">
+                <h3>&nbsp;</h3>
+                <h:panelGroup layout="block"  styleClass="fondo">
+                    <ul class="pasos_transferencia">
+                        <li class="bot_tf_01"><span>1</span><h:outputText value="#{msg.condicionesCredito}"/> </li>
+                        <li class="bot_tf_02"><span class="activo">2</span><h:outputText value="#{msg.confirmacionSeguridad}"/></li>
+                        <li class="bot_tf_03"><span>3</span><h:outputText value="#{msg.comprobante}"/></li>
+                    </ul>
+                    <!--END PASOS TRANSFERENCIA-->
+                    <h:panelGroup layout="block"  styleClass="clear"></h:panelGroup>
+                    <h:panelGroup layout="block"  styleClass="fondo_borde_gris simulador borde_ie_10">
+                        <!--COLUMNA-->
+                          <h:panelGroup layout="block"  styleClass="columna fila_01" style="height: 400px;">
+                            <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10 sin_margen">
+                                <p><span class="col_left destacado"><h:outputText value="#{msg.montoSolicitado}"/>:</span><span class="col_right destacado">$ <h:outputText  id="montoFinalCredito3" name="montoFinalCredito3" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.montoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                            <p><label for="tipo_credito"><strong><h:outputText value="#{msg.tipoDeCredito}"/>:</strong></label><h:outputText styleClass="tipo_credito" value="#{avanceCreditosMultilineaViewMB.tipoDeCreditoSeleccionado eq 'AVC721' ? 'Cuota fija tasa fija' : 'Un vencimiento tasa fija'}"/></p>
+                            <p class="numero_cuotas"><label for="numero_cuotas"><strong><h:outputText value="#{msg.numeroCuotas}"/>:</strong></label><h:outputText  id="numero_cuotas3" name="numero_cuotas3" disabled="disabled" styleClass="off solo_numeros2"  value="#{avanceCreditosMultilineaViewMB.tipoDeCreditoSeleccionado eq 'AVC721' ? avanceCreditosMultilineaViewMB.cuotaSeleccionada : 1}"/></p>
+                            <p class="txt_fecha"><label for="fecha_vencimiento"><strong><h:outputText value="#{msg.fechaPagoPrimeraCuota}"/>:</strong></label><h:inputText id="fecha_vencimiento3" name="fecha_vencimiento3"  styleClass="off calendar_hasDatepicker" disabled="true" value="#{avanceCreditosMultilineaViewMB.fechaVencimientoSeleccionada}" /></p>
+                        </h:panelGroup>
+                            <h4><h:outputText value="#{msg.detalleCredito}"/></h4>
+                            <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                              <p><span class="col_left destacado"><h:outputText value="#{msg.cuotaMensual}"/>:</span><span class="col_right destacado">$ <h:outputText id="valorCuota2" name="valorCuota2" disabled="disabled" value="#{avanceCreditosMultilineaViewMB.valorCuota}"> <f:convertNumber pattern = "#,###"/> </h:outputText></span></p>
+                            </h:panelGroup>
+                            
+                            <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                              <p><span class="col_left">+ <h:outputText value="#{msg.impuestos}"/>:</span><span class="col_right">$ <h:outputText  id="impuestos3" name="impuestos3" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.impuestos}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                              <p><span class="col_left">+ <h:outputText value="#{msg.segurosIncluidos}"/>:</span><span class="col_right">$ <h:outputText  id="segurosIncluidos4" name="segurosIncluidos4"   value="#{avanceCreditosMultilineaViewMB.montoTotalSegurosSeleccionados}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                              <p><span class="col_left">+ <h:outputText value="#{msg.gastosNotariales}"/>:</span><span class="col_right">$ <h:outputText  id="gastos2" name="gastos2" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.gastosNotariales}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                              <p><span class="col_left"><strong>= <h:outputText value="#{msg.montoFinalCredito}"/>:</strong></span><span class="col_right destacado">$ <h:outputText  id="monto_solicitado3" name="monto_solicitado3" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.montoSolicitado}"/></span></p>
+						      <p class="txt_condiciones tooltip" title="#{msg.montoCAE}"><h:outputText value="#{msg.costoTotalCredito}"/> : $ <h:outputText  id="montoFinalCredito4" name="montoFinalCredito4" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.costoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText><br/><h:outputText value="#{msg.cargaAnualEquivalente}"/>: <h:outputText  id="factorCae2" name="factorCae2" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.factorCae}"><f:convertNumber pattern = "#,###"/></h:outputText> %</p>
+                          </h:panelGroup>
+                        </h:panelGroup>
+                        <!--END COLUMNA-->
+                        
+                        <!--COLUMNA-->
+                        <h:panelGroup layout="block"  styleClass="columna con_altura fila_01 borde_ie_10" style="height: 434px;">
+                            <h:panelGroup layout="block"  styleClass="formulario">
+                                <p><strong>¿<h:outputText value="#{msg.dondeDeseaAbono}"/>?</strong></p>
+                                <p>
+                                 <h:selectOneMenu id="cuentaAbono" value="#{avanceCreditosMultilineaViewMB.cuentaSeleccionadaAbono}" onblur="quitaBordeError(this);" styleClass="select_230">
+                                        <f:selectItem itemLabel="Seleccione Cuenta Corriente" itemValue="0" selected="selected"/>
+                                        <f:selectItems value = '#{avanceCreditosMultilineaViewMB.cuentasCorrientesYPrimas}'/>
+                                  </h:selectOneMenu>
+                             <!-- <h:inputHidden id="cuentaAbonoFinal" value ="#{avanceCreditosMultilineaViewMB.cuentaSeleccionadaAbono}"/>-->
+                                </p>
+                                <p><strong>¿<h:outputText value="#{msg.dondeDeseaCargo}"/>?</strong></p>
+                                <p>
+                                   <h:selectOneMenu id="cuentaCargo" value="#{avanceCreditosMultilineaViewMB.cuentaSeleccionadaCargo}" onblur="quitaBordeError(this);" styleClass="select_230">
+                                    <f:selectItem itemLabel="Seleccione Cuenta Corriente" itemValue="0" selected="selected"/>
+                                    <f:selectItems value = '#{avanceCreditosMultilineaViewMB.cuentasCorrientesYPrimas}'/>
+                                   </h:selectOneMenu>
+                                    <!-- <h:inputHidden id="cuentaCargoFinal" value ="#{avanceCreditosMultilineaViewMB.cuentaSeleccionadaCargo}"/> -->
+                                </p>
+                          </h:panelGroup>
+                        </h:panelGroup>
+                    <!--END COLUMNA-->
+                       <h:panelGroup id="acepto_condicionesPG" layout="block" rendered="#{avanceCreditosMultilineaViewMB.mostrarCondicionesMandato}" >
+	                    <p class="checkbox">
+	                        <h:selectBooleanCheckbox id="acepto_condiciones_mandato"  onclick="borrarErrorCheck()" onfocus="borrarErrorCheck();" onblur="borrarErrorCheck();" value="#{avanceCreditosMultilineaViewMB.aceptaCondicionesMandato}" />
+	                        <label for="acepto_condiciones_mandato">
+	                           <h:outputText value="#{msg.txtCondicionesMandato}"/>
+	                        </label>
+	                    </p>
+	                </h:panelGroup>
+                 <h:panelGroup id="disclaimer_avance" layout="block" rendered="#{avanceCreditosMultilineaViewMB.mostrarCondicionesMandato}" >
+	           		<div class="mensajes_de_alerta borde_ie_10">
+			      		<p>#{msg.tituloResponsabilidadAvalista}</p>
+			      		<textarea name="message" rows="8" cols="80">#{avanceCreditosMultilineaViewMB.disclaimerMandato}</textarea>
+			   		</div>
+                  </h:panelGroup>	                
+                 <div id="muestraError" class="noMostrar">
+                         <div  class="mensaje_checkbox">
+                             <div class="mensaje_error"><h:outputText value="#{msg.noHaAceptadoCondiciones}"/>:
+                             <h:outputText value="#{msg.declaroConocerAceptar}"/>.</div>
+                         </div>
+                 </div>
+                     <h:panelGroup id="acepto_condiciones_mandato_error" layout="block" rendered="#{avanceCreditosMultilineaViewMB.mostrarCondicionesMandato}" >
+	                     <div id="muestraErrorMandato" class="noMostrar">
+	                         <div  class="mensaje_checkbox">
+	                             <div class="mensaje_error"><h:outputText value="#{msg.noHaAceptadoCondicionesMandato}"/></div>
+	                         </div>
+	                     </div>
+                     </h:panelGroup>
+                </h:panelGroup>
+                <!--end fondo gris-->
+                <h:panelGroup layout="block" styleClass="multipass">
+                    <p class="botones">
+                         <segundaclave:metodoAutenticacion id="segundaclave" servicio="AvanceMultilinea"
+                            layout="vertical"
+                            bindingComponent="avanceCreditosMultilineaViewMB.segundaClaveAplicativo"
+                            textoButtonAction="Autorizar"
+                            textoButtonRetorno="Cancelar"
+                            destinoButtonAction="#{avanceCreditosMultilineaViewMB.cursarAvance}"
+                            destinoButtonOnclick="return antesDeCursarAvance()"
+                            destinoButtonRetornoOnclick="volver()"
+                            esPrimefaces="false"
+                            mensaje="">
+                         </segundaclave:metodoAutenticacion>   
+                                                
+                           <h:panelGroup layout="block" styleClass="mensaje_activar" rendered="#{not empty facesContext.messageList}">
+                            <h:messages showSummary="false" showDetail="true" layout="table" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-left:0px"/>
+                         </h:panelGroup>
+                    </p>
+                </h:panelGroup>
+                         <h:panelGroup layout="block" styleClass="mensaje_informacion borde_ie_10">
+                            <p><h:outputText value="#{msg.txtMsgFooterTitleAvc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto1Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto2Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto3Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto4Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto5Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto6Avc}"/> </p>
+                            <p>• <h:outputText value="#{msg.txtMsgFooterpunto7Avc}"/> </p>
+                         </h:panelGroup>
+              </h:panelGroup>
+           </h:panelGroup>    
+         <h:panelGroup layout="block" styleClass="fondo_bottom">&nbsp;</h:panelGroup>
+     </h:panelGroup>
+     <!--  Cuarto click -->
+      <h:panelGroup id="paso5" layout="block" rendered="#{avanceCreditosMultilineaViewMB.paso eq 3}">
+        <h2 class="encabezado"><h:outputText value="#{msg.financiamientoLinea}"/></h2>
+            <h:panelGroup layout="block" styleClass="cont_servicios_multilinea">
+                <h3>&nbsp;</h3>
+                <h:panelGroup layout="block"  styleClass="fondo">
+                    <ul class="pasos_transferencia">
+                        <li class="bot_tf_01"><span>1</span><h:outputText value="#{msg.condicionesCredito}"/> </li>
+                        <li class="bot_tf_02"><span class="activo">2</span><h:outputText value="#{msg.confirmacionSeguridad}"/></li>
+                        <li class="bot_tf_03"><span>3</span><h:outputText value="#{msg.comprobante}"/></li>
+                    </ul>
+                    <!--END PASOS TRANSFERENCIA-->
+                    <h:panelGroup layout="block"  styleClass="clear"></h:panelGroup>
+                    <h:panelGroup layout="block"  styleClass="fondo_borde_gris simulador borde_ie_10">
+                        <!--COLUMNA-->
+                          <h:panelGroup layout="block"  styleClass="columna fila_01" style="height: 432px;">
+                            <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10 sin_margen">
+                                <p><span class="col_left destacado"><h:outputText value="#{msg.montoSolicitado}"/>:</span><span class="col_right destacado">$ <h:outputText  id="montoFinalCredito5" name="montoFinalCredito5" disabled="disabled" value="#{avanceCreditosMultilineaViewMB.montoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                            <p><label for="tipo_credito"><strong><h:outputText value="#{msg.tipoDeCredito}"/>:</strong></label><h:outputText styleClass="tipo_credito" value="#{avanceCreditosMultilineaViewMB.tipoDeCreditoSeleccionado eq 'AVC721' ? 'Cuota fija tasa fija' : 'Un vencimiento tasa fija'}"/></p>                                             
+                            <p class="numero_cuotas"><label for="numero_cuotas"><strong><h:outputText value="#{msg.numeroCuotas}"/>:</strong></label><h:outputText  id="numero_cuotas4" name="numero_cuotas4" disabled="disabled" styleClass="off solo_numeros2"  value="#{avanceCreditosMultilineaViewMB.cuotaSeleccionada}"/></p>
+                            <p class="txt_fecha"><label for="fecha_vencimiento"><strong><h:outputText value="#{msg.fechaPagoPrimeraCuota}"/>:</strong></label><h:inputText id="fecha_vencimiento4" name="fecha_vencimiento4"  styleClass="off calendar_hasDatepicker" disabled="true" value="#{avanceCreditosMultilineaViewMB.fechaVencimientoSeleccionada}" /></p>
+                        </h:panelGroup>
+                            <h4><h:outputText value="#{msg.detalleCredito}"/></h4>
+                            <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                              <p><span class="col_left destacado"><h:outputText value="#{msg.cuotaMensual}"/>:</span><span class="col_right destacado">$ <h:outputText id="valorCuota3" name="valorCuota3" disabled="disabled" value="#{avanceCreditosMultilineaViewMB.valorCuota}"> <f:convertNumber pattern = "#,###"/> </h:outputText></span></p>
+                            </h:panelGroup>
+                            
+                            <h:panelGroup layout="block"  styleClass="fondo_simulador borde_ie_10">
+                              <p><span class="col_left">+ <h:outputText value="#{msg.impuestos}"/>:</span><span class="col_right">$ <h:outputText  id="impuestos4" name="impuestos4" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.impuestos}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                              <p><span class="col_left">+ <h:outputText value="#{msg.segurosIncluidos}"/>:</span><span class="col_right">$ <h:outputText  id="segurosIncluidos3" name="segurosIncluidos3"   value="#{avanceCreditosMultilineaViewMB.montoTotalSegurosSeleccionados}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                              <p><span class="col_left">+ <h:outputText value="#{msg.gastosNotariales}"/>:</span><span class="col_right">$ <h:outputText  id="gastos3" name="gastos3" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.gastosNotariales}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                              <p><span class="col_left"><strong>= <h:outputText value="#{msg.montoFinalCredito}"/>:</strong></span><span class="col_right destacado">$ <h:outputText  id="monto_solicitado4" name="monto_solicitado4" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.montoSolicitado}"/></span></p>
+						      <p class="txt_condiciones tooltip" title="#{msg.montoCAE}"><h:outputText value="#{msg.costoTotalCredito}"/>: $ <h:outputText  id="montoFinalCredito6" name="montoFinalCredito6" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.costoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText><br/><h:outputText value="#{msg.cargaAnualEquivalente}"/>: <h:outputText  id="factorCae3" name="factorCae3" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.factorCae}"><f:convertNumber pattern = "#,###"/></h:outputText> %</p>
+                          </h:panelGroup>
+                        </h:panelGroup>
+                        <!--END COLUMNA-->
+                        <!--COLUMNA-->
+                        <h:panelGroup layout="block"  styleClass="columna con_altura fila_01 borde_ie_10" style="height: 400px;">
+                              <h:panelGroup layout="block" styleClass="fondo_simulador formulario_simulador">
+                                  <p>
+                                    <strong><h:outputText value="#{msg.txtClienteRns}"/></strong>
+                                  </p>
+                                   <p><h:outputText value="#{msg.paraPoderContinuar}"/>:</p>
+                                     <h:panelGroup layout="block" styleClass="cont_formulario">
+                                        <p>
+                                         <label for="cod_telefono">
+                                          <strong><h:outputText value="#{msg.telefono}"/></strong>
+                                         </label>
+                                            <h:inputText id="cod_telefono" styleClass="solo_numeros caja_30"  maxlength="3" onkeypress="return soloNumeros(event)" name="cod_telefono" value="#{avanceCreditosMultilineaViewMB.codTelefonoCliente}"/>
+                                            -
+                                            <h:inputText id="telefono_fijo" styleClass="solo_numeros caja_115" maxlength="12"  onkeypress="return soloNumeros(event)" name="telefono_fijo" value="#{avanceCreditosMultilineaViewMB.telefonoCliente}"/>
+                                        </p>
+                                        <p>
+                                           <label for="cod_celular">
+                                             <strong><h:outputText value="#{msg.telefonoCelular}"/></strong>
+                                            </label>
+                                            <h:inputText id="cod_celular" styleClass="solo_numeros caja_30" maxlength="3" onkeypress="return soloNumeros(event)" name="cod_celular" value="#{avanceCreditosMultilineaViewMB.codCelularCliente}"/>
+                                            -
+                                            <h:inputText id="telefono_movil" styleClass="solo_numeros caja_115" maxlength="12" onkeypress="return soloNumeros(event)" name="telefono_movil" value="#{avanceCreditosMultilineaViewMB.celularCliente}"/>
+                                        </p>
+                                        <p>
+                                            <label for="email">
+                                                <strong><h:outputText value="#{msg.mail}"/></strong>
+                                            </label>
+                                            <h:inputText id="email" styleClass="caja_140" name="email" onfocus="quitarMensaje(this);" value="#{avanceCreditosMultilineaViewMB.emailCliente}" />
+                                        </p>
+                                        <p>
+                                            <label for="email2">
+                                            <strong><h:outputText value="#{msg.confirmarMail}"/></strong>
+                                            </label>
+                                            <h:inputText id="email2" styleClass="caja_140" name="email2" onfocus="quitarMensaje(this)"/>
+                                        </p>
+                                        <h:panelGroup id="combox" layout="block" >  
+                                        <p>
+                                            <label for="region">
+                                            <strong><h:outputText value="#{msg.region}"/></strong>
+                                            </label>
+                                             <h:selectOneMenu id="region"  styleClass="select_150 col_180" name="region" value="#{avanceCreditosMultilineaViewMB.codigoRegion}">
+                                                  <f:ajax execute="@this" render="@none" />
+                                                  <f:ajax execute="@none" render="combox"/>  
+                                                  <f:selectItems value = "#{avanceCreditosMultilineaViewMB.regiones}"/>
+                                             </h:selectOneMenu> 
+                                             <h:inputHidden id="codRegionOculto" value="#{avanceCreditosMultilineaViewMB.codigoRegion}"  />
+                                             <h:inputHidden id="regionOculta" value="#{avanceCreditosMultilineaViewMB.regionCliente}"  />
+                                        </p>
+                                        <p>
+                                            <label for="comuna">
+                                                <strong><h:outputText value="#{msg.comuna}"/></strong>
+                                            </label>
+                                                <h:selectOneMenu id="comuna" onchange="quitarEstiloError();" value="#{avanceCreditosMultilineaViewMB.codigoComuna}">
+                                                    <f:selectItem itemValue="000" itemLabel="Seleccione..." />
+                                                    <f:selectItems value = "#{avanceCreditosMultilineaViewMB.comunas}"/>
+                                               </h:selectOneMenu>
+                                               <h:inputHidden id="comunaOculta" value="#{avanceCreditosMultilineaViewMB.comunaCliente}"  />    
+                                        </p>
+                                        </h:panelGroup>
+                                        </h:panelGroup>
+                                </h:panelGroup>
+                                  
+                        </h:panelGroup>
+                    <!--END COLUMNA-->
+                    </h:panelGroup>
+                        <p class="botones">
+                            <h:commandButton id="volverCuartoClic"  title="Volver" styleClass="bot_01" value="Volver" action="#{avanceCreditosMultilineaViewMB.volverPaso(0)}"/>
+                           <h:commandButton  id="enviarSolicitud" styleClass="bot_02" title="Enviar solicitud" value="Enviar solicitud" onclick="return validarSolicitud();" action="#{avanceCreditosMultilineaViewMB.enviarSolicitud}" />
+                        </p>
+                    <!--end fondo gris-->
+                             <h:panelGroup layout="block" styleClass="mensaje_informacion borde_ie_10">
+                               <p><h:outputText value="#{msg.txtMsgFooterTitleAvc}"/> </p>
+                                <p>• <h:outputText value="#{msg.txtMsgFooterpunto1Avc}"/> </p>
+                                <p>• <h:outputText value="#{msg.txtMsgFooterpunto2Avc}"/> </p>
+                                <p>• <h:outputText value="#{msg.txtMsgFooterpunto3Avc}"/> </p>
+                                <p>• <h:outputText value="#{msg.txtMsgFooterpunto4Avc}"/> </p>
+                                <p>• <h:outputText value="#{msg.txtMsgFooterpunto5Avc}"/> </p>
+                                <p>• <h:outputText value="#{msg.txtMsgFooterpunto6Avc}"/> </p>
+                                <p>• <h:outputText value="#{msg.txtMsgFooterpunto7Avc}"/> </p>
+                         </h:panelGroup>
+              </h:panelGroup>
+           </h:panelGroup>    
+         <h:panelGroup layout="block" styleClass="fondo_bottom">&nbsp;</h:panelGroup>
+     </h:panelGroup>
+     <!-- Fin cuarto click -->
+     <h:panelGroup id="paso4" layout="block" rendered="#{avanceCreditosMultilineaViewMB.paso eq 4}">
+          <h2 class="encabezado"><h:outputText value="#{msg.financiamientoLinea}"/></h2>
+            <h:panelGroup layout="block" styleClass="cont_servicios_multilinea">
+                <h3>&nbsp;</h3>
+                <h:panelGroup layout="block"  styleClass="fondo">
+                    <ul class="pasos_transferencia">
+                        <li class="bot_tf_01"><span>1</span><h:outputText value="#{msg.condicionesCredito}"/></li>
+                        <li class="bot_tf_02"><span>2</span><h:outputText value="#{msg.txtPaso3Rns}"/></li>
+                        <li class="bot_tf_03"><span class="activo">3</span><h:outputText value="#{msg.txtPaso4Rns}"/></li>
+                    </ul>
+                    <!--END PASOS TRANSFERENCIA-->
+                    <h:panelGroup layout="block"  styleClass="clear"></h:panelGroup>
+                    <h:panelGroup layout="block"  styleClass="fondo_borde_gris simulador borde_ie_10">
+                       <h:panelGroup layout="block" styleClass="form_comprobante">
+                        <p><h:outputText value="#{msg.estimadoCliente}"/> </p>
+                        <h:panelGroup layout="block" rendered="#{avanceCreditosMultilineaViewMB.resultadoFirmaAvance eq 1}">
+                          <p> #{msg.txtSuCredito}  <strong>#{avanceCreditosMultilineaViewMB.caiOperacion}<h:outputText value="#{avanceCreditosMultilineaViewMB.iicOperacion}"> <f:convertNumber minIntegerDigits = "8" pattern = "############"/></h:outputText> </strong> #{msg.txtPor} <strong>$ <h:outputText  disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.montoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText></strong> #{msg.txtFueAbonado} <h:outputText  disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.cuentaSeleccionadaAbono}"/>. </p>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" rendered="#{avanceCreditosMultilineaViewMB.resultadoFirmaAvance eq 0}">
+                          <p> #{msg.resultadoFirma1} <strong>#{avanceCreditosMultilineaViewMB.caiOperacion}<h:outputText value="#{avanceCreditosMultilineaViewMB.iicOperacion}"> <f:convertNumber minIntegerDigits = "8" pattern = "############"/></h:outputText> </strong> #{msg.txtPor} <strong>$ <h:outputText  disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.montoSolicitado}"><f:convertNumber pattern = "#,###"/></h:outputText></strong> #{msg.txtSeEncuentraPendiente}(<a href="#;" onclick="window.location.href='vistaCreditosPorFirmar.jsf'" ><strong>#{msg.verPendientesFirma}</strong></a>). </p>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" rendered="#{avanceCreditosMultilineaViewMB.resultadoFirmaAvance != 1 and avanceCreditosMultilineaViewMB.resultadoFirmaAvance != 0}">
+                          <p> #{msg[msg.resultadoFirma.concat(avanceCreditosMultilineaViewMB.resultadoFirmaAvance)]} <strong>#{avanceCreditosMultilineaViewMB.caiOperacion}<h:outputText value="#{avanceCreditosMultilineaViewMB.iicOperacion}"> <f:convertNumber minIntegerDigits = "8" pattern = "############"/></h:outputText> </strong> por <strong>$ <h:outputText  disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.montoSolicitado}"><f:convertNumber pattern = "#,###"/></h:outputText></strong> (<a href="#;" onclick="window.location.href='vistaCreditosPorFirmar.jsf'" ><strong>#{msg.verPendientesFirma}</strong></a>). </p>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="col_150 display_inline">
+                            <p><strong>#{msg.txtResumenDelCredito}</strong><br />
+                            <span class="detalle">
+                                <h:commandLink value="#{msg.detalles}" actionListener="#{avanceCreditosMultilineaViewMB.resumenCredito('avance', avanceCreditosMultilineaViewMB.caiOperacion, avanceCreditosMultilineaViewMB.iicOperacion)}" />
+                            </span></p>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup layout="block" styleClass="col_150 display_inline">
+                            <p><strong>#{msg.txtCalendarioPago}</strong><br />
+                            <span class="detalle">
+                                <h:commandLink value="#{msg.detalles}" actionListener="#{avanceCreditosMultilineaViewMB.calendarioPago('avance', avanceCreditosMultilineaViewMB.caiOperacion, avanceCreditosMultilineaViewMB.iicOperacion)}" />
+                            </span></p>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" styleClass="col_150 display_inline">
+                         <p><strong>#{msg.txtDetalleSeguros}</strong><br />
+                            <span class="detalle">
+                                <h:commandLink value="#{msg.detalles}" actionListener="#{avanceCreditosMultilineaViewMB.detalleSeguros('avance',avanceCreditosMultilineaViewMB.caiOperacion, avanceCreditosMultilineaViewMB.iicOperacion)}" />                          
+                            </span>
+                          </p>
+                        </h:panelGroup>
+                        <p class="herramientas_fondos">
+                        <span class="herramienta_pdf"><h:commandLink value="#{msg.detalles}" actionListener="#{avanceCreditosMultilineaViewMB.generarComprobanteCargaPDF}"/>#{msg.txtGuardar}</span>
+                        <span class="herramienta_imprimir"><a onclick="window.print();" title="Imprimir" href="#;">+</a><h:outputText value="#{msg.txtImprimir}"/></span> </p>
+                        <h:panelGroup styleClass="clear"></h:panelGroup>
+                    </h:panelGroup> 
+                  </h:panelGroup>
+                        <p class="botones"> <button  class="bot_02 width_140" type="button" title="#{msg.txtIrCuentaCorriente}" 
+                        onclick="fnVinculoAccesoDirecto('saldos_ult_mov ');" >
+                        <h:outputText value="#{msg.txtIrCuentaCorriente}"/> </button> <button type="button" title="#{msg.txtVerPendientesFirma}" class="bot_02 width_140" onclick="window.location.href='vistaCreditosPorFirmar.jsf'"><h:outputText value="#{msg.txtVerPendientesFirma}"/></button></p>
+              </h:panelGroup>
+         <h:panelGroup layout="block" styleClass="fondo_bottom">&nbsp;</h:panelGroup>  
+      </h:panelGroup>
+     </h:panelGroup>
+     
+     <!-- Respuesta del correo -->
+     <h:panelGroup id="paso6" layout="block" rendered="#{avanceCreditosMultilineaViewMB.paso eq 5}"> 
+                <h2 class="encabezado"><h:outputText value="#{msg.financiamientoLinea}"/></h2>
+                <h:panelGroup layout="block" styleClass="cont_servicios">
+                <h3> </h3>
+                <h:panelGroup layout="block" styleClass="fondo">
+                <ul class="pasos_transferencia">
+                <li class="bot_tf_01">
+                <span>1</span>
+                <h:outputText value="#{msg.condicionesCredito}"/>
+                </li>
+                <li class="bot_tf_02">
+                <span class="activo">2</span>
+                  <h:outputText value="#{msg.confirmacionSeguridad}"/>
+                </li>
+                <li class="bot_tf_03">
+                <span>3</span>
+                      <h:outputText value="#{msg.comprobante}"/>
+                </li>
+                </ul>
+                <div class="clear"></div>
+            <h:panelGroup layout="block" styleClass="mensaje_alerta borde_ie_10">
+                <p><h:outputText value="#{msg.estimadoCliente}"/>:</p>
+                <p>
+                    <h:outputText value="#{msg.suSolicituFueIngresada}" />, <strong>
+                    <h:outputText value="#{msg.unEjecutivoComercial}"/></strong>&nbsp;<h:outputText value="#{msg.paraAtenderSuSolicitud}"/> </p>
+            </h:panelGroup>
+            <h:panelGroup  layout="block" styleClass="fondo_borde_gris simulador borde_ie_10">
+                <h:panelGroup layout="block" styleClass="col_100 float_right">
+                    <p class="herramientas_fondos"> <span class="herramienta_pdf"><h:commandLink value="#{msg.detalles}" actionListener="#{avanceCreditosMultilineaViewMB.generarComprobanteCargaPDF}"/>#{msg.txtGuardar}</span><span class="herramienta_imprimir"><a onclick="window.print();" title="Imprimir" href="#;">+</a><h:outputText value="#{msg.txtImprimir}"/></span> </p>
+                </h:panelGroup>
+
+                <h4 class="txt_oscuro"><h:outputText value="#{msg.txtResumenSimulacion}"/>:</h4>
+                <h:panelGroup  layout="block" styleClass="clear"></h:panelGroup>
+                <!--COLUMNA-->
+                <h:panelGroup layout="block" styleClass="columna">
+                    <h:panelGroup layout="block" styleClass="fondo_simulador borde_ie_10">
+                        <p>
+                            <label class="destacado"><h:outputText value="#{msg.txtMontoDelCredito}"/>:</label><span
+                                class="col_right destacado">$ <h:outputText value="#{avanceCreditosMultilineaViewMB.montoSolicitado}"/></span>
+                        </p>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" styleClass="fondo_simulador borde_ie_10 fila_01">
+                        <p>
+                            <label for="tipo_credito"><strong><h:outputText value="#{msg.tipoDeCredito}"/>:</strong></label><span class="col_right"><h:outputText value="#{avanceCreditosMultilineaViewMB.tipoDeCreditoSeleccionado eq 'AVC721' ? 'Cuota fija tasa fija' : 'Un vencimiento tasa fija'}"/></span>
+                        </p>
+                        <p class="numero_cuotas">
+                            <label for="numero_cuotas"><strong><h:outputText value="#{msg.numeroCuotas}"/>:</strong></label><span class="col_right"><h:outputText value="#{avanceCreditosMultilineaViewMB.cuotaSeleccionada}" /></span>
+                        </p>
+                        <p class="txt_fecha">
+                            <label for="fecha_vencimiento">
+                                    <strong><h:outputText value="#{msg.fechaPagoPrimeraCuota}"/>:</strong>
+                            </label>
+                            <span class="col_right"> 
+                                     <h:outputText id="fecha_vencimiento9" name="fecha_vencimiento9"  disabled="true" value="#{avanceCreditosMultilineaViewMB.fechaVencimientoSeleccionada}" />
+                           </span>
+                        </p>
+                        <p></p>
+                        <p></p>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <!--END COLUMNA-->
+                <!--COLUMNA-->
+                <h:panelGroup layout="block" styleClass="columna">
+                    <h:panelGroup layout="block" styleClass="fondo_simulador borde_ie_10">
+                        <p>
+                            <span class="col_left destacado"><h:outputText value="#{msg.valorCuota}"/>:</span><span
+                                class="col_right destacado">$ <h:outputText id="valorCuota9" name="valorCuota9" disabled="disabled" value="#{avanceCreditosMultilineaViewMB.valorCuota}"><f:convertNumber pattern = "#,###"/></h:outputText></span>
+                        </p>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" styleClass="fondo_simulador borde_ie_10 fila_01">
+                         <p><span class="col_left"><strong><h:outputText value="#{msg.montoSolicitado}"/>:</strong></span><span class="col_right destacado">$ <h:outputText  id="montoFinalCredito9" name="montoFinalCredito" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.montoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                         <p><span class="col_left">+ <h:outputText value="#{msg.impuestos}"/>:</span><span class="col_right">$ <h:outputText  id="impuestos2" name="impuestos" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.impuestos}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                         <p><span class="col_left">+ <h:outputText value="#{msg.segurosIncluidos}"/>:</span><span class="col_right">$ <h:outputText  id="segurosIncluidos2" name="segurosIncluidos2"   value="#{avanceCreditosMultilineaViewMB.montoTotalSegurosSeleccionados}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                         <p><span class="col_left">+ <h:outputText value="#{msg.gastosNotariales}"/>:</span><span class="col_right">$ <h:outputText  id="gastos4" name="gastos4" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.gastosNotariales}"><f:convertNumber pattern = "#,###"/></h:outputText></span></p>
+                         <p><span class="col_left"><strong>= <h:outputText value="#{msg.montoFinalCredito}"/>:</strong></span><span class="col_right destacado">$ <h:outputText  id="monto_solicitado9" name="monto_solicitado2" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.montoSolicitado}"/></span></p>
+                         <p class="txt_condiciones tooltip" title="#{msg.montoCAE}"><h:outputText value="#{msg.costoTotalCredito}"/>: $ <h:outputText  id="montoFinalCredito10" name="montoFinalCredito2" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.costoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText><br/><h:outputText value="#{msg.cargaAnualEquivalente}"/>: <h:outputText  id="factorCae9" name="factorCae" disabled="disabled"   value="#{avanceCreditosMultilineaViewMB.factorCae}"><f:convertNumber pattern = "#,###"/></h:outputText> %</p>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <!--END COLUMNA-->
+            </h:panelGroup>
+            <!--end fondo gris-->
+            <p class="botones">
+                <button  class="bot_02 width_140" type="button" title="#{msg.txtIrCuentaCorriente}" 
+                onclick="fnVinculoAccesoDirecto('saldos_ult_mov ');">
+                <h:outputText value="#{msg.txtIrCuentaCorriente}"/> 
+                </button>
+            </p>
+            <h:panelGroup layout="block" class="fondo_bottom">&nbsp;</h:panelGroup>
+            </h:panelGroup>
+           </h:panelGroup>  
+          </h:panelGroup>
+        </h:panelGroup> 
+        
+    <h:panelGroup layout="block" id="terminosCreditos" styleClass="noMostrar">
+        <ui:include src="terminosCondiciones.xhtml"/>
+    </h:panelGroup> 
+    <h:panelGroup layout="block" id="resumenCredito" styleClass="#{avanceCreditosMultilineaViewMB.muestraResumen ? 'mostrar' : 'noMostrar' }">
+        <ui:include src="resumenCreditoAvance.xhtml"/>
+    </h:panelGroup> 
+    <h:panelGroup layout="block" id="calendarioPago" styleClass="#{avanceCreditosMultilineaViewMB.muestraCalendario ? 'mostrar' : 'noMostrar' }">
+        <ui:include src="calendarioPago.xhtml"/>
+    </h:panelGroup>     
+    <h:panelGroup layout="block" id="detalleSeguros" styleClass="#{avanceCreditosMultilineaViewMB.muestraSeguros ? 'mostrar' : 'noMostrar' }">
+        <ui:include src="detalleSeguros.xhtml"/>
+    </h:panelGroup> 
+    </h:form>
+</h:body> 
+</html>
+<!--
+/***************************************************************************************************************
+* Archivo:          vistaAvanceMultilinea.xhtml
+* Descripción       Este xhtml tiene la funcionalidad de poder
+*                   realizar un avance de multilinea en empresarios.
+* Path              /cl/bci/aplicaciones/productos/servicios/multilinea
+* " Todos los derechos reservados por Banco de Crédito e Inversiones."              
+* Historia Cambios
+* versión       fecha            autor                        								cambios
+* =======   ==========    =====================================================		 ============================================================
+* 1.0       09/12/2014    Manuel Escárate (BEE) - Jimmy Muñoz D. (ing.Soft.BCI)      version inicial.
+* 1.1       19/11/2015    Manuel Escárate (BEE) - Jimmy Muñoz D. (ing.Soft.BCI)      Se agrega lógica para cambio de tipo de crédito.
+*                                                        
+* 1.2      09/12/2015    Manuel Escárate (BEE) - Jimmy Muñoz D. (ing.Soft.BCI)       Se agregan elementos correspondientes a errores genericos
+*                                                         							 para desplegar en vista y botón para volver atrás.
+* 1.3      07/01/2016    Manuel Escárate (BEE) - Jimmy Muñoz D. (ing.Soft.BCI)       Se modifica presentación de valores de simulación.
+* 1.4      07/03/2016    Manuel Escárate (BEE) - Felipe Ojeda (ing.Soft.BCI)       Se agrega seteo de campos para envio de correos.
+* 1.5      22/02/2016    Manuel Escárate (BEE) - Felipe Ojeda   (ing.Soft.BCI)       Se agregan condiciones especiales y mandato multicanal. 
+* 1.6      19/05/2016    Manuel Escárate (BEE) - Pablo Paredes   (ing.Soft.BCI)      Se agregan atributos para DPS, y llamado a nueva págia de consulta DPS.       
+* 1.7      16/08/2016    Manuel Escárate (BEE) - Felipe Ojeda   (ing.Soft.BCI)     Se agrega discleimer avalista, gasto notarial y se quita checkbox de condiciones.  
+*
+****************************************************************************************************************/
+-->

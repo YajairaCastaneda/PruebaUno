@@ -1,0 +1,201 @@
+
+Estimado ${nombreAval} :
+
+De nuestra consideración,
+
+Junto con saludar y agradecer su confianza, le informamos a Ud. que se ha otorgado un Crédito Comercial, en los términos que se indica a 
+continuación, a RAZÓN SOCIAL  ${nombreEmpresa} RUT ${rutEmpresa}, contando con vuestra constitución de vuestra 
+avalía, y con fecha ${fechaActual} se ha procedido, en su representación, a suscribir el pagaré respectivo, en
+calidad de aval.
+
+Lo anterior, en conformidad  a vuestro consentimiento otorgado a través del canal web- sometido a lo
+dispuesto en el artículo 3º de la Ley Nº 19.799, sobre Documentos Electrónicos, Firma Electrónica y Servicios
+de Certificación de dicha Firma,-y dando efectivo cumplimiento al mandato que Ud. 
+otorgo a esta entidad bancaria en forma previa a la solicitud  y contratación del crédito
+comercial, según el detalle adjunto:
+
+
+ANTECEDENTES DEL CRÉDITO COMERCIAL
+Fecha y Hora de la Solicitud   : ${fechaHora}
+Monto del Capital Inicial      : ${montoCredito}
+Tasa de Interés                : ${tasaInteres}
+Impuestos                      : ${impuestos}
+Seguros                        : ${seguros}
+Valor Notario                  : ${valorNotario}
+Cuotas                         : ${totalVencimientos}
+Fecha 1° vencimiento           : ${fechaPrimerVcto}
+Número de operación            : ${numeroOperacion}
+Destino del crédito            : ${destinoCredito}
+Estado del Avance              : ${estado}
+
+
+
+PAGARE (Sin Protesto)
+CUOTA FIJA 
+Nº de Operación: ${numeroOperacion}
+Por valor recibido, debo y pagaré a la orden del BANCO DE CREDITO E INVERSIONES, en su Oficina 
+ubicada en El Golf número 125, Las Condes, Santiago, o en cualquiera de sus sucursales, la suma de 
+${montoCredito}(${montoEnPalabras} pesos m/l)
+Tasa de Interés.  El capital adeudado devengará a partir de esta fecha una tasa de interés del ${tasaInteres}% 
+mensual vencido durante todo el plazo pactado. Los intereses se calcularán sobre el capital insoluto y se
+pagarán por períodos vencidos, por el número de días efectivamente transcurridos en cada período de 
+intereses y sobre la base de años de trescientos sesenta días.
+Amortización del capital y Pago de los Intereses. El capital adeudado y sus respectivos intereses se
+pagará en ${totalVencimientos} cuotas mensuales, iguales y sucesivas, de ${valorCuota} cada una, con vencimiento
+la primera de ellas el día ${diaPrimerVen} de ${mesPrimerVen} de ${anioPrimerVen} y las restantes los días ${diaVencimiento} de cada 
+mes de pago, venciendo la última de ellas el día ${diaUltimoVen}  de ${mesUltimoVen} de ${anioUltimoVen}.
+Prórroga de plazo por día inhábil. Las cuotas de amortización de capital e intereses se pagarán a su
+vencimiento, siempre que éste corresponda a un día hábil bancario. En caso contrario, se pagarán el día 
+hábil bancario siguiente.
+Prepagos.  Si el monto de capital inicial supera el equivalente a UF 5.000, todo pago anticipado, sea total o 
+parcial, será convenido libremente entre el suscriptor y el Banco. A falta de acuerdo, el suscriptor podrá en
+todo caso anticipar el pago, total o parcialmente, y en este último caso, siempre que el importe a pagar sea
+igual o superior al 20% del capital de la obligación adeudada, pagando además los intereses estipulados
+devengados y no pagados a la fecha del prepago,  calculados sobre el saldo insoluto, más los intereses
+estipulados en este instrumento, calculados sobre el capital prepagado desde la fecha del prepago hasta el
+vencimiento del plazo pactado. Si el monto de capital inicial no supera el equivalente a UF 5.000, al capital
+prepagado deberán sumársele los intereses calculados hasta la fecha del prepago y la comisión de
+prepago máxima que el artículo 10 de la Ley 18.010 permite pactar.
+Intereses Moratorios. En caso de retardo o mora en el cumplimiento de esta obligación, ésta devengará
+desde la fecha del retardo y hasta el día del pago efectivo, a favor del acreedor, el interés máximo
+convencional que rija durante la mora.
+Exigibilidad anticipada.  El no pago oportuno de una cualquiera de las cuotas de capital y/o de interés
+comprendidos en esta obligación, dará derecho y facultará al acreedor a hacer exigible de inmediato y
+anticipadamente el monto total del saldo insoluto adeudado a esa fecha, el que desde esa misma fecha y
+en tal evento se considerará de plazo vencido devengándose en favor del acreedor o de quien sus 
+derechos represente, el interés máximo convencional.  Asimismo, el Banco podrá hacer exigible de
+inmediato el monto total adeudado, expirando todos los plazos pendientes por el sólo hecho de constituirse
+en mora o de habérsele protestado al suscriptor o al aval, por falta de pago, cualquier documento, pagaré,
+letra de cambio o cheque, aceptado, suscrito, girado o avalado por él. Se deja expresamente establecido
+que el ejercicio de estos derechos constituyen una sanción al suscriptor por el no pago de la deuda e
+importan una mera facultad establecida en beneficio exclusivo del acreedor, que no altera en caso alguno
+la fecha de vencimiento del pagaré originalmente pactada, ni a la exigibilidad de las acciones cambiarias y
+ejecutivas derivadas de éste. Se deja expresamente establecido que corresponderá al suscriptor acreditar
+el pago de las cuotas en que se divide el presente instrumento, en caso de cobro judicial. Sin embargo, en
+operaciones de crédito de dinero en cuotas, cuyo capital inicial sea igual o inferior a 200 unidades de
+fomento no podrá hacerse exigible la obligación en forma anticipada, si no una vez cumplidos 60 días
+corridos desde que el suscriptor incurra en mora o simple retardo en el pago.
+Indivisibilidad y solidaridad. Las obligaciones que emanen de este pagaré serán solidarias para el
+suscriptor, avalista(s) y demás obligados al pago y serán indivisibles para sus herederos. Además, el
+suscriptor  pagará los gastos, impuestos y costas personales y procesales que correspondan.
+Mandato para prórrogas. El suscriptor faculta al Banco de Crédito e Inversiones para que en su nombre y
+representación otorgue, previa autorización expresa de éste,  una o más prórrogas que establezcan nuevas
+condiciones, tasas de interés y fechas de vencimiento. 
+Domicilio y competencia. Para todos los efectos legales, judiciales o extrajudiciales derivados de este
+pagaré, prorrogo expresamente la competencia para los Tribunales de Justicia con asiento en la comuna y
+ciudad de _____________________, prórroga que será obligatoria tanto para el suscriptor como para sus 
+avales, endosantes u obligados por garantía. Sin perjuicio de esta prórroga de competencia, declaro, sólo 
+para efectos del emplazamiento judicial, que mi domicilio y residencia son los indicados en el cuerpo de
+este título, comprometiéndome desde luego a dar pronto aviso por escrito, mediante carta certificada al
+Banco, en el evento que realice cualquier cambio de domicilio en el futuro.
+Impuesto de timbres y estampillas. El impuesto de timbres y estampillas que grava este documento se 
+paga por ingresos mensuales de dinero en Tesorería, según Decreto Ley Nº 3475.
+Sin obligación de protesto.
+
+En _____________________,a_________de_________________________de__________
+            	
+
+                 ___________________________________
+						Firma del Suscriptor
+
+
+
+
+
+
+NOMBRE O RAZÓN SOCIAL ${nombreEmpresa} RUT ${rutEmpresa}
+DOMICILIO ${direccionEmpresa} COMUNA ${comunaEmpresa}  , CIUDAD ${ciudadEmpresa}                                                  
+
+REPRESENTADO POR BANCO DE CREDITO E INVERSIONES  RUT 97.006.000-6
+REPRESENTANTE _____________________________________ RUT ______________________
+
+							POR  AVALES
+
+Los que firmamos a continuación nos constituimos por este acto en avales del presente pagaré, como 
+asimismo nos constituimos en fiadores y codeudores solidarios del suscriptor en favor del banco, respecto
+de las obligaciones de dinero que emanan del presente pagaré, que el suscriptor declaró haber recibido y
+de cuyas condiciones particulares de monto, tasa de interés y vencimientos deja constancia este pagaré y 
+por todo el tiempo que transcurriere hasta el efectivo y completo pago de dicha obligación, y que en nuestra
+calidad de avalistas, fiadores y codeudores solidarios,  aceptamos desde luego las eventuales prórrogas o
+esperas que con o sin protestos, y con o sin abonos, pudieren convenirse entre el suscriptor y el Banco de
+Crédito e Inversiones o quien sus derechos represente. 
+Convenimos asimismo, en que la falta de protestos no perjudicará nuestra calidad de avales, fiadores y
+codeudores solidarios del suscriptor del presente documento. 
+
+
+
+
+							_________________________________
+								   Firma del Avalista
+
+NOMBRE ${nombreAval}	   	RUT ${rutAval}
+DOMICILIO ${direccionAval} COMUNA ${comunaAval}, CIUDAD ${ciudadAval}                                                        
+
+REPRESENTADO POR BANCO DE CREDITO E INVERSIONES  RUT 97.006.000-6
+REPRESENTANTE _____________________________________   RUT ______________________
+
+En _____________________, a_________de_________________________de__________
+
+
+						AUTORIZACIÓN NOTARIAL
+
+Con esta fecha, autorizo la firma de don (ña) 
+__________________________________________________, cédula nacional de identidad 
+N°_______________ -___, como apoderado del Banco de Crédito e Inversiones, y a éste a su vez,
+actuando como mandatario y en representación del suscriptor o deudor y avalista precedentemente 
+individualizados.
+
+
+						____________________________
+								NOTARIO
+
+
+___________ , ____ de ______________ del año _______
+
+Anexo: 
+Responsabilidades del avalista, fiador y codeudor solidario 
+Yo: ${nombreAval} C.I.
+Nº ${rutAval} declaro por este acto, haber tomado
+conocimiento de mi calidad de AVAL, FIADOR y CODEUDOR SOLIDARIO, de la deuda 
+por $ ${montoCredito} (Indicar monto bruto/ Cupo de Línea de Crédito) suscrita 
+por ${nombreEmpresa} 
+RUT Nº ${rutEmpresa} para con el Banco (Bci; Bci-Nova) 
+
+En cumplimiento de lo previsto en el artículo 17 j) de la ley Nº 20.555, declaro estar en
+conocimiento de los deberes y responsabilidades, de quien pretende constituir una 
+garantía personal y declaro expresamente que:
+a) Mi responsabilidad de avalista, fiador y codeudor solidario, está expresada en los 
+   mismos términos y condiciones del deudor directo, y en caso de incumplimiento de 
+   éste, deberé responder por la obligación anteriormente indicada, más intereses, costas
+   y gastos de cobranza. El Banco podrá cobrar, en ese caso, al deudor directo y/o al
+   avalista.
+b) Acepto los plazos, prórrogas y/o modificaciones de las condiciones del crédito que se 
+   acordaren entre el deudor y el Bci.
+c) Mi responsabilidad es de carácter indivisible, por lo que la obligación del monto 
+   anteriormente indicado, es exigible a mis herederos y/o sucesores, según lo dispuesto 
+   en los artículos 1526 Nº 4 y 1528 del Código Civil.
+d) No podré retractarme de mi condición de avalista y/o fiador solidario mientras esté 
+   pendiente el pago de la obligación principal.
+e) Producto de la morosidad en la obligación principal puedo ser objeto de la respectiva 
+   cobranza judicial en mi contra, en calidad de avalista y/o codeudor solidario, proceso 
+   que inicialmente el Banco efectúa a través de su plataforma telefónica de cobranza, y 
+   de no prosperar esta gestión, se interpondrá una demanda ejecutiva con el mérito del 
+   pagaré ante los Tribunales de Justicia. El Banco efectúa la cobranza directamente, por 
+   medio de abogados externos y/o a través de su filial Servicios de Normalización y
+   Cobranza -Normaliza S.A.
+
+  
+  
+						_____________________________ 
+                    Avalista, fiador y codeudor solidario.
+					
+
+Recibo: declaro haberme impuesto del contenido de esta carta y haber recibido con esta
+misma fecha el original de la misma. 
+
+
+                       
+
+
+Le saluda atentamente,
+Banco Bci

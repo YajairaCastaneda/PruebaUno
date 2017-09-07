@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+    xmlns:segundaclave="http://java.sun.com/jsf/composite/segundaclave">	
+<h:head>
+	<title>BCI Corporativo</title>
+
+	<h:outputStylesheet name="multilinea.css" library="Webbci/pyme/css" />
+	<h:outputStylesheet name="creditos.css" library="Webbci/pyme/css" />
+	<h:outputStylesheet name="common.css" library="Webbci/common/css" />
+	<h:outputStylesheet name="canal.css" library="Webbci/#{portalMB.atributosWeb.estiloCss}css" />
+	<h:outputScript library="Webbci/common/js" name="jquery-1.7.1.min.js" target="head" />
+	<h:outputScript library="Webbci/pyme/js"   name="jquery-ui.min.js"   target="head" />
+	<h:outputScript library="Webbci/pyme/js"   name="multilinea.js"  />
+
+</h:head>
+		<f:loadBundle
+			basename="#{resolutorResourceBundleMB.obtieneResourceBundle('cl.bci.aplicaciones.productos.servicios.multilinea.multilinea')}"
+			var="msg" />
+<h:body >			
+<h:panelGroup layout="block" styleClass="servicios_cliente width_714">
+	<h:panelGroup layout="block" styleClass="top_cliente">
+		<span onclick="$('.servicios_cliente.width_714').hide();" class="cerrar"><h:outputText value="#{msg.cerrar}"/></span>
+	</h:panelGroup>
+	<h:panelGroup layout="block" styleClass="fondo_cliente">
+		<h2><h:outputText value="#{msg.confirmarAutorizacion}"/></h2>
+		<div class="fondo_borde_gris borde_ie_10">
+			<table width="100%" cellspacing="0" cellpadding="0" border="0" class="tabla_datos tablesorter tabla_no_border">
+				<thead>
+					<tr>
+						<th style="width:16%;"><span class="bullet_ordenar"></span><h:outputText value="#{msg.txtNumOperacionRns}"/></th>
+						<th style="width:12%;"><span class="bullet_ordenar"></span><h:outputText value="#{msg.tipode}"/><br/><h:outputText value="#{msg.credito}"/></th>
+						<th style="width:12%;"><span class="bullet_ordenar"></span><h:outputText value="#{msg.monto}"/> <br/><h:outputText value="#{msg.solicitado}"/></th>
+						<th><span class="bullet_ordenar"></span><h:outputText value="#{msg.cuenta}"/><br/><h:outputText value="#{msg.abono}"/></th>
+						<th><span class="bullet_ordenar"></span><h:outputText value="#{msg.cuentaCargo}" /></th>
+						<th style="width:12%;"><span class="bullet_ordenar"></span><h:outputText value="#{msg.fecha}"/><br/><h:outputText value="#{msg.ingreso}"/></th>
+						<th style="width:12%;"><span class="bullet_ordenar"></span><h:outputText value="#{msg.firmas}"/><br/><h:outputText value="#{msg.ingresadas}"/></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="campos">
+						<td class="align_center">#{autorizaFirmaCreditosViewMB.operacionSeleccionada.caiOperacion}#{autorizaFirmaCreditosViewMB.operacionSeleccionada.iicOperacion}</td>
+						<td class="align_center">
+						#{autorizaFirmaCreditosViewMB.glosasTipoCredito[autorizaFirmaCreditosViewMB.operacionSeleccionada.tipoOperacion.concat(autorizaFirmaCreditosViewMB.operacionSeleccionada.auxiliarOpe)]}
+						</td>
+						<td class="align_center">
+							<h:outputText value="#{autorizaFirmaCreditosViewMB.operacionSeleccionada.montoOperacion}">
+                              <f:convertNumber pattern = "#,###"/>
+                            </h:outputText> 
+                        </td>
+						<td class="align_center">#{autorizaFirmaCreditosViewMB.operacionSeleccionada.cuentaAbono}</td>
+						<td class="align_center">#{autorizaFirmaCreditosViewMB.operacionSeleccionada.cuentaCargo}</td>
+						<td class="align_center">
+										<h:outputText value="#{autorizaFirmaCreditosViewMB.operacionSeleccionada.fechaCurse}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+						</td>
+						<td title="" class="align_center tooltip">
+						 <h:commandLink onclick="# " styleClass="nounderline"   onmouseout="closediv('ope_#{detalleCredito.iicOperacion}')" onmousemove="showdiv('ope_#{detalleCredito.iicOperacion}')">
+								               <h:outputText value="Ver Firmas">	
+							               </h:outputText>		
+			                  			  <div id="ope_#{detalleCredito.iicOperacion}"  class="monto cont_alerta_mensaje3">
+						                   <div class="top">&nbsp;</div>
+						                        <div class='tip_ayuda tooltip' >
+						                              <div class="tip_ayuda">
+						                               
+						                                   <strong><h:outputText value="#{msg.hanFirmado}"/> </strong><br/>
+						                                   <ui:repeat var="apo" value="#{autorizaFirmaCreditosViewMB.operacionSeleccionada.apoderadosFirmados.conApoquehanFirmado}" varStatus="status">
+														 	
+																- #{apo.nombres} #{apo.apellidoPaterno} #{apo.apellidoMaterno} 
+															
+														 
+														   </ui:repeat>
+						                              </div>
+						                       </div>
+		                                   </div>
+              
+						</h:commandLink>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+          <h:panelGroup id="acepto_condiciones_firma" layout="block" rendered="#{autorizaFirmaCreditosViewMB.mostrarCondicionesMandato}" >
+              <p class="checkbox">
+                  <h:selectBooleanCheckbox id="acepto_condiciones_mandato" onclick="borrarErrorCheckFirma();" onfocus="borrarErrorCheckFirma();" onblur="borrarErrorCheckFirma();"  value="#{autorizaFirmaCreditosViewMB.aceptaCondicionesMandato}"/>
+                  <label for="acepto_condiciones_mandato">
+                     <h:outputText value="#{msg.txtCondicionesMandato}"/>
+                  </label>
+              </p>
+          </h:panelGroup>	
+			
+          <h:panelGroup id="disclaimer_firma" layout="block" rendered="#{autorizaFirmaCreditosViewMB.mostrarCondicionesMandato}" >
+			
+			<div class="mensajes_de_alerta borde_ie_10">
+		      <p>#{msg.tituloResponsabilidadAvalista}</p>
+		      <textarea name="message" rows="8">#{autorizaFirmaCreditosViewMB.disclaimerMandato}</textarea>
+		   </div>
+		   </h:panelGroup> 
+		   
+          <h:panelGroup id="acepto_condiciones_firma_error" layout="block" rendered="#{autorizaFirmaCreditosViewMB.mostrarCondicionesMandato}" >
+           <div id="muestraErrorMandato" class="noMostrar">
+               <div  class="mensaje_checkbox">
+                   <div class="mensaje_error"><h:outputText value="#{msg.noHaAceptadoCondicionesMandato}"/></div>
+               </div>
+           </div> 
+          </h:panelGroup> 
+			
+		  <h:panelGroup layout="block" id="muestraErrorPop" styleClass="#{not empty autorizaFirmaCreditosViewMB.errorSegundaClave ? 'visible' : 'invisible'}">
+			<div style="" class="mensaje_checkbox">
+	            <div class="mensaje_error">#{autorizaFirmaCreditosViewMB.errorSegundaClave}</div>
+            </div>
+            </h:panelGroup>
+		</div>
+		<h:panelGroup layout="block" styleClass="multipass">
+		<p class="botones">
+         		    <segundaclave:metodoAutenticacion id="segundaclave" servicio="FirmarMultilinea"
+				        layout="vertical"
+				        bindingComponent="autorizaFirmaCreditosViewMB.segundaClaveAplicativo"
+				        textoButtonAction="Autorizar"
+				        textoButtonRetorno="Cancelar"
+				        destinoButtonAction="#{autorizaFirmaCreditosViewMB.firmarOperacion}"
+				        destinoButtonOnclick="return antesDeFirmar()"
+				        destinoButtonRetornoOnclick="$('.servicios_cliente.width_714').hide();"
+				        esPrimefaces="false"
+				        mensaje="">
+					 </segundaclave:metodoAutenticacion>   
+					  <h:panelGroup layout="block" class="mensaje_alerta_ch borde_ie" rendered="#{not empty facesContext.messageList}">
+                              <h:messages showSummary="false" showDetail="true" layout="table" styleClass="mensajes_valida_segunda_clave"/>
+                        </h:panelGroup>
+		</p>
+		</h:panelGroup>        
+	</h:panelGroup>
+</h:panelGroup>
+</h:body>
+</html>
+<!--
+/***************************************************************************************************************
+* Archivo:          vistaConfirmarAutorizacionCredito.xhtml
+* Descripción       Este xhtml muestra el detalle del credito a firmar.
+* Path              /cl/bci/aplicaciones/productos/servicios/multilinea
+* " Todos los derechos reservados por Banco de Crédito e Inversiones."              
+* Historia Cambios
+* versión       fecha                autor                     cambios
+* =======   ==========    =====================        =================================
+* 1.0       12/03/2015    Braulio Rivas S.(BEE)          versión inicial.
+* 1.1       12/08/2016    Manuel Escarate (BEE) - Felipe Ojeda (ing.Soft.BCI) : Se agrega discleimer.
+*
+****************************************************************************************************************/
+-->

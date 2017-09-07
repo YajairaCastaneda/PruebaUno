@@ -1,0 +1,296 @@
+## Transaccion, nemonico normal y excepcional (con horario)
+transaccionNormal;TRXABO=V0776;TRXNEM=506;
+transaccionExcepc;TRXABO=V0783;TRXNEM=506;HORATOPEINI=1400;HORATOPEFIN=2000;
+
+## Ajuste al monto disponible en %
+ajustemontodisponible;DESC=0;
+
+## bancas permitidas para operar Empresario
+bancapermitidasEmpresario;DESC=PM,PMR,PMN,PME;
+
+## consulta cartola Multilinea ?
+flagcartola;DESC=N;
+
+## Mensajes al cliente
+tiene_margen;DESC=Cliente no posee multilínea o se encuentra vencida;
+tiene_margen_activo;DESC=Cliente no posee multilínea o se encuentra vencida;
+tiene_margen_al_dia;DESC=Cliente no posee multilínea o se encuentra vencida;
+tiene_mlt;DESC=Cliente no posee multilínea o se encuentra vencida;
+tiene_mlt_vigente;DESC=Cliente con multilínea no vigente;
+tiene_mlt_al_dia;DESC=Cliente no posee multilínea o se encuentra vencida;
+tiene_margen_monto;DESC=Cliente sin monto disponible;
+tiene_mlt_monto;DESC=Cliente sin monto disponible;
+
+## monto minimo en supercartola express
+montominimocartola;DESC=150000;
+
+## bancas permitidas para operar Empresario para enviar E-mail
+bancapermitidasEmpresarioEmail;DESC=PM,PMR,PMN,PME;vigencia=S;
+
+#envio de correo a backoffice
+emailsbackoffice;desc=multilinea@bci.cl;
+emailsbackofficefrom;desc=contacto@bci.cl;
+emailsbackofficede;desc=Webmast;
+emailsbackofficeEmpresario;desc=S;
+emailsbackofficeEmpresarioRenovacion;desc=N;
+emailsbackofficeEmpresarioProrroga;desc=N;
+
+#control de horarios para envio de correo
+HorarioNormalInicio;horaInicioNormal=1950;
+HorarioNormalFinal;horaTerminoNormal=1630;
+HorarioExcepcInicio;horaInicioExcepc=1631;
+HorarioExcepcFinal;horaTerminoExcepc=859;
+HorarioInicioInhabil;horaInhabilIni=806;
+HorarioFinInhabil;horaInhabilFin=2000;
+HorarioTardeini;desc=2000;
+HorarioTardefin;desc=800;
+HorasAbono;desc=3;
+
+#mensajes que debe ir a pantalla informativa al cliente
+MENSAJENORMAL;Desc=Estimado (a) Cliente, su solicitud fue ingresada.<br>El Crédito será abonado durante las próximas [HORASABONO] horas dependiendo de la verificación de condiciones de endeudamiento vigentes.<br>Su ejecutivo lo contactará para informarle el estado de su solicitud.;
+MENSAJEEXCEPCIONAL;Desc=Estimado (a) Cliente, su solicitud fue ingresada.<br>El Crédito será abonado el día [SIGDIAHABIL] dependiendo de la verificación de condiciones de endeudamiento vigentes.<br>Su ejecutivo lo contactará para informarle el estado de su solicitud.;
+MENSAJEDIAINHABIL;Desc=Estimado (a) Cliente, en este momento no podemos atender su pedido.<br>Por Favor intente nuevamente entre las 08:00 am. y las 20:00;
+
+#control de tiempo visacion expresado en segundos
+tiempovisacion;desc=15;
+
+#numero de registros por pagina en resumen de creditos
+paginacionmax;desc=20;
+
+#horario de renovacion
+considerarhorariorenovacion;desc=S;
+inihorariorenovacion;desc=08:00;
+finhorariorenovacion;desc=14:00;
+
+#envio de correo a ejecutivo de cliente EMPRESAS
+bancaEnvioEmailEjecutivo;desc=EM,EMQ,EG,EQ,EGQ,EX;vigencia=S;
+emailsEjecutivoFrom;desc=contacto@bci.cl;
+emailsEjecutivoDe;desc=Webmast;
+emailsbackofficeEmpresas;desc=N;
+emailsbackofficeEmpresasRenovacion;desc=N;
+emailsbackofficeEmpresasProrroga;desc=N;
+
+#Bancas permitidas para funcionar con seguros desde PRECIOS
+AvanceBancasSeguros      ;banca=PM,PMR,PMN,PME,EG,EX,EM,EQ,EGQ,EMQ,I1,I2,I3,I4,C1,C2,C3,C4,C1A,C1B,C1C,C1D;vigente=S;
+RenovacionBancasSeguros  ;banca=PM,PMR,PMN,PME,EG,EX,EM,EQ,EGQ,EMQ,I1,I2,I3,I4,C1,C2,C3,C4,C1A,C1B,C1C,C1D;vigente=S;
+ProrrogasBancasSeguros   ;banca=PM,PMR,PMN,PME,EG,EX,EM,EQ,EGQ,EMQ,I1,I2,I3,I4,C1,C2,C3,C4,C1A,C1B,C1C,C1D;vigente=S;
+segurosexcluyentesentresi;listaCR=CR1,CR2,CR3;
+
+#Mensajes a informar al ejecutivo email
+AvanceOK;desc=Avance OK;
+asuntoDescripcion;desc=Avance con Problemas:;
+asuntoEmailExito;desc=Operacion Cursada;
+asuntoEmailExitoDeposito;desc=Avance Crédito comercial OK - Problema en Deposito;
+asuntoEmailProblemaAvance;desc=Avance con problemas;
+asuntoEmailProblemaAvanceVisa;desc=Avance con problemas de visacion;
+asuntoEmailProblemaActivar;desc=Avance enviado para su activacion;
+
+estadoAvanceActivar;desc=Avance enviado a ACA para su activacion;
+estadoAvanceVisacion;desc=Cliente con problemas de visacion;
+estadoAvanceAvales;desc=Falta Ingresar Avales;
+estadoAvanceEfectuado;desc=Avance Efectuado;
+
+#Mensajes a informar al ejecutivo email sobre renovacion de avance
+RenovacionOK;desc=Renovacion OK;
+asuntoDescripcionRen;desc=Renovacion con Problemas:;
+asuntoEmailExitoRen;desc=Renovacion OK;
+asuntoEmailProblemaAvanceRen;desc=Renovacion sin exito, derivar a oficina;
+asuntoEmailProblemaAvanceRenVisa;desc=Renovacion sin exito, derivar a oficina;
+asuntoEmailProblemaActivarRen;desc=Renovacion sin exito, derivar a oficina;
+
+estadoAvanceEfectuadoRen;desc=Renovacion Avance Efectuado;
+estadoAvanceActivarRen;desc=;
+estadoAvanceVisacionRen;desc=Cliente con problemas de visacion;
+estadoAvanceAvalesRen;desc=;
+
+#Mensajes a informar al ejecutivo email sobre prorroga de  avance
+ProrrogaOK;desc=Prorroga OK;
+asuntoDescripcionPro;desc=Prorroga con Problemas:;
+asuntoEmailExitoPro;desc=Prorroga OK;
+asuntoEmailProblemaAvanceProVisa;desc=Prorroga sin exito, derivar a oficina;
+asuntoEmailProblemaAvancePro;desc=Prorroga sin exito, derivar a oficina;
+asuntoEmailProblemaActivarPro;desc=Prorroga sin exito, derivar a oficina;
+
+estadoAvanceEfectuadoPro;desc=Prorroga Avance Efectuado;
+estadoAvanceActivarPro;desc=;
+estadoAvanceVisacionPro;desc=Cliente con problemas de visacion;
+estadoAvanceAvalesPro;desc=;
+
+## define archivo de eMail
+archivoMail;desc=tablas/multilineaEmail.parametros;
+
+#descripcion de seguros BCI
+segurosCAT;CAT=Asistencia Total                                ;
+segurosCR1;CR1=Responsabilidad Civil Empresa (100 UF)          ;
+segurosCR2;CR2=Responsabilidad Civil Empresa (500 UF)          ;
+segurosCR3;CR3=Responsabilidad Civil Empresa (1000 UF)         ;
+segurosCIP;CIP=Información Protegida                           ;
+segurosSDP;SDP=Doble Capital                                   ;
+segurosSEC;SEC=Cuota Segura por Enfermedades Graves            ;
+segurosSHO;SHO=Cuota Segura por Hospitalización                ;
+segurosCCS;CCS=Credito Salud                                   ;
+segurosCSA;CSA=Credito Salud Aval                              ;
+segurosSDG;SDG=Desgravamen Deudor Directo                      ;
+segurosDGA;DGA=Desgravamen Aval                                ;
+segurosSDC;SDC=Cuota Segura por Cesantía o Incapacidad Temporal;
+segurosHGC;HGC=Hogar Contenido;
+segurosSCV;SCV=Credito Vida;
+segurosCVA;CVA=Credito Vida Aval;
+
+## Descripciones de Tipo de Cobro de Seguros BCI
+tipoCobroSegurosCodigo;lista=FLT,FVC,VCD;
+tipoCobroSegurosNumero;lista=0,1,2;
+tipoCobroFLT;FLT=Pago Total       ;
+tipoCobroFVC;FVC=Cuotas Anticipado;
+tipoCobroVCD;VCD=Total Cuota      ;
+
+## Avisos de vencimiento n dias antes de fin del mes
+diasantesdefindemes;desc=Para su conveniencia le sugerimos la siguiente fecha de vencimiento;diasantes=5;vigente=S;
+
+## Registra simulaciones en Avance;renovacion;prorroga
+registraAVC;desc=S;
+registraRTT;desc=S;
+registraPTT;desc=S;
+
+## Requiere Declaracion Personal de Salud DPS S=si
+utilizaDPS;desc=S;
+mensajeSegurosconDPS;desc=Declaro conocer y aceptar las condiciones de seguros expuestas en esta página.;
+mensajeSegurosconDPSLink;desc=/belwls/bciexpress/multilinea/declaracionpersonalsalud/CondSeguros.pdf;
+
+## descripcion destino del credito
+destino288;desc=CAPITAL DE TRABAJO;
+destino301;desc=CAPITAL DE TRABAJO FOGAPE;
+
+## Define bancas con validacion de fecha
+bancasConValidacionDeFecha;vigente=S;diasNoValidos=21,22,23,24,25,26,27,28,29,30,31;separador=,;listaBancas=PM,PMN,PMR,PME;
+
+##Multilinea 2.0###
+agrupacionCanales;total=3;key1=sucursal;key2=movil;key3=web;
+sucursal;codGrupo=1;canales=010|151;
+movil;codGrupo=2;canales=650;
+web;codGrupo=3;canales=230|130|132;
+
+
+linkArt85;link=https://bciimg.bci.cl/medios/pdf/Declaracion_Articulo_85.pdf;
+linkEstadosFinancieros;link=/pymewls/portalinfofinanciera/obtencionbalances/solicitudBalances.do?accion=formularioSolicitudGeneral; 
+
+numeroAvalesVisar;DESC=2;
+operacionesFirmar;diasAtras=1;
+
+emailMultilinea;desc=Banco Bci;
+crearPDF;rutaRecursosPDF=applications/wcorpWebApp/;comprobanteAutorizaFirma=resources/icono/comprobanteCreditosPorFirmar.html;comprobanteAvanceMultilinea=resources/icono/comprobanteAvanceCredito.html;comprobanteRenovacionMultilinea=resources/icono/comprobanteRenovacionCredito.html;
+
+opePendienteFirmas;desc=Operación pendiente de firmas;
+opeNoCursada;desc=Operación no cursada; 
+opeExitoAvance;desc=Avance Efectuado;
+formatoFecha;formato=dd/MM/yyyy;
+
+asuntoPendienteFirma;desc=Avance con firmas pendientes.;
+archivoMailAvales;desc=tablas/multilineaEmailAval.parametros;
+archivoMailAvalesCuotaFija;desc=tablas/multilineaEmailAvalPagareCuotaFija.parametros;
+archivoMailAvalesUnVencimiento;desc=tablas/multilineaEmailAvalPagareUnVencimiento.parametros;
+archivoMailAvalesCuotaFijaContacto;desc=tablas/multilineaEmailContactoPagareCuotaFija.parametros;
+archivoMailAvalesUnVencimientoContacto;desc=tablas/multilineaEmailContactoPagareUnVencimiento.parametros;
+archivoMailGenerico;desc=tablas/multilineaEmailGenerico.parametros;
+
+mensajeYaFirmo;desc=Estimado Cliente, su firma ya fue registrada, esta operación se encuentra pendiente de firma por otro Apoderado.;
+
+descuentoVencimientoRenovacion;valor=5%;
+rutMAxNoFirma;valor=50000000;
+
+multilineaBackOffice;descripcion=Sin Oferta Crediticia Vigente;estado=Cuarto Click;
+
+journalAvance;codEventoSimulaOK=SIMULAC;codSubEventoSimulaOK=SIMULAOK;productoSimulaOK=MLT;codEventoCurseOK=CURSE;codSubEventoCurseOK=CURSEOK;productoCurseOK=MLT;codEventoCurseNOOK=CURSE;codSubEventoCurseNOOK=CURSENOK;productoCurseNOOK=MLT;codEventoSimulaNOOK=SIMULAC;codSubEventoSimulaNOOK=ERRSIM;productoSimulaNOOK=MLT;codEventoSinGarantia=SIMULAC;codSubEventoSinGarantia=SNGTIA;productoSinGarantia=MLT;codEventoAceptaCondicionesMandato=SELECCIONA;codSubEventoAceptaCondicionesMandato=CURSE;productoAceptaCondicionesMandato=MLT;codEventoAutorizaCurse=AUTORIZA;codSubEventoAutorizaCurse=CURSE;estadoCanal=N;
+journalFirma;codEventoFirmaOK=FIRMA;codSubEventoFirmaOK=FIRMLTOK;productoFirmaOK=MLT;codEventoPendienteFirma=FIRMA;codSubEventoPendienteFirma=PFIRMLT;productoPendienteFirma=MLT;estadoCanal=N;codEventoAceptaCondicionesMandato=SELECCIONA;codSubEventoAceptaCondicionesMandato=CURSE;productoAceptaCondicionesMandato=MLT;
+journalRenovacion;codEventoCurseOK=CURSE;codSubEventoCurseOK=RENVOK;productoCurseOK=RENOV;codEventoCurseNOOK=CURSE;codSubEventoCurseNOOK=RENVNOK;productoCurseNOOK=RENOV;codEventoSimulaOK=SIMULAC;codSubEventoSimulaOK=SIMULREN;productoSimulaOK=RENOV;codEventoSimulaNOOK=SIMULAC;codSubEventoSimulaNOOK=ERRENV;productoSimulaNOOK=RENOV;codEventoAceptaCondicionesMandato=SELECCIONA;codSubEventoAceptaCondicionesMandato=CURSE;productoAceptaCondicionesMandato=RENOV;codEventoAutorizaCurse=AUTORIZA;codSubEventoAutorizaCurse=CURSE;estadoCanal=N;
+
+flagConsultaCLN;desc=S;
+cantidadCuotas;total=4;
+cantidadTiposDeCreditos;total=2;
+tiposDeCreditos;valores=AVC721|AVC010|AVC326|AVC426;
+
+AVC721;glosa=Cuota fija tasa fija;valor=AVC721;moneda=0999  ;
+AVC010;glosa=Un vencimiento tasa fija ($);valor=AVC010;moneda=0999  ;
+AVC326;glosa=Un Vencimiento Tasa Fija (UF);valor=AVC326;moneda=0998  ;
+AVC426;glosa=Cuota Tasa Fija (UF);valor=AVC426;moneda=0998  ;
+
+tiposDeCreditosParaFirma;valores=Cuota Tasa Fija(Pesos) |Un vencimiento Tasa Fija (Pesos);
+tipoUsuarioParaMulti;usuario=WEBMLT;
+ofertacrediticia;activa=activa;inactiva=inactiva;
+estiloOfertaCrediticia;ofertaVerde=ofertaVerde;ofertaAmarilla=ofertaAmarilla;ofertaNaranja=ofertaNaranja;
+
+formatoUF;valor=UF ##,##;
+formatoPeso;valor=$ ###,###,###;
+
+## utiliza clave web
+tokenetiqueta;vigenteClaveWeb=S;tipo=A;tipoN=Debe ingresar solo numeros;mensajerrorvigente=S;mensajerror=Cliente no posee un MultiPass asignado;
+
+excepciones;ERRORCAG=Error consulta antecedentes generales;ERRORCLN=Error consulta CLN;ERRORAVALES=Error consulta AVL al iniciar avance;ERRORVISACION=Error visación rut;ERRORAVALESCONDICIONES=Error consulta AVL obteniendo condiciones del crédito;ERRORINGRESOOPERACIONCREDITO=Error ingreso operación Crédito WEB;ERRORCAMBIAESTADOOPERACION=Error cambio estado operación;ERRORACTIVAMULTILINEA=Error al activar Crédito WEB;ERRORVISACIONAVALES=Error visación rut aval;
+TIPOBANCACLIENTENOINSCRITA;desc=Tipo Banca de cliente no inscrita. Comuníquese con su ejecutivo o con la mesa de ayuda.;
+
+errorFlujoFirma;errorFirma=Estimado cliente: Por el momento el servicio no se encuentra disponible, por favor ingrese más tarde.;
+
+revisionMandato;valor=true;
+activaCondicionesMandato;valor=true;
+
+#PRIORIDAD DE LINEA DE CREDITO
+lineasdecredito;listaTiposLineas=LOP;porDefecto=MLT;canalesHabiles=132;ocupaCanal=S;separador=,;vigencia=S;
+
+datosNoAplica;mensaje=NO APLICA;
+modulo;moduloAvance=AVANCE:;moduloRenovacion=RENOVACION:;moduloFirma=FIRMA:;
+
+tipoDePlazo;desc=M;
+
+formatosFechas;formatoFechaSimple=yyyyMMdd;
+erroActivacionFirma;desc=Estimado cliente: Por el momento el servicio no se encuentra disponible, por favor ingrese más tarde.;
+usuarioAutorizado;mensaje=Usuario no Autorizado para esta operación;perfilUsuario=Autorizado;tipoUsuario=Apoderado;
+canalCreditoWeb;canales=132;
+
+#plantilla mandato
+pmandato1;value=Yo:;
+pmandato2;value=C.I. Nº;
+pmandato3;value=declaro por este acto, haber tomado conocimiento de mi calidad de AVAL, FIADOR y CODEUDOR SOLIDARIO , de la deuda por $;
+pmandato4;value=(Indicar monto bruto/ Cupo de Línea de Crédito) suscrita por;
+pmandato5;value=RUT Nº;
+pmandato6;value=para con el Banco (Bci;
+pmandato7;value=En cumplimiento de lo previsto en el artículo 17 j) de la ley Nº 20.555, declaro estar en conocimiento de los deberes y responsabilidades, de quien pretende constituir una garantía personal y declaro expresamente que:;
+pmandato8;value=a) Mi responsabilidad de avalista, fiador y codeudor solidario, está expresada en los mismos términos y condiciones del deudor directo, y en caso de incumplimiento de éste, deberé responder por la obligación anteriormente indicada, más intereses, costas y gastos de cobranza. El Banco podrá cobrar, en ese caso, al deudor directo y/o al avalista.;
+pmandato9;value=b) Acepto los plazos, prórrogas y/o modificaciones de las condiciones del crédito que se acordaren entre el deudor y el Bci.;
+pmandato10;value=c) Mi responsabilidad es de carácter indivisible, por lo que la obligación del monto anteriormente indicado, es exigible a mis herederos y/o sucesores, según lo dispuesto en los artículos 1526 Nº 4 y 1528 del Código Civil.;
+pmandato11;value=d) No podré retractarme de mi condición de avalista y/o fiador solidario mientras esté pendiente el pago de la obligación principal.;
+pmandato12;value=e) Producto de la morosidad en la obligación principal puedo ser objeto de la respectiva cobranza judicial en mi contra, en calidad de avalista y/o codeudor solidario, proceso que inicialmente el Banco efectúa a través de su plataforma telefónica de cobranza, y de no prosperar esta gestión, se interpondrá una demanda ejecutiva con el mérito del pagaré ante los Tribunales de Justicia. El Banco efectúa la cobranza directamente, por medio de abogados externos y/o a través de su filial Servicios de Normalización y Cobranza -Normaliza S.A.;
+pmandato13;value=Avalista, fiador y codeudor solidario.;
+pmandato14;value=Recibo: declaro haberme impuesto del contenido de esta carta y haber recibido con esta misma fecha el original de la misma.;
+pmandato15;value=Bci-Nova);
+
+#Plantilla avales 
+pavales1;value=Firma del Avalista;
+pavales2;value=NOMBRE ;
+pavales3;value=RUT ;
+pavales4;value=DOMICILIO ;
+pavales5;value=COMUNA ;
+pavales6;value=,CIUDAD ;
+pavales7;value=REPRESENTADO POR BANCO DE CREDITO E INVERSIONES  RUT 97.006.000-6;
+pavales8;value=REPRESENTANTE _____________________________________   RUT ______________________;
+pavales9;value=POR  AVALES;
+pavales10;value=Los que firmamos a continuación nos constituimos por este acto en avales del presente pagaré, como;
+pavales11;value=asimismo nos constituimos en fiadores y codeudores solidarios del suscriptor en favor del banco, respecto;
+pavales12;value=de las obligaciones de dinero que emanan del presente pagaré, que el suscriptor declaró haber recibido y;
+pavales13;value=de cuyas condiciones particulares de monto, tasa de interés y vencimientos deja constancia este pagaré y;
+pavales14;value=por todo el tiempo que transcurriere hasta el efectivo y completo pago de dicha obligación, y que en nuestra;
+pavales15;value=calidad de avalistas, fiadores y codeudores solidarios,  aceptamos desde luego las eventuales prórrogas o;
+pavales16;value=esperas que con o sin protestos, y con o sin abonos, pudieren convenirse entre el suscriptor y el Banco de;
+pavales17;value=Crédito e Inversiones o quien sus derechos represente. ;
+pavales18;value=Convenimos asimismo, en que la falta de protestos no perjudicará nuestra calidad de avales, fiadores y;
+pavales19;value=codeudores solidarios del suscriptor del presente documento. ;
+
+
+
+
+
+
+
+
+
+
+

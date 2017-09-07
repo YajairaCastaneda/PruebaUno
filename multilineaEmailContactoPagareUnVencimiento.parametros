@@ -1,0 +1,149 @@
+
+Sres. ${nombreEmpresa}
+
+Junto con saludar y agradecer el haber contratado con nosotros su Créditos Comercial, cuyas
+características indicamos a continuación, queremos informarle que con fecha ${fechaActual} se ha procedido,
+en su representación, a suscribir el pagaré que documenta dicho crédito.
+
+Lo anterior, en conformidad  a vuestro consentimiento otorgado a través del canal web- sometido a lo
+dispuesto en el artículo 3º de la Ley Nº 19.799, sobre Documentos Electrónicos, Firma Electrónica y Servicios 
+de Certificación de dicha Firma,-y dando efectivo   cumplimiento  al mandato que Ud.  otorgo a esta entidad 
+bancaria en forma previa a la solicitud  y contratación del crédito comercial, según el detalle adjunto:
+
+
+ANTECEDENTES DEL CRÉDITO COMERCIAL
+Fecha y Hora de la Solicitud   : ${fechaHora}
+Monto de Capital Inicial       : ${montoCredito}
+Tasa de Interés:               : ${tasaInteres}
+Impuestos                      : ${impuestos}
+Seguros                        : ${seguros}
+Valor Notario                  : ${valorNotario}
+Cuotas                         : ${totalVencimientos}
+Fecha 1° vencimiento           : ${fechaPrimerVcto}
+Número de operacion            : ${numeroOperacion}
+Destino del credito            : ${destinoCredito}
+Estado del Avance              : ${estado}
+
+
+
+PAGARE (Sin Protesto) 
+UN VENCIMIENTO 
+Nº de Operación: ${numeroOperacion} 
+Por valor recibido, debo y pagaré a la orden del BANCO DE CREDITO E INVERSIONES, en su domicilio ubicado 
+en Avenida El Golf N° 125, Comuna de Las Condes, Santiago, o en cualquiera de sus sucursales, la suma de 
+$ ${montoCredito} (${montoEnPalabras} pesos m/l)  
+Tasa de Interés El capital adeudado devengará a partir de esta fecha una tasa de interés del ${tasaInteres}% mensual vencido
+durante todo el plazo pactado. Los intereses se calcularán sobre el capital insoluto y se pagarán por períodos vencidos, por el
+número de días efectivamente transcurridos en cada período de intereses y sobre la base de años de trescientos sesenta
+días.
+Amortización del Capital y Pago de Intereses El capital adeudado y sus intereses se pagarán íntegramente el
+día ${diaPrimerVen} de ${mesPrimerVen} de ${anioPrimerVen}.
+Prórroga de plazo por día inhábil. Las cuotas de amortización de capital e intereses se pagarán a su 
+vencimiento, siempre que éste corresponda a un día hábil bancario. En caso contrario, se pagarán el día hábil 
+bancario siguiente.  
+Prepagos.  Si el monto de capital inicial supera el equivalente a UF 5.000, todo pago anticipado, sea total o parcial, será 
+convenido libremente entre el suscriptor y el Banco. A falta de acuerdo, el suscriptor podrá en todo caso anticipar el pago, 
+total o parcialmente, y en este último caso, siempre que el importe a pagar sea igual o superior al 20% del capital de la 
+obligación adeudada, pagando además los intereses estipulados devengados y no pagados a la fecha del prepago,  
+calculados sobre el saldo insoluto, más los intereses estipulados en este instrumento, calculados sobre el capital prepagado 
+desde la fecha del prepago hasta el vencimiento del plazo pactado. Si el monto de capital inicial no supera el equivalente a UF
+5.000, al capital prepagado deberán sumársele los intereses calculados hasta la fecha del prepago y la comisión de prepago 
+máxima que el artículo 10 de la Ley 18.010 permite pactar.
+Intereses Moratorios, En caso de retardo o mora en el cumplimiento de esta obligación, ésta devengará desde la fecha del 
+retardo y hasta el día del pago efectivo, a favor del acreedor, el interés máximo convencional que rija durante la mora.
+Exigibilidad anticipada.  El no pago oportuno de una cualquiera de las cuotas de capital y/o de interés comprendidos en esta 
+obligación, dará derecho y facultará al acreedor a hacer exigible de inmediato y anticipadamente el monto total del saldo 
+insoluto adeudado a esa fecha, el que desde esa misma fecha y en tal evento se considerará de plazo vencido 
+devengándose en favor del acreedor o de quien sus derechos represente, el interés máximo convencional.  
+Asimismo, el Banco podrá hacer exigible de inmediato el monto total adeudado, expirando todos los plazos pendientes por el 
+sólo hecho de constituirse en mora o de habérsele protestado al suscriptor o al aval, por falta de pago, cualquier documento,
+pagaré, letra de cambio o cheque, aceptado, suscrito, girado o avalado por él. Se deja expresamente establecido que el 
+ejercicio de estos derechos constituyen una sanción al suscriptor por el no pago de la deuda e importan una mera facultad 
+establecida en beneficio exclusivo del acreedor, que no altera en caso alguno la fecha de vencimiento del pagaré 
+originalmente pactada, ni a la exigibilidad de las acciones cambiarias y ejecutivas derivadas de éste. Se deja expresamente 
+establecido que corresponderá al suscriptor acreditar el pago de las cuotas en que se divide el presente instrumento, en caso 
+de cobro judicial. Sin embargo, en operaciones de crédito de dinero en cuotas, cuyo capital inicial sea igual o inferior a 200 
+unidades de fomento no podrá hacerse exigible la obligación en forma anticipada, si no una vez cumplidos 60 días corridos 
+desde que el suscriptor incurra en mora o simple retardo en el pago.
+Exigibilidad anticipada.  El no pago oportuno de una cualquiera de las cuotas de capital y/o de interés comprendidos en esta 
+obligación, dará derecho y facultará al acreedor a hacer exigible de inmediato y anticipadamente el monto total del saldo 
+insoluto adeudado a esa fecha, el que desde esa misma fecha y en tal evento se considerará de plazo vencido 
+devengándose en favor del acreedor o de quien sus derechos represente, el interés máximo convencional.  
+Asimismo, el Banco podrá hacer exigible de inmediato el monto total adeudado, expirando todos los plazos pendientes por el 
+sólo hecho de constituirse en mora o de habérsele protestado al suscriptor o al aval, por falta de pago, cualquier documento, 
+pagaré, letra de cambio o cheque, aceptado, suscrito, girado o avalado por él. Se deja expresamente establecido que el 
+ejercicio de estos derechos constituyen una sanción al suscriptor por el no pago de la deuda e importan una mera facultad 
+establecida en beneficio exclusivo del acreedor, que no altera en caso alguno la fecha de vencimiento del pagaré 
+originalmente pactada, ni a la exigibilidad de las acciones cambiarias y ejecutivas derivadas de éste. Se deja expresamente 
+establecido que corresponderá al suscriptor acreditar el pago de las cuotas en que se divide el presente instrumento, en caso 
+de cobro judicial. Sin embargo, en operaciones de crédito de dinero en cuotas, cuyo capital inicial sea igual o inferior a 200 
+unidades de fomento no podrá hacerse exigible la obligación en forma anticipada, si no una vez cumplidos 60 días corridos 
+desde que el suscriptor incurra en mora o simple retardo en el pago.
+Indivisibilidad y solidaridad. Las obligaciones que emanen de este pagaré serán solidarias para el suscriptor, 
+avalista(s) y demás obligados al pago y serán indivisibles para sus herederos. Además, el suscriptor  pagará los 
+gastos, impuestos y costas personales y procesales que correspondan.  
+Mandato para prórrogas. El suscriptor faculta al Banco de Crédito e Inversiones para que en su nombre y 
+representación otorgue, previa autorización expresa de éste,  una o más prórrogas que establezcan nuevas 
+condiciones, tasas de interés y fechas de vencimiento. 
+Domicilio y competencia. Para todos los efectos legales, judiciales o extrajudiciales derivados de este pagaré, 
+prorrogo expresamente la competencia para los Tribunales de Justicia con asiento en la comuna y ciudad de
+_____________________, prórroga que será obligatoria tanto para el suscriptor como para sus avales, 
+endosantes u obligados por garantía. Sin perjuicio de esta prórroga de competencia, declaro, sólo para efectos 
+del emplazamiento judicial, que mi domicilio y residencia son los indicados en el cuerpo de este título,
+comprometiéndome desde luego a dar pronto aviso por escrito, mediante carta certificada al Banco, en el evento 
+que realice cualquier cambio de domicilio en el futuro.  
+Impuesto de timbres y estampillas. El impuesto de timbres y estampillas que grava este documento se paga 
+por ingresos mensuales de dinero en Tesorería, según Decreto Ley Nº 3475.  
+Sin obligación de protesto.
+Nº de Operación: ${numeroOperacion}  
+
+En _____________________,a_________de_________________________de__________  
+  
+
+
+
+					___________________________________  
+						 Firma del Suscriptor  
+
+
+NOMBRE O RAZÓN SOCIAL  ${nombreEmpresa} RUT ${rutEmpresa}
+DOMICILIO ${direccionEmpresa} COMUNA ${comunaEmpresa}   , CIUDAD ${ciudadEmpresa}                                                       
+
+REPRESENTADO POR BANCO DE CREDITO E INVERSIONES  RUT 97.006.000-6
+REPRESENTANTE _____________________________________ RUT ______________________
+
+
+
+
+
+${textosParaAvales}
+  
+
+
+					                
+${glosasAvales}           
+                                          
+                                                           
+
+
+
+En _____________________, a _________de _________________________de__________  
+
+
+AUTORIZACIÓN NOTARIAL
+
+Con esta fecha, autorizo la firma de don (ña) __________________________________________________, 
+cédula nacional de identidad N°_______________ -___, como apoderado del Banco de Crédito e Inversiones, y 
+a éste a su vez, actuando como mandatario y en representación del suscriptor o deudor y del avalista 
+precedentemente individualizados.
+
+  
+   
+                 ____________________________  
+							NOTARIO  
+
+Agradecemos nuevamente su preferencia y le invitamos a vivir la experiencia de seguir usando sus productos
+en Bci.							
+
+Le saluda atentamente,
+Banco Bci

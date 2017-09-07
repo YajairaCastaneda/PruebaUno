@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.prime.com.tr/ui">
+
+<h:head>
+    <title>BCI Corporativo</title>
+    <f:loadBundle
+            basename="#{resolutorResourceBundleMB.obtieneResourceBundle('cl.bci.aplicaciones.productos.servicios.multilinea.multilinea')}"
+    var="msg" />
+</h:head>
+
+<h:body>
+    <h:panelGroup layout="block" styleClass="servicios_cliente width_714">
+
+        <h:panelGroup layout="block" styleClass="top_cliente">
+            <span onclick="$('.servicios_cliente.width_714').hide();"
+                class="cerrar">#{msg.cerrar}</span>
+        </h:panelGroup>
+
+        <h:panelGroup layout="block" styleClass="fondo_cliente">
+            <h2>#{msg.txtResumenDelCredito}</h2>
+
+            <table width="100%" border="0" cellpadding="0" cellspacing="0"
+                class="tabla_datos">
+                <tr>
+                    <th style="width: 200px;"><strong>#{msg.cuotaMensual}:</strong></th>
+                    <td style="border-top: 1px solid #EBEBEB;"><strong>$
+                            <h:outputText
+                                value="#{avanceCreditosMultilineaViewMB.valorCuota}">
+                                <f:convertNumber pattern="#,###" />
+                            </h:outputText>
+                    </strong></td>
+                </tr>
+                <tr>
+                    <th><strong>#{msg.txtNumCuotasRns}:</strong></th>
+                    <td><strong>
+                         <h:outputText value="#{avanceCreditosMultilineaViewMB.tipoDeCreditoSeleccionado eq 'AVC721' ? avanceCreditosMultilineaViewMB.cuotaSeleccionada : 1}"/>
+                       </strong></td>
+                </tr>
+                <tr>
+                    <th><strong>#{msg.fechaPagoPrimeraCuota}:</strong></th>
+                    <td><h:outputText
+                            value="#{avanceCreditosMultilineaViewMB.fechaVencimientoSeleccionada}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </h:outputText></td>
+                </tr>
+                <!-- 
+                <tr>
+                    <th><strong>Meses de No Pago:</strong></th>
+                    <td>Sin meses de no pago</td>
+                </tr>
+                -->
+                <tr>
+                    <th><strong>#{msg.tasaInteresMensual}:</strong></th>
+                    <td><h:outputText value="#{avanceCreditosMultilineaViewMB.tasaInteresInternet}"/> %</td>
+                </tr>
+                <tr>
+                    <th><strong>#{msg.montoSolicitado}:</strong></th>
+                    <td>$  <h:outputText  value="#{avanceCreditosMultilineaViewMB.montoFinalCredito}"><f:convertNumber pattern = "#,###"/></h:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <th><strong>#{msg.impuestos}:</strong></th>
+                    <td>$ <h:outputText
+                            value="#{avanceCreditosMultilineaViewMB.operacionCredito.impuestos}">
+                            <f:convertNumber pattern="#,###" />
+                        </h:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <th><strong><h:outputText value="#{msg.gastosNotariales}"/>:</strong></th>
+                    <td>$ <h:outputText
+                            value="#{avanceCreditosMultilineaViewMB.gastosNotariales}">
+                            <f:convertNumber pattern="#,###" />
+                        </h:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <th><strong>#{msg.segurosIncluidos}:</strong></th>
+                    <td>$ <h:outputText
+                            value="#{avanceCreditosMultilineaViewMB.montoTotalSegurosSeleccionados}">
+                            <f:convertNumber pattern="#,###" />
+                        </h:outputText>
+
+                    </td>
+                </tr>
+                <tr>
+                    <th><strong>#{msg.montoFinalCredito}:</strong></th>
+                    <td><strong>$ <h:outputText value="#{avanceCreditosMultilineaViewMB.montoSolicitado}"/></strong></td>
+                </tr>
+            </table>
+
+        </h:panelGroup>
+    </h:panelGroup>
+</h:body>
+</html>
+<!--
+/***************************************************************************************************************
+* Archivo:          resumenCreditoAvance.xhtml
+* Descripción       Este xhtml muestra un resumen del avance de credito.
+* Path              /cl/bci/aplicaciones/productos/servicios/multilinea
+* " Todos los derechos reservados por Banco de Crédito e Inversiones."              
+* Historia Cambios
+* versión       fecha            autor                        cambios
+* =======   ==========    =====================        =================================
+* 1.0       09/12/2014    Manuel Escárate (BEE)           versión inicial.
+* 1.1       19/05/2016    Manuel Escárate (BEE) - Claudia Lopez   (ing.Soft.BCI)  :  Se quita caracter : dentro de la 
+*                                                                 página que no correspondía.
+* 1.2       12/08/2016    Manuel Escarate (BEE) - Felipe Ojeda (ing.Soft.BCI)         Se agrega valor del gasto notarial.
+****************************************************************************************************************/
+-->
