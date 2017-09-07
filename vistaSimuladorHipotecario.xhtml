@@ -1,0 +1,1785 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:p="http://primefaces.prime.com.tr/ui"
+	  xmlns:ui="http://java.sun.com/jsf/facelets">
+	<h:head>
+		<h:outputStylesheet library="Webbci/common/css" name="print.css"></h:outputStylesheet>
+        <h:outputStylesheet library="Webbci/common/css" name="screen.css"></h:outputStylesheet>
+        <h:outputStylesheet library="simuladorhipotecario/css" name="bcihome.css"></h:outputStylesheet>
+        
+        <h:outputScript library="Webbci/common/js" name="jquery-1.5.2.min.js"></h:outputScript>
+        <h:outputScript library="Webbci/common/js" name="jquery.numeric.js"></h:outputScript>
+        <h:outputScript library="Webbci/common/js" name="libreriaBci.js"></h:outputScript>
+        <h:outputScript library="simuladorhipotecario/js" name="simuladorHipotecario.js"></h:outputScript>
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+		
+		<title><h:outputText value="#{msgSimulacionCreditoHipotecario.titulo}" escape="false"/></title>
+		
+		<script>
+			if (jQuery==null){jQuery=$;}else{$=jQuery;}
+			
+			$(document).ready(function(){
+				if($('input[name$="revisaVolver"]').val() != 1){
+					$('input[name$="valorUF"]').attr("value", "");
+					$('input[name$="valorPesos"]').attr("value", "");
+					$('input[name$="subsidio"]').attr("value", "");
+					$('input[name$="subsidioPesos"]').attr("value", "");
+					$('input[name$="cuotaContado"]').attr("value", "");
+					$('input[name$="cuotaContadoPesos"]').attr("value", "");
+					$('input[name$="credito"]').attr("value", "");
+					$('input[name$="creditoPesos"]').attr("value", "");
+					$('input[name$="campoLiquidacionSeguro"]').attr("value", "");
+				}				
+			});
+		</script>	
+	</h:head>
+	
+	<f:loadBundle basename="cl.bci.aplicaciones.productos.colocaciones.simulacion.hipotecario.simulacionCreditoHipotecario" var="msgSimulacionCreditoHipotecario"/>
+	<f:event listener="#{simulacionCreditoHipotecarioBackingMB.cargaInicial}" type="preRenderView"/>
+	<h:body>
+		<div id="contenido" class="contenido-simchip">
+		<!-- PASO 1 -->
+		<h:panelGroup layout="block" id="paso1" >
+			<h:form id="formPaso1" styleClass="paso1" rendered="#{simulacionCreditoHipotecarioBackingMB.pasoInicial}">
+			<h:inputHidden name="revisaVolver" id="revisaVolver" value="#{simulacionCreditoHipotecarioBackingMB.indVolver}"></h:inputHidden>
+				<div id="divCliente">
+					<div class="chip-tit"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.tituloCliente}" escape="false"/></b></div>
+					<div class="chip-cont">
+						<table width="86%" border="0" cellpadding="0" cellspacing="0" class="tabla-simchip">
+			                <tr>
+								<td width="13%"><h:outputText value="#{msgSimulacionCreditoHipotecario.nombreCliente}" escape="false"/></td>
+								<td width="36%">
+									<h:inputText id="nombreCliente" name="nombreCliente" styleClass="caja input-cliente" value="#{simulacionCreditoHipotecarioBackingMB.nombreCliente}" maxlength="40"/>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+								</td>
+								<td width="15%"><h:outputText value="#{msgSimulacionCreditoHipotecario.nacimientoCliente}" escape="false"/></td>
+			                  	<td width="22%"><h:inputText id="fechaNacimientoCliente" name="fechaNacimientoCliente" maxlength="10" styleClass="caja input-nacimiento" onkeypress="return ingresoFecha(event);" value="#{simulacionCreditoHipotecarioBackingMB.fechaNacimientoCliente}"/>
+									<img src="/resources/simuladorhipotecario/images/calendario.gif" width="23" height="18" border="0" align="absmiddle" onclick="javascript:void(0);calendarioSolucion('fechaNacimientoCliente');return false;"/>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>					
+			                    </td>
+			                </tr>
+			                <tr>
+								<td width="13%"><h:outputText value="#{msgSimulacionCreditoHipotecario.rutCliente}" escape="false"/></td>
+								<td width="36%">
+									<h:inputText id="rutCliente" readonly="true" name="rutCliente" styleClass="caja input-rut" maxlength="10" onkeypress="return ingresoRut(event)" onchange="checkRutField(this)" value="#{simulacionCreditoHipotecarioBackingMB.rutCliente}"/>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+								</td>
+								<td width="15%"><h:outputText value="#{msgSimulacionCreditoHipotecario.seguroCliente}" escape="false"/></td>
+								<td width="22%">
+									<h:selectOneMenu styleClass="caja-simchip2" name="desgravamenCliente" id="desgravamenCliente" value="#{simulacionCreditoHipotecarioBackingMB.porcentajeSegDesgravamenCliente}">
+										<f:selectItem itemLabel="0%" itemValue="0"/>
+										<f:selectItem itemLabel="50%" itemValue="50"/>
+										<f:selectItem itemLabel="100%" itemValue="100"/>
+									</h:selectOneMenu>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>					
+								</td>
+			                </tr>
+							<tr>
+								<td width="13%"><h:outputText value="#{msgSimulacionCreditoHipotecario.condicionCliente}" escape="false"/></td>
+								<td width="36%"><h:selectBooleanCheckbox id="tieneCodeudor" name="tieneCodeudor" value="#{simulacionCreditoHipotecarioBackingMB.tieneCodeudor}" onclick="simchip_checkCodeudor(this)"/></td>				
+							</tr>
+						</table>
+						<table width="86%" border="0" cellpadding="0" cellspacing="0" class="tabla-simchip">
+			                <tr id="trCodeudor" style="display:none;">
+			                  <td width="13%"><h:outputText value="#{msgSimulacionCreditoHipotecario.nacimientoCodeudor}" escape="false"/></td>
+			                  <td width="36%">
+			                  		<h:inputText id="fechaNacimientoCodeudor" name="fechaNacimientoCodeudor" class="caja input-nacimiento" maxlength="10" onkeypress="return ingresoFecha(event);" value="#{simulacionCreditoHipotecarioBackingMB.fechaNacimientoCodeudor}"/>
+									<img src="/resources/simuladorhipotecario/images/calendario.gif" width="23" height="18" border="0" align="absmiddle" onclick="javascript:void(0);calendarioSolucion('fechaNacimientoCodeudor');return false;"/>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>					
+			                  </td>
+							  <td width="15%"><h:outputText value="#{msgSimulacionCreditoHipotecario.seguroCodeudor}" escape="false"/></td>
+							  <td width="19%">
+								 <h:selectOneMenu styleClass="caja-simchip2" name="desgravamenCodeudor" id="desgravamenCodeudor" value="#{simulacionCreditoHipotecarioBackingMB.porcentajeSegDesgravamenCodeudor}">
+									 <f:selectItem itemLabel="0%" itemValue="0"/>
+									 <f:selectItem itemLabel="50%" itemValue="50"/>
+									 <f:selectItem itemLabel="100%" itemValue="100"/>
+								 </h:selectOneMenu>
+							     <b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>					
+							  </td>
+			               </tr>
+						 </table>
+					</div>
+				</div>
+				<div id="divVivienda" style="display:block;">
+					<div class="chip-tit"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.tituloVivienda}" escape="false"/></b></div>
+					<div class="chip-ayuda"><h:outputText value="#{msgSimulacionCreditoHipotecario.subtituloVivienda}" escape="false"/></div>			
+					<div class="chip-cont">
+						<table width="86%" border="0" cellpadding="0" cellspacing="0" class="tabla-simchip">
+							<tr>
+								<td width="13%"><h:outputText value="#{msgSimulacionCreditoHipotecario.antiguedadVivienda}" escape="false"/></td>
+								<td width="36%">
+									<h:selectOneMenu styleClass="caja-simchip" name="antiguedad" id="antiguedad" value="#{simulacionCreditoHipotecarioBackingMB.antiguedadVivienda}" onchange="simchip_cambiaAntiguedad(this)">
+										<f:selectItem itemLabel="Seleccione" itemValue="0" />
+										<f:selectItem itemLabel="Nueva" itemValue="#{msgSimulacionCreditoHipotecario.antiguedadNueva}"/>
+										<f:selectItem itemLabel="Usada" itemValue="#{msgSimulacionCreditoHipotecario.antiguedadUsada}"/>
+										<f:ajax execute="antiguedad" render="inmobiliaria" listener="#{simulacionCreditoHipotecarioBackingMB.cambiaAntiguedad}"/>
+									</h:selectOneMenu>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+								</td>
+							</tr>
+			                <tr id="trInmobiliaria" style="display:none;">
+								<td><h:outputText value="#{msgSimulacionCreditoHipotecario.inmobiliariaVivienda}" escape="false"/></td>
+								<td>
+									<h:selectOneMenu styleClass="caja-simchip" name="inmobiliaria" id="inmobiliaria" value="#{simulacionCreditoHipotecarioBackingMB.inmobiliaria}" onchange="simchip_cambiaProyecto(this)">
+										<f:selectItem itemLabel="Seleccione Inmobiliaria" itemValue="0" />
+										<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.inmobiliarias}" var="inmobiliariaVar" itemLabel="#{inmobiliariaVar.nombreInmobiliaria}" itemValue="#{inmobiliariaVar.codInmobiliaria}"/>
+										<f:ajax execute="inmobiliaria" render="proyecto" listener="#{simulacionCreditoHipotecarioBackingMB.cambiaProyecto}"/>
+									</h:selectOneMenu>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+								</td>
+								<td><h:outputText value="#{msgSimulacionCreditoHipotecario.proyectoVivienda}" escape="false"/></td>
+								<td>
+									<h:selectOneMenu styleClass="caja-simchip" name="proyecto" id="proyecto" value="#{simulacionCreditoHipotecarioBackingMB.proyecto}" >
+										<f:selectItem itemLabel="Seleccione Proyecto" itemValue="0" />
+										<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.proyectos}" var="proyectoVar" itemLabel="#{proyectoVar.descripcionProyecto}" itemValue="#{proyectoVar.codProyecto}"/>
+										<f:ajax execute="proyecto" listener="#{simulacionCreditoHipotecarioBackingMB.seleccionaProyecto}"/>
+									</h:selectOneMenu>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+								</td>
+			                </tr>
+							<tr>
+								<td><h:outputText value="#{msgSimulacionCreditoHipotecario.dfl2Vivienda}" escape="false"/></td>
+								<td>
+									<h:selectOneMenu styleClass="caja-simchip" name="dfl2" id="dfl2" value="#{simulacionCreditoHipotecarioBackingMB.dfl2}" onchange="simchip_dfl2(this)">
+										<f:selectItem itemLabel="#{msgSimulacionCreditoHipotecario.dfl2Si}" itemValue="1"/>
+										<f:selectItem itemLabel="#{msgSimulacionCreditoHipotecario.dfl2No}" itemValue="0"/>
+									</h:selectOneMenu>			  
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>						
+								</td>
+								<td><h:outputText value="#{msgSimulacionCreditoHipotecario.tipoVivienda}" escape="false"/></td>
+								<td>
+									<h:selectOneMenu styleClass="caja-simchip" name="tipoVivienda" id="tipoVivienda" value="#{simulacionCreditoHipotecarioBackingMB.tipoVivienda}" onclick="simchip_tipoVivienda(this)">
+										<f:selectItem itemLabel="#{msgSimulacionCreditoHipotecario.tipoCasa}" itemValue="0001"/>
+										<f:selectItem itemLabel="#{msgSimulacionCreditoHipotecario.tipoDepartamento}" itemValue="0008"/>
+									</h:selectOneMenu>				  
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+									<h:inputHidden id="descripcionVivienda" name="descripcionVivienda" value="#{simulacionCreditoHipotecarioBackingMB.descripcionVivienda}"/>					
+								</td>			
+							</tr>
+							<tr>
+								<td><h:outputText value="#{msgSimulacionCreditoHipotecario.seguroVivienda}" escape="false"/></td>
+								<td>
+									<h:selectOneMenu styleClass="caja-simchip" name="seguro" id="seguro" value="#{simulacionCreditoHipotecarioBackingMB.seguro}" onchange="simchip_revisaOpcionSeguro(this)">
+										<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.configuracionSimuladorTO.tablaSeguros}" var="tablaSeguros" itemLabel="#{tablaSeguros.descripcion}" itemValue="#{tablaSeguros.codigo}"/>
+									</h:selectOneMenu>				  
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+								</td>
+								<td><span id="labelAdobe"><h:outputText value="#{msgSimulacionCreditoHipotecario.materialVivienda}" escape="false"/></span></td>
+								<td>
+									<div id="adobeCasa">
+										<input id="adobeCasaSi" title="#{msgSimulacionCreditoHipotecario.tituloAdobeSi}" value="si" type="radio" name="adobeCasa" onclick="simchip_revisaOpcionAdobe()" class="input-adobe alineaAdobe"/><h:outputText value="#{msgSimulacionCreditoHipotecario.adobeSi}" escape="false"/>							
+										<input id="adobeCasaNo"  title="#{msgSimulacionCreditoHipotecario.tituloAdobeNo}" value="no" type="radio" name="adobeCasa" checked="checked"  onclick="simchip_revisaOpcionAdobe()" class="input-adobe"/><h:outputText value="#{msgSimulacionCreditoHipotecario.adobeNo}" escape="false"/>
+										<h:inputHidden id="materialAdobe" name="materialAdobe" value="#{simulacionCreditoHipotecarioBackingMB.materialAdobe}"/>
+									</div>
+								</td>					
+							</tr>
+						
+			                <tr id="trUbicacionPropiedad" style="display:block;">
+			                	<td height="22"><h:outputText value="#{msgSimulacionCreditoHipotecario.regionVivienda}" escape="false"/></td>
+			            	    <td>
+									<h:selectOneMenu styleClass="caja-simchip inputRegCiuCom" name="region" id="region" value="#{simulacionCreditoHipotecarioBackingMB.region}" >
+							              <f:selectItem itemLabel="Seleccionar" itemValue="0" />
+							              <f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.regiones}" var="regiones" itemLabel="#{regiones.nombre}" itemValue="#{regiones.codigo}"/>
+							              <f:ajax execute="region" render="ciudad comuna" listener="#{simulacionCreditoHipotecarioBackingMB.cambiaRegion}"/>
+							    	</h:selectOneMenu>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+				                </td>							
+							</tr>
+							<tr id="trCiudadPropiedad" style="display:block;">
+		                	<td height="22"><h:outputText value="#{msgSimulacionCreditoHipotecario.ciudadVivienda}" escape="false"/></td>
+		            	    <td>
+								<h:selectOneMenu styleClass="caja-simchip inputRegCiuCom" id="ciudad" name="ciudad" value="#{simulacionCreditoHipotecarioBackingMB.ciudad}" >
+									<f:selectItem itemLabel="Seleccionar" itemValue="0" />
+					              	<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.ciudadesRegion}" var="ciudad" itemLabel="#{ciudad.nombreCiudad}" itemValue="#{ciudad.codigoCiudad}"/>
+					              	<f:ajax execute="ciudad" render="comuna" listener="#{simulacionCreditoHipotecarioBackingMB.cambiaCiudad}"/>
+								</h:selectOneMenu>
+								<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+			                </td>
+							</tr>
+							<tr id="trComunaPropiedad" style="display:block;">
+			                	<td height="22"><h:outputText value="#{msgSimulacionCreditoHipotecario.comunaVivienda}" escape="false"/></td>
+			            	    <td>
+									<h:selectOneMenu styleClass="caja-simchip inputRegCiuCom" id="comuna" name="comuna" value="#{simulacionCreditoHipotecarioBackingMB.comuna}">
+						                <f:selectItem itemLabel="Seleccionar" itemValue="0" />
+						                <f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.comunasCiudad}" var="comuna" itemLabel="#{comuna.nombreComuna}" itemValue="#{comuna.codigoComuna}"/>
+							    	</h:selectOneMenu>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+								</td>
+							</tr>				
+						 </table>  
+					</div>
+				</div>			
+				<div id="divCredito" style="display:block;">
+					<div class="chip-tit"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.tituloCredito}" escape="false"/></b></div>
+					<div class="chip-ayuda"><h:outputText value="#{msgSimulacionCreditoHipotecario.subtituloCredito}" escape="false"/></div>
+					<div class="chip-cont">
+						<table width="86%" border="0" cellpadding="0" cellspacing="0" class="tabla-simchip">
+							<tr>
+								<td><h:outputText value="#{msgSimulacionCreditoHipotecario.productoCredito}" escape="false"/></td>
+								<td class="alineaElementos">
+									<h:selectOneMenu styleClass="caja-simchip" name="producto" id="producto" value="#{simulacionCreditoHipotecarioBackingMB.producto}" onchange="simchip_cambiaProducto(this)" >
+										<f:selectItem itemLabel="Seleccionar" itemValue="0" />
+										<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.productosHipotecarios}" />
+										<f:ajax execute="producto antiguedad destino tipoVivienda tipoMoneda aniosTasa" render="textoPlazos actualizaPlazoCombo actualizaVencimiento textoMesesGracia actualizaMesesGraciaCombo actualizaComparacion actualizaMontos textoMesesExclusion actualizaMesesExclusionCombo" listener="#{simulacionCreditoHipotecarioBackingMB.cambiaProducto}"/>
+									</h:selectOneMenu>			  
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>				
+								</td>	
+								<td id="tdLabelTipoMoneda" style="display: none;"><h:outputText value="#{msgSimulacionCreditoHipotecario.tipoMoneda}" escape="false"/></td>
+								<td id="tdSelectTipoMoneda" style="display: none;">
+									<h:selectOneMenu styleClass="caja-simchip" name="tipoMoneda" id="tipoMoneda" value="#{simulacionCreditoHipotecarioBackingMB.productoMoneda}" onchange="simchip_cambiaMoneda(this)">
+										<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.configuracionSimuladorTO.tablaMonedas}" var="monedas" itemLabel="#{monedas.descripcion}" itemValue="#{monedas.codigo}"/>
+										<f:ajax execute="producto antiguedad destino tipoVivienda tipoMoneda aniosTasa" render="textoPlazos actualizaPlazoCombo actualizaVencimiento textoMesesGracia actualizaMesesGraciaCombo actualizaComparacion actualizaMontos textoMesesExclusion actualizaMesesExclusionCombo" listener="#{simulacionCreditoHipotecarioBackingMB.cambiaProducto}"/>
+									</h:selectOneMenu>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false" /></b>
+								</td>
+							</tr>
+							<tr>
+								<td id="tdEscondido" style="display: block;" colSpan="2"><h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false" /></td>
+								<td id="tdLabelAniosTasa" style="display: none;"><h:outputText value="#{msgSimulacionCreditoHipotecario.aniosTasa}" escape="false"/></td>
+								<td id="tdSelectAniosTasa" style="display: none;">
+									<h:selectOneMenu styleClass="caja-simchip" name="aniosTasa" id="aniosTasa" onchange="asignaAniosTasa(this)">
+										<f:selectItem itemLabel="1" itemValue="1"/>
+										<f:selectItem itemLabel="2" itemValue="2"/>
+										<f:selectItem itemLabel="3" itemValue="3"/>
+										<f:selectItem itemLabel="4" itemValue="4"/>
+										<f:selectItem itemLabel="5" itemValue="5"/>
+										<f:ajax execute="producto antiguedad destino tipoVivienda tipoMoneda aniosTasaFija" render="textoPlazos actualizaPlazoCombo actualizaVencimiento textoMesesGracia actualizaMesesGraciaCombo actualizaComparacion actualizaMontos textoMesesExclusion actualizaMesesExclusionCombo" listener="#{simulacionCreditoHipotecarioBackingMB.cambiaProducto}"/>
+									</h:selectOneMenu>
+									<h:inputHidden id="aniosTasaFija" name="aniosTasaFija"  value="#{simulacionCreditoHipotecarioBackingMB.productoAnosTasaFija}"></h:inputHidden>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false" /></b>
+								</td>
+								<td>
+									<h:panelGroup layout="block" id="textoPlazos" styleClass="textoPlazos">
+										<h:outputText value="#{msgSimulacionCreditoHipotecario.plazoCredito}" escape="false" rendered="#{not empty simulacionCreditoHipotecarioBackingMB.productoSeleccionado and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.indRequierePlazo}"/>
+									</h:panelGroup>
+								</td>
+								<td>
+									<h:panelGroup layout="block" id="actualizaPlazoCombo" styleClass="actualizaPlazoCombo">
+										<h:selectOneMenu styleClass="caja-simchip" name="plazoMeses" id="plazoMeses" value="#{simulacionCreditoHipotecarioBackingMB.plazo}" rendered="#{not empty simulacionCreditoHipotecarioBackingMB.productoSeleccionado and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.indRequierePlazo}">
+											<f:selectItem itemLabel="Seleccionar" itemValue="0"/>
+											<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.plazos}" var="plazo" itemLabel="#{plazo}" itemValue="#{plazo}"/>
+										</h:selectOneMenu>
+										<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false" rendered="#{not empty simulacionCreditoHipotecarioBackingMB.productoSeleccionado and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.indRequierePlazo}"/></b>
+									</h:panelGroup>				
+								</td>								
+							</tr>
+							<tr>	
+								<td>
+									<h:panelGroup layout="block" id="textoMesesGracia" styleClass="textoMesesGracia">
+										<h:outputText value="#{msgSimulacionCreditoHipotecario.graciaCredito}" escape="false" rendered="#{not empty simulacionCreditoHipotecarioBackingMB.productoSeleccionado and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.indGracia}"/>
+									</h:panelGroup>
+								</td>
+								<td>
+									<h:panelGroup layout="block" id="actualizaMesesGraciaCombo" styleClass="actualizaMesesGraciaCombo">
+										<h:selectOneMenu styleClass="caja-simchip" name="mesGracia" id="mesGracia" value="#{simulacionCreditoHipotecarioBackingMB.mesGracia}" rendered="#{not empty simulacionCreditoHipotecarioBackingMB.productoSeleccionado and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.indGracia}">
+											<f:selectItem itemLabel="Seleccionar" itemValue="-1" />
+											<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.mesesGracia}"/>
+										</h:selectOneMenu>
+										<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false" rendered="#{not empty simulacionCreditoHipotecarioBackingMB.productoSeleccionado and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.indGracia}"/></b>
+									</h:panelGroup>
+								</td>						
+								<td><h:outputText value="#{msgSimulacionCreditoHipotecario.vencimientoCredito}" escape="false"/></td>
+								<td>
+									<h:panelGroup layout="block" id="actualizaVencimiento">
+										<h:selectOneMenu styleClass="caja-simchip" name="diaVencimiento" id="diaVencimiento" value="#{simulacionCreditoHipotecarioBackingMB.diaVencimiento}">
+											<f:selectItem itemLabel="Seleccionar" itemValue="0" />
+											<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.diasDeVencimiento}" var="vencimiento" itemLabel="#{vencimiento}" itemValue="#{vencimiento}"/>
+										</h:selectOneMenu>
+										<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+									</h:panelGroup>
+								</td>
+							</tr>
+							<tr>	
+								<td><h:outputText value="#{msgSimulacionCreditoHipotecario.destinoCredito}" escape="false"/></td>
+								<td>
+									<h:selectOneMenu styleClass="caja-simchip" name="destino" id="destino" value="#{simulacionCreditoHipotecarioBackingMB.destino}">
+										<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.configuracionSimuladorTO.tablaObjetivos}" var="tablaObjetivos" itemLabel="#{tablaObjetivos.descripcion}" itemValue="#{tablaObjetivos.codigo}"/>
+									</h:selectOneMenu>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>				
+								</td>				
+								<td id="TdLabelMesExclusion" style="display:none;">
+								    <h:panelGroup layout="block" id="textoMesesExclusion" styleClass="textoMesesExclusion">
+										<h:outputText value="#{msgSimulacionCreditoHipotecario.exclusionCredito}" escape="false" rendered="#{not empty simulacionCreditoHipotecarioBackingMB.productoSeleccionado and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.indExclusion}"/>
+									</h:panelGroup>
+								</td>
+								<td id="TdSelectMesExclusion" style="display:none;">
+									<h:panelGroup layout="block" id="actualizaMesesExclusionCombo" styleClass="actualizaMesesExclusionCombo">
+										<h:selectOneMenu styleClass="caja-simchip" name="mesExclusion" id="mesExclusion" value="#{simulacionCreditoHipotecarioBackingMB.mesExclusion}" rendered="#{not empty simulacionCreditoHipotecarioBackingMB.productoSeleccionado and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.indExclusion}">
+											<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.mesesExclusion}"/> 
+										</h:selectOneMenu>		  
+										<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false" rendered="#{not empty simulacionCreditoHipotecarioBackingMB.productoSeleccionado and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.indExclusion}"/></b>
+									</h:panelGroup>		
+								</td>
+							</tr>
+							<tr>	
+								<td><div align="left"><h:outputText value="#{msgSimulacionCreditoHipotecario.precioCredito}" escape="false"/></div></td>
+								<td>
+									<h:inputHidden id="unidadFomento" name="unidadFomento" value="#{simulacionCreditoHipotecarioModelMB.configuracionSimuladorTO.valorUF}"></h:inputHidden>
+									<h:inputHidden id="variableFinanciamiento" name="variableFinanciamiento" value="UF"></h:inputHidden>
+									<h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/>
+									<h:inputText id="valorUF" name="valorUF" styleClass="caja input-precio-credito" maxlength="12" size="12" value="#{simulacionCreditoHipotecarioBackingMB.precioViviendaUF}" onkeypress="return isNumberKey(event);" onblur="simchip_validaMonto(this);simchip_UF2Pesos(this,'valorPesos');">
+										<f:convertNumber currencySymbol="" type="currency" locale="es_CL"/>
+									</h:inputText>
+									<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+									<h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/>
+									<h:inputText id="valorPesos" name="valorPesos" styleClass="caja input-precio-credito" maxlength="12" size="12" onkeypress="return isNumberKey(event);" onblur="simchip_validaMonto(this);simchip_Pesos2UF(this,'valorUF');">
+										<f:convertNumber currencySymbol="" type="currency" locale="es_CL"/>
+									</h:inputText>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+								</td>						
+								<td><h:outputText value="#{msgSimulacionCreditoHipotecario.tipoFinanciamiento}" escape="false"/></td>	
+								<td class="alineaElementos">
+									<h:selectOneMenu styleClass="caja-simchip" name="tipoFinanciamiento" id="tipoFinanciamiento" value="#{simulacionCreditoHipotecarioBackingMB.tipoFinanciamiento}">
+										<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.configuracionSimuladorTO.tablaTipoFinanciamiento}" var="tablaTipoFinanciamiento" itemLabel="#{tablaTipoFinanciamiento.descripcion}" itemValue="#{tablaTipoFinanciamiento.codigo}"/>
+									</h:selectOneMenu>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false" /></b>
+								</td>			
+							</tr>
+				            <tr>	
+				            	<td><div align="left"><h:outputText value="#{msgSimulacionCreditoHipotecario.subsidioCredito}" escape="false"/></div></td>
+								<td>
+									<h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/>
+									<h:inputText id="subsidio" name="subsidio" styleClass="caja input-subsidio-credito" maxlength="12" size="12" value="#{simulacionCreditoHipotecarioBackingMB.subsidioUF}" onkeypress="return isNumberKey(event);" onblur="simchip_validaMonto(this);simchip_UF2Pesos(this,'subsidioPesos');">
+										<f:convertNumber currencySymbol="" type="currency" locale="es_CL"/>
+									</h:inputText>
+									<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+									<h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/>
+									<h:inputText id="subsidioPesos" name="subsidioPesos" styleClass="caja input-subsidio-credito" maxlength="12" size="12" onkeypress="return isNumberKey(event);" onblur="simchip_validaMonto(this);simchip_Pesos2UF(this,'subsidio');">
+										<f:convertNumber currencySymbol="" type="currency" locale="es_CL"/>
+									</h:inputText>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>					
+								</td>					
+								<td><span id="labelAdobe"><h:outputText value="#{msgSimulacionCreditoHipotecario.pac}" escape="false"/></span></td>
+								<td id="radioAdobe" style="display: block;">
+									<input id="pacSi" title="#{msgSimulacionCreditoHipotecario.tituloPacSi}" value="si" type="radio" name="pacCheck" onclick="simchip_revisaOpcionPac()" class="input-adobe alineaAdobe"/><h:outputText value="#{msgSimulacionCreditoHipotecario.adobeSi}" escape="false"/>							
+									<input id="pacNo"  title="#{msgSimulacionCreditoHipotecario.tituloPacNo}" value="no" type="radio" name="pacCheck" checked="checked"  onclick="simchip_revisaOpcionPac()" class="input-adobe"/><h:outputText value="#{msgSimulacionCreditoHipotecario.adobeNo}" escape="false"/>
+									<h:inputHidden id="pac" name="pac" value="#{simulacionCreditoHipotecarioBackingMB.suscribePac}"/>
+								</td>
+								<td colspan="2"><h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/></td>
+							</tr>				
+							<tr>
+								<td><div align="left"><h:outputText value="#{msgSimulacionCreditoHipotecario.cuotaCredito}" escape="false"/></div></td>
+								<td>
+									<h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/>
+									<h:inputText id="cuotaContado" name="cuotaContado" styleClass="caja input-cuota-credito"  maxlength="12" size="12" value="#{simulacionCreditoHipotecarioBackingMB.cuotaContadoUF}" onkeypress="return isNumberKey(event);" onblur="simchip_validaMonto(this);simchip_UF2Pesos(this,'cuotaContadoPesos');">
+										<f:convertNumber currencySymbol="" type="currency" locale="es_CL"/>
+									</h:inputText>
+									<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+									<h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/>
+									<h:inputText id="cuotaContadoPesos" name="cuotaContadoPesos" styleClass="caja input-cuota-credito"  maxlength="12" size="12" onkeypress="return isNumberKey(event);" onblur="simchip_validaMonto(this);simchip_Pesos2UF(this,'cuotaContado');">
+										<f:convertNumber currencySymbol="" type="currency" locale="es_CL"/>
+									</h:inputText>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+								</td>
+								<td colspan="2"><h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/></td>
+							</tr>
+							<tr>
+								<td><div align="left"><h:outputText value="#{msgSimulacionCreditoHipotecario.creditoCredito}" escape="false"/></div></td>
+								<td>
+									<h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/>
+									<h:inputText id="credito" name="credito" styleClass="caja input-credito-credito" maxlength="12" size="12" value="#{simulacionCreditoHipotecarioBackingMB.creditoUF}" onkeypress="return isNumberKey(event);" onblur="simchip_validaMonto(this);simchip_UF2Pesos(this,'creditoPesos');simchip_setFinanciamiento();">
+										<f:convertNumber currencySymbol="" type="currency" locale="es_CL"/>
+									</h:inputText>
+									<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+									<h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/>
+									<h:inputText id="creditoPesos" name="creditoPesos" styleClass="caja input-credito-credito" maxlength="12" size="12" onkeypress="return isNumberKey(event);" onblur="simchip_validaMonto(this);simchip_Pesos2UF(this,'credito');simchip_setFinanciamientoPesos();">
+										<f:convertNumber currencySymbol="" type="currency" locale="es_CL"/>
+									</h:inputText>
+									<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>
+								</td>
+								<td colspan="2"><h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/></td>				
+							</tr>			
+							<tr>
+								<td><div align="left"><h:outputText value="#{msgSimulacionCreditoHipotecario.financiamientoCredito}" escape="false"/></div></td>
+				                <td>
+									<div align="left">
+										<b id="labelFinanciamiento"></b>
+										<h:inputHidden id="financiamiento" name="financiamiento" value="#{simulacionCreditoHipotecarioBackingMB.porcentajeFinanciamiento}"/>
+									</div>
+									<h:panelGroup layout="block" id="actualizaMontos">
+										<h:inputHidden id="montoMaximo" name="montoMaximo" value="#{simulacionCreditoHipotecarioBackingMB.montoMaximoUF}"/>
+										<h:inputHidden id="montoMinimo" name="montoMinimo" value="#{simulacionCreditoHipotecarioBackingMB.montoMinimoUF}"/>
+										<h:inputHidden id="porcentajeFinancMax" name="porcentajeFinancMax" value="#{simulacionCreditoHipotecarioBackingMB.porcentajeFinancMax}"/>
+										<h:inputHidden id="porcentajeFinancMin" name="porcentajeFinancMin" value="#{simulacionCreditoHipotecarioBackingMB.porcentajeFinancMin}"/>
+									</h:panelGroup>
+								</td>				
+								<td colspan="2"><h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/></td>				
+							</tr>						
+					   </table>
+					</div>
+					<div id="divValorAsegurable" style="display:none;">
+						<div class="chip-cont">
+							<table width="100%" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="45%"><h:outputText value="#{msgSimulacionCreditoHipotecario.valorAsegurable}" escape="false"/></td>
+									<td>	
+										<select class="caja-simchip" id="tasacion" name="tasacion" onchange="simchip_cambiaValorLiquidacion(this)"> 
+											<option value="1"><h:outputText value="#{msgSimulacionCreditoHipotecario.adobeSi}" escape="false"/></option>
+											<option value="0" selected="selected"><h:outputText value="#{msgSimulacionCreditoHipotecario.adobeNo}" escape="false"/></option>
+										</select>
+									</td>
+								</tr>
+								<tr id="valorLiquidacionSeguro" style="display:none;">
+									<td><h:outputText value="#{msgSimulacionCreditoHipotecario.valorLiquidacion}" escape="false"/></td>
+									<td>
+										<h:inputText name="campoLiquidacionSeguro" id="campoLiquidacionSeguro" styleClass="caja" maxlength="30" size="30" value="#{simulacionCreditoHipotecarioBackingMB.montoValorAsegurable}" onkeypress="return isNumberKey(event);" onblur="simchip_validaMonto(this);">
+											<f:convertNumber currencySymbol="" type="currency" locale="es_CL"/>
+										</h:inputText>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>		
+				<div id="divComparacion" style="display:none;">
+					<div class="chip-tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.tituloComparacionCredito}" escape="false"/></div>
+					<div class="chip-cont">
+						<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tabla-simchip">
+							<tr>
+								<td width="45%"><h:outputText value="#{msgSimulacionCreditoHipotecario.deseaComparar}" escape="false"/></td>
+								<td>
+									<select class="caja-simchip" id="comparar" name="comparar" onchange="simchip_cambiaDeseaComparar(this)">
+										<option value="1"><h:outputText value="#{msgSimulacionCreditoHipotecario.adobeSi}" escape="false"/></option>
+										<option value="0" selected="selected"><h:outputText value="#{msgSimulacionCreditoHipotecario.adobeNo}" escape="false"/></option>
+									</select>
+									<h:inputHidden id="deseaComparar" name="deseaComparar" value="#{simulacionCreditoHipotecarioBackingMB.deseaComparar}"/>
+								</td>
+							</tr>
+							<tr id="tasaYProductoComparacion" style="display:none;">
+								<td><h:outputText value="#{msgSimulacionCreditoHipotecario.productoConveniencia}" escape="false"/></td>
+								<td>
+									<h:panelGroup layout="block" id="actualizaComparacion">
+										<h:selectOneMenu styleClass="caja-simchip" name="productoComparable" id="productoComparable" value="#{simulacionCreditoHipotecarioBackingMB.productoComparacion}" rendered="#{not empty simulacionCreditoHipotecarioBackingMB.listaProductosComparacion}">
+											<f:selectItem itemLabel="Seleccionar" itemValue="0" />
+											<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.listaProductosComparacion}" var="listaProductos" itemLabel="#{listaProductos.descripcion}"  itemValue="#{listaProductos.codProducto}"/> 
+										</h:selectOneMenu>
+										<b class="asterisco"><h:outputText value="#{msgSimulacionCreditoHipotecario.campoObligatorio}" escape="false"/></b>	
+									</h:panelGroup>
+								</td>
+							</tr>
+						</table>
+					</div>		
+				</div>	
+				<div id="divSegAdicionales" style="display:block;">
+					<h:panelGroup layout="block" rendered="#{not empty simulacionCreditoHipotecarioBackingMB.segurosAdicionalesTO}">
+						<div class="chip-tit"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.tituloSegurosAdicionales}" escape="false"/></b></div>
+						<div class="chip-ayuda"><h:outputText value="#{msgSimulacionCreditoHipotecario.subtituloSegurosAdicionales}" escape="false"/></div>			
+						<div class="chip-cont">
+							<h:inputHidden id="codigosCesantia" name="codigosCesantia" value="#{simulacionCreditoHipotecarioBackingMB.codigosCesantia}"/>
+							<h:inputHidden id="codigosServiu" name="codigosServiu" value="#{simulacionCreditoHipotecarioBackingMB.codigosServiu}"/>
+							<table width="86%" border="0" cellpadding="0" cellspacing="0" class="tabla-simchip">
+								<tr>
+									<ui:repeat var="seguroAdicional" value="#{simulacionCreditoHipotecarioBackingMB.segurosAdicionalesTO}" varStatus="status">
+										<td>
+											<input id="seguroAdicional" name="seguroAdicional" value="#{seguroAdicional.codigo}" type="checkbox" onclick="simchip_checkSegAdicional(this)"/><h:outputText value="#{seguroAdicional.nombre}" escape="false"/>
+										</td>
+										<h:outputText value="#{msgSimulacionCreditoHipotecario.saltoTR}" escape="false" rendered="#{status.index%2==1}"/>
+									</ui:repeat>
+									 <h:selectManyCheckbox id="segurosAdicionales" style="display:none" value="#{simulacionCreditoHipotecarioBackingMB.segurosAdicionales}">
+								    	<f:selectItems value="#{simulacionCreditoHipotecarioBackingMB.segurosAdicionalesTO}" var="segurosAdicionales" itemLabel="#{segurosAdicionales.nombre}" itemValue="#{segurosAdicionales.codigo}"/> 
+								    </h:selectManyCheckbox>
+								</tr>				
+						    </table>
+						</div>
+						<h:panelGroup layout="block" rendered="#{not empty simulacionCreditoHipotecarioBackingMB.segurosAdicionales}">
+							<ui:repeat value="#{simulacionCreditoHipotecarioBackingMB.segurosAdicionales}" varStatus="status"> 
+								<script>buscaCheck('<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.segurosAdicionales[status.index]}" escape="false"/>')</script>
+							</ui:repeat>
+						</h:panelGroup>
+					</h:panelGroup>
+				</div>
+				<br></br>
+			  	<center>
+			  		<h:commandButton id="limpiar" type="button" styleClass="boton input-boton" value="#{msgSimulacionCreditoHipotecario.botonLimpiar}" onclick="simchip_limpiarFormulario();"/>
+			  		<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+					<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+			  		<h:commandButton id="simular" type="button" value="#{msgSimulacionCreditoHipotecario.botonSimular}" styleClass="boton input-boton botonSimular" onclick="simchip_validaFormulario();"/>
+					<h:commandButton styleClass="simularCreditoHipotecario" style="display:none" actionListener="#{simulacionCreditoHipotecarioBackingMB.calculaSimulacion}"/>
+			  	</center>
+				<script>volver();</script>
+			</h:form>
+		</h:panelGroup>
+		<!--END PASO 1-->
+		
+		<!-- PASO 2 -->
+		<h:panelGroup layout="block" id="paso2">
+			<h:form id="formPaso2" styleClass="paso2" rendered="#{simulacionCreditoHipotecarioBackingMB.pasoSimulacion}">	
+			<h:inputHidden id="tipoMonedaHidden" name="tipoMonedaHidden"  value="#{simulacionCreditoHipotecarioBackingMB.productoMoneda}"></h:inputHidden>	
+			<h:inputHidden id="productoHidden" name="productoHidden"  value="#{simulacionCreditoHipotecarioBackingMB.producto}"></h:inputHidden>	
+				<table width="100%" border="0" cellSpacing="0" cellPading="0">
+					<tr>
+						<td><h:graphicImage url="/resources/simuladorhipotecario/images/logo_bci.jpg" styleClass="imagen-simchip"/></td>
+					</tr>
+					<tr>
+						<td id="cont">
+							<div id="titulo" class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.tituloSimulacion}" escape="false"/></div>
+							
+							<!-- Seccion Cliente -->
+							<table width="100%" id="grilla44" border="0" cellSpacing="0" cellPading="0" class="tabla-simchip-res">
+								<tr>
+									<th width="150" class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.tituloCliente}" escape="false"/></th>
+									<td width="200"><b><h:outputText value="#{simulacionCreditoHipotecarioBackingMB.nombreCliente}" escape="false"/></b></td>
+									<th width="150" class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.condicionCliente}" escape="false"/></th>
+									<td width="200">
+										<h:outputText value="#{msgSimulacionCreditoHipotecario.si}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.tieneCodeudor}"/>
+										<h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false" rendered="#{!simulacionCreditoHipotecarioBackingMB.tieneCodeudor}"/>
+									</td>
+								</tr>
+								<tr>
+									<th width="150" class="tit">
+										<b>
+											<h:outputText value="#{msgSimulacionCreditoHipotecario.inmobiliariaVivienda}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.antiguedadVivienda == msgSimulacionCreditoHipotecario.antiguedadNueva}"/>
+											<h:outputText value="#{msgSimulacionCreditoHipotecario.tipoVivienda}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.antiguedadVivienda == msgSimulacionCreditoHipotecario.antiguedadUsada}"/>
+										</b>
+									</th>
+									<td width="200">	
+										<b>								
+											<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.inmobiliariaSeleccionada.nombreInmobiliaria}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.antiguedadVivienda == msgSimulacionCreditoHipotecario.antiguedadNueva and simulacionCreditoHipotecarioBackingMB.inmobiliaria != '0'}"/>
+											<h:outputText value="#{msgSimulacionCreditoHipotecario.casaUsada}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.antiguedadVivienda == msgSimulacionCreditoHipotecario.antiguedadUsada and simulacionCreditoHipotecarioBackingMB.tipoVivienda == msgSimulacionCreditoHipotecario.viviendaCasa}"/>
+											<h:outputText value="#{msgSimulacionCreditoHipotecario.deptoUsado}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.antiguedadVivienda == msgSimulacionCreditoHipotecario.antiguedadUsada and simulacionCreditoHipotecarioBackingMB.tipoVivienda == msgSimulacionCreditoHipotecario.viviendaDepto}"/>
+										</b>
+										<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+									</td>
+									<th width="150" class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.fecha}" escape="false"/></th>
+									<td>
+										<h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionTO.datosOperacion.fecha}" escape="false">
+											<f:convertDateTime type="date" locale="es_CL" pattern ="dd/MM/yyyy"/>
+										</h:outputText>
+									</td>
+								</tr>
+								<tr>
+									<th width="150" class="tit">
+										<h:outputText value="#{msgSimulacionCreditoHipotecario.proyectoVivienda}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.antiguedadVivienda == msgSimulacionCreditoHipotecario.antiguedadNueva}"/>
+										<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.antiguedadVivienda == msgSimulacionCreditoHipotecario.antiguedadUsada}"/>
+									</th>
+									<td width="200">
+										<b>
+											<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.proyectoSeleccionado.descripcionProyecto}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.antiguedadVivienda == msgSimulacionCreditoHipotecario.antiguedadNueva}"/>
+										</b>
+										<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+									</td>
+									<th width="150" class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></th>
+									<td>
+										<h:outputText value="#{simulacionCreditoHipotecarioModelMB.configuracionSimuladorTO.valorUF}" escape="false">
+											<f:convertNumber currencySymbol="$" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/>
+										</h:outputText>
+										<h:inputHidden id="valorUFDia" name="valorUFDia" value="#{simulacionCreditoHipotecarioModelMB.configuracionSimuladorTO.valorUF}">
+											<f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/>
+										</h:inputHidden>
+									</td>
+								</tr>
+							</table>
+							<!-- Fin Seccion Cliente -->
+							
+							<!-- Seccion Vivienda -->
+							<table width="100%" id="grilla44" border="0" cellSpacing="0" cellPading="0" class="tabla-simchip-res">
+								<tr>
+									<th width="150" class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.valorCompraVenta}" escape="false"/></th>
+									<td width="200"><span class="align_izquierda"><h:outputText value="#{simulacionCreditoHipotecarioBackingMB.precioViviendaUF}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText><h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></span></td>
+									<th width="150" class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.plazoCredito}" escape="false"/></th>
+									<td width="200"><h:outputText value="#{simulacionCreditoHipotecarioBackingMB.plazo}" escape="false"/><h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/><h:outputText value="#{msgSimulacionCreditoHipotecario.años}" escape="false"/></td>
+								</tr>
+								<tr>
+									<th class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.subsidio}" escape="false"/></th>
+									<td><h:outputText value="#{simulacionCreditoHipotecarioBackingMB.subsidioUF}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText><h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+									<th class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.tasaCredito}" escape="false"/></th>									
+									<td><h:outputText id="tasa" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.tasa}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText><h:outputText value="#{msgSimulacionCreditoHipotecario.porcentaje}" escape="false"/></td>
+								</tr>
+								<tr>
+									<th class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.cuotaContado}" escape="false"/></th>
+									<td><h:outputText value="#{simulacionCreditoHipotecarioBackingMB.cuotaContadoUF}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText><h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+									<th class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.graciaCredito}" escape="false"/></th>
+									<td><h:outputText value="#{simulacionCreditoHipotecarioBackingMB.mesGracia}" escape="false"/></td>
+								</tr>
+								<tr>
+									<th class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.tituloCredito}" escape="false"/></th>
+									<td><h:outputText value="#{simulacionCreditoHipotecarioBackingMB.creditoUF}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText><h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+									<th class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.exclusionCredito}" escape="false"/></th>
+									<td><h:outputText value="#{simulacionCreditoHipotecarioBackingMB.nombreMes}" escape="false"/></td>
+								</tr>
+								<tr>
+									<th class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.financiamiento}" escape="false"/></th>
+									<td><h:outputText value="#{simulacionCreditoHipotecarioBackingMB.porcentajeFinanciamiento}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText><h:outputText value="#{msgSimulacionCreditoHipotecario.porcentaje}" escape="false"/></td>
+									<th class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.diaPago}" escape="false"/></th>
+									<td><h:outputText value="#{simulacionCreditoHipotecarioBackingMB.diaVencimiento}" escape="false"/></td>
+								</tr>
+								<tr>
+									<th class="tit"><h:outputText value="#{msgSimulacionCreditoHipotecario.suscribePac}" escape="false"/></th>
+									<td>
+										<h:outputText value="#{msgSimulacionCreditoHipotecario.si}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.suscribePac == 1}"/>
+										<h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.suscribePac == 0}"/>
+									</td>
+									<td colSpan="2"><h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false" /></td>
+								</tr>
+							</table>
+							<!-- Fin Seccion Vivienda -->
+							
+							<!-- Seccion Simulacion Normal -->
+							<h:panelGroup id="tablaSimulacionNormal">
+								<table width="100%" id="grilla44-der" border="0" cellSpacing="0" cellPading="0">
+									<tr>
+										<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0 and (simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 20 and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 22)}">
+											<th align="center" class="tit2" colSpan="8">
+												<b class="titulo">
+													<h:outputText value="#{msgSimulacionCreditoHipotecario.detalleDividendo}" escape="false"/>
+													<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.descripcion}" escape="false"/>
+												</b>
+											</th>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0 and (simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 20 or simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22)}">
+											<th align="center" class="tit2" colSpan="9">
+												<b class="titulo">
+													<h:outputText value="#{msgSimulacionCreditoHipotecario.detalleDividendo}" escape="false"/>
+													<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.descripcion}" escape="false"/>
+												</b>
+											</th>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{0>=simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales and (simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 20 and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 22)}">
+											<th align="center" class="tit2" colSpan="7">
+												<b class="titulo">
+													<h:outputText value="#{msgSimulacionCreditoHipotecario.detalleDividendo}" escape="false"/>
+													<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.descripcion}" escape="false"/>
+												</b>
+											</th>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{0>=simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales and (simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 20 or simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22)}">
+											<th align="center" class="tit2" colSpan="8">
+												<b class="titulo">
+													<h:outputText value="#{msgSimulacionCreditoHipotecario.detalleDividendo}" escape="false"/>
+													<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.descripcion}" escape="false"/>
+												</b>
+											</th>
+										</h:panelGroup>
+									</tr>
+									<tr>
+										<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 20 or simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+											<th  width="5%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.plazoCredito}" escape="false"/></th>
+										</h:panelGroup>
+										<th width="10%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.dividendoNeto}" escape="false"/></th>
+										<th width="15%" class="tit align_centro">
+											<h:outputText value="#{msgSimulacionCreditoHipotecario.seguroIncendioColectivo}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.seguro != 2}"/>
+											<h:outputText value="#{msgSimulacionCreditoHipotecario.seguroIncendioSismoColectivo}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.seguro == 2}"/>
+										</th>
+										<th width="18%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.seguroDesgravamenColectivo}" escape="false"/></th>
+										<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+											<th width="13%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.tituloSegurosAdicionales}" escape="false"/></th>
+										</h:panelGroup>
+										<th width="12%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.dividendoTotal}" escape="false"/></th>
+										<th width="12%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.dividendoTotal}" escape="false"/></th>
+										<th width="8%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.cae}" escape="false"/></th>
+										<th width="12%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.costoTotalCredito}" escape="false"/></th>
+									</tr>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 21 and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 22}">
+										<tr>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 20}">
+												<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.meses}" escape="false"/></td>
+											</h:panelGroup>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+												<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+											</h:panelGroup>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.porcentaje}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 21 or simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+										<tr>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+												<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.meses}" escape="false"/></td>
+											</h:panelGroup>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+												<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											</h:panelGroup>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.porcentaje}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 21 and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 22}">
+										<tr>		
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 20}">
+												<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.tramo1}" escape="false"/></td>
+											</h:panelGroup>							
+											<td class="textos2 align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.dividendo}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.montoSegIncSis}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.montoSegDesg}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+												<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											</h:panelGroup>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.dividendoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.dividendoTotalPesos}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAETO.tasaCAE}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAETO.costoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 20}">
+										<tr>													
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.tramo2}" escape="false"/></td>
+											<td class="textos2 align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadTO.dividendo}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadTO.montoSegIncSis}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadTO.montoSegDesg}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+												<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											</h:panelGroup>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadTO.dividendoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadTO.dividendoTotalPesos}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAETO.tasaCAE}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAETO.costoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 21 or simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+										<tr>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+												<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.tramo1}" escape="false"/></td>
+											</h:panelGroup>	
+											<td class="textos2 align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.dividendo}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.montoSegIncSis}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.montoSegDesg}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+												<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionalesPesos}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											</h:panelGroup>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.dividendoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.dividendoTotalPesos}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAETO.tasaCAE}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAETO.costoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+										<tr>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.tramo2}" escape="false"/></td>
+											<td class="textos2 align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadTO.dividendo}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadTO.montoSegIncSis}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadTO.montoSegDesg}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+												<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionalesPesos}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											</h:panelGroup>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadTO.dividendoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadTO.dividendoTotalPesos}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAETO.tasaCAE}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAETO.costoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+										</tr>
+									</h:panelGroup>
+								</table>
+							</h:panelGroup>
+							<!-- Fin Seccion Simulacion Normal -->
+							
+							<br/>
+							
+							<!-- Seccion Simulacion Comparacion -->							
+							<h:panelGroup layout="block" rendered="#{simulacionCreditoHipotecarioBackingMB.deseaComparar}">
+							<h:panelGroup id="tablaSimulacionComparacion" >
+								<table width="100%" id="grilla44-der" border="0" cellSpacing="0" cellPading="0">
+									<tr>
+										<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+											<th align="center" class="tit2" colSpan="8">
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.comparacionBciHome}" escape="false"/>
+												<h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.nombreProductoComparacion}" escape="false"/>
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.comparacionBciHomePorcentaje}" escape="false"/>
+												<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.tasaConveniencia}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText>
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.porcentaje}" escape="false"/>
+											</th>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{0>=simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales}">
+											<th align="center" class="tit2" colSpan="7">
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.comparacionBciHome}" escape="false"/>
+												<h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.nombreProductoComparacion}" escape="false"/>
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.comparacionBciHomePorcentaje}" escape="false"/>
+												<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.tasaConveniencia}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText>
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.porcentaje}" escape="false"/>
+											</th>
+										</h:panelGroup>
+									</tr>
+									<tr>
+										<th width="10%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.dividendoNeto}" escape="false"/></th>
+										<th width="15%" class="tit align_centro">
+											<h:outputText value="#{msgSimulacionCreditoHipotecario.seguroIncendioColectivo}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.seguro != 2}"/>
+											<h:outputText value="#{msgSimulacionCreditoHipotecario.seguroIncendioSismoColectivo}" escape="false" rendered="#{simulacionCreditoHipotecarioBackingMB.seguro == 2}"/>
+										</th>
+										<th width="18%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.seguroDesgravamenColectivo}" escape="false"/></th>
+										<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+											<th width="13%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.tituloSegurosAdicionales}" escape="false"/></th>
+										</h:panelGroup>
+										<th width="12%" class="tit align_centro" ><h:outputText value="#{msgSimulacionCreditoHipotecario.dividendoTotal}" escape="false"/></th>
+										<th width="12%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.dividendoTotal}" escape="false"/></th>
+										<th width="8%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.cae}" escape="false"/></th>
+										<th width="12%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.costoTotalCredito}" escape="false"/></th>
+									</tr>
+									<tr>
+										<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+										<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+										<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+										<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+										</h:panelGroup>
+										<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+										<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+										<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.porcentaje}" escape="false"/></td>
+										<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+									</tr>
+									<tr>
+										<ui:repeat var="simulacionPlazo" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionTO.simulacionPlazos}" varStatus="status">
+											<h:panelGroup rendered="#{simulacionPlazo.plazo == simulacionCreditoHipotecarioBackingMB.plazo and simulacionPlazo.comparacionConveniencia}">
+												<td class="textos2 align_centro"><h:outputText value="#{simulacionPlazo.dividendo}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+												<td class="align_centro"><h:outputText value="#{simulacionPlazo.montoSegIncSis}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+												<td class="align_centro"><h:outputText value="#{simulacionPlazo.montoSegDesg}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+												<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+													<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+												</h:panelGroup>
+												<td class="align_centro"><h:outputText value="#{simulacionPlazo.dividendoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+												<td class="align_centro"><h:outputText value="#{simulacionPlazo.dividendoTotalPesos}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+												<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAEComparacionTO.tasaCAE}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+												<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAEComparacionTO.costoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											</h:panelGroup>
+										</ui:repeat>
+									</tr>
+								</table>
+								<br/>
+							</h:panelGroup>
+							</h:panelGroup>
+							<!-- Fin Seccion Simulacion Comparacion -->
+							
+							<!-- Seccion Simulacion Contempla -->
+							<span class="align_izquierda spanContempla">
+								<p><h:outputText value="#{msgSimulacionCreditoHipotecario.informacion1}" escape="false"/></p>
+								<ul>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.seguro == 0}">
+										<li><h:outputText value="#{msgSimulacionCreditoHipotecario.simulacionSinSeguroIncendioColectivo}" escape="false"/></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.seguro == 1}">
+										<li><h:outputText value="#{msgSimulacionCreditoHipotecario.simulacionSeguroIncendioColectivo}" escape="false"/></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.seguro == 2}">
+										<li><h:outputText value="#{msgSimulacionCreditoHipotecario.simulacionSeguroIncendioSismoColectivo}" escape="false"/></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.porcentajeSegDesgravamenCliente == 0}">
+										<li><h:outputText value="#{msgSimulacionCreditoHipotecario.simulacionSeguroDesgravamenTitular0}" escape="false"/></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.porcentajeSegDesgravamenCliente == 50}">
+										<li><h:outputText value="#{msgSimulacionCreditoHipotecario.simulacionSeguroDesgravamenTitular50}" escape="false"/></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.porcentajeSegDesgravamenCliente == 100}">
+										<li><h:outputText value="#{msgSimulacionCreditoHipotecario.simulacionSeguroDesgravamenTitular100}" escape="false"/></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.tieneCodeudor and simulacionCreditoHipotecarioBackingMB.porcentajeSegDesgravamenCodeudor == 0}">
+										<li><h:outputText value="#{msgSimulacionCreditoHipotecario.simulacionSeguroDesgravamenCodeudor0}" escape="false"/></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.tieneCodeudor and simulacionCreditoHipotecarioBackingMB.porcentajeSegDesgravamenCodeudor == 50}">
+										<li><h:outputText value="#{msgSimulacionCreditoHipotecario.simulacionSeguroDesgravamenCodeudor50}" escape="false"/></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.tieneCodeudor and simulacionCreditoHipotecarioBackingMB.porcentajeSegDesgravamenCodeudor == 100}">
+										<li><h:outputText value="#{msgSimulacionCreditoHipotecario.simulacionSeguroDesgravamenCodeudor100}" escape="false"/></li>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{not empty simulacionCreditoHipotecarioBackingMB.segurosAdicionales}">
+										<ul>
+											<ui:repeat var="seguroAdicional" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.segurosAdicionalesTO}">
+												<h:panelGroup layout="block" rendered="#{seguroAdicional.estado == '1'}">
+													<li>
+														<h:outputText value="#{msgSimulacionCreditoHipotecario.simulacionSeguroAdicionalTexto}" escape="false"/>
+														<h:outputText value="#{seguroAdicional.producto}" escape="false"/>
+													</li>
+												</h:panelGroup>
+											</ui:repeat>
+										</ul>
+									</h:panelGroup>
+								</ul>
+							</span>
+							<!-- Fin Seccion Simulacion Contempla -->
+							
+							<!-- Seccion Simulacion Individual -->
+							<h:panelGroup id="tablaSimulacionIndividual">
+								<table width="100%" id="grilla44-der" border="0" cellSpacing="0" cellPadding="0">
+									<tr>
+										<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0 and (simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 20 and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 22)}">
+											<th align="center" class="tit2 align_centro" colSpan="8">
+												<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.descripcion}" escape="false"/>
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.ofertaIndividuales}" escape="false"/>
+											</th>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0 and (simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 20 or simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22)}">
+											<th align="center" class="tit2 align_centro" colSpan="9">
+												<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.descripcion}" escape="false"/>
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.ofertaIndividuales}" escape="false"/>
+											</th>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{0>=simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales and (simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 20 and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 22)}">
+											<th align="center" class="tit2 align_centro" colSpan="7">
+												<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.descripcion}" escape="false"/>
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.ofertaIndividuales}" escape="false"/>
+											</th>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{0>=simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales and (simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 20 or simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22)}">
+											<th align="center" class="tit2 align_centro" colSpan="8">
+													<h:outputText value="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.descripcion}" escape="false"/>
+													<h:outputText value="#{msgSimulacionCreditoHipotecario.ofertaIndividuales}" escape="false"/>
+											</th>
+										</h:panelGroup>
+									</tr>
+									<tr>
+										<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 20 or simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+											<th  width="5%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.plazoCredito}" escape="false"/></th>
+										</h:panelGroup>
+										<th width="10%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.dividendoNeto}" escape="false"/></th>
+										<th width="15%" class="tit align_centro">
+											<h:outputText value="#{msgSimulacionCreditoHipotecario.seguroIncendioBasico}" escape="false" styleClass="incendio1"/>
+											<h:outputText value="#{msgSimulacionCreditoHipotecario.seguroIncendioFull}" escape="false" styleClass="incendio2" style="display:none;"/>
+										</th>
+											<th width="18%" class="tit align_centro">
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.seguroDesgravamenBasico}" escape="false" styleClass="desgravamen1"/>
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.seguroDesgravamenPlus}" escape="false" styleClass="desgravamen2" style="display:none;"/>
+												<h:outputText value="#{msgSimulacionCreditoHipotecario.seguroDesgravamenFull}" escape="false" styleClass="desgravamen3" style="display:none;"/>
+											</th>
+										<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+											<th width="13%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.tituloSegurosAdicionales}" escape="false"/></th>
+										</h:panelGroup>
+										<th width="12%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.dividendoTotal}" escape="false"/></th>
+										<th width="12%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.dividendoTotal}" escape="false"/></th>
+										<th width="8%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.cae}" escape="false"/></th>
+										<th width="12%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.costoTotalCredito}" escape="false"/></th>
+									</tr>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 21 and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 22}">
+										<tr>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 20}">
+												<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.meses}" escape="false"/></td>
+											</h:panelGroup>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+												<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+											</h:panelGroup>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.porcentaje}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 21 or simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+										<tr>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+												<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.meses}" escape="false"/></td>
+											</h:panelGroup>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+												<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											</h:panelGroup>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.porcentaje}" escape="false"/></td>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 21 and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 22}">
+										<tr>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 20}">
+												<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.tramo1}" escape="false"/></td>
+											</h:panelGroup>		
+										    <td class="textos2 align_centro">
+										    	<h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.dividendo}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText>
+										    	<h:inputHidden id="dividendoNetoIndividual" name="dividendoNetoIndividual" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.dividendo}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+										    </td>
+											<td class="align_centro">
+												<h:inputHidden id="primaSeguroIncendioBasico" name="primaSeguroIncendioBasico" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaOfertaMinima}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+												<h:inputHidden id="primaSeguroIncendioFull" name="primaSeguroIncendioFull" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaOfertaMaxima}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+												<span id="primaIncendio"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaOfertaMinima}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></span>
+											</td>
+											<td class="align_centro">
+												<h:inputHidden id="primaSeguroDesgravamenBasico" name="primaSeguroDesgravamenBasico" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenBasico}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+												<h:inputHidden id="primaSeguroDesgravamenPlus" name="primaSeguroDesgravamenPlus" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenPlus}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+												<h:inputHidden id="primaSeguroDesgravamenFull" name="primaSeguroDesgravamenFull" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenFull}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+											    <span id="primaDesgravamen"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenBasico}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></span>
+											</td>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+												<td class="align_centro">
+													<h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText>
+													<h:inputHidden id="primaSegurosAdicionalesIndividual" name="primaSegurosAdicionalesIndividual" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+												</td>
+											</h:panelGroup>
+											<td class="align_centro"><span id="dividendoTotalUfIndividual"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.dividendoTotalConIndividuales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></span></td>
+											<td class="align_centro"><span id="dividendoTotalPesosIndividual"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.dividendoTotalPesosConIndividuales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></span></td>
+											<td class="align_centro"><h:outputText id="tasaCaeIndividual" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAEIndividualesTO.tasaCAE}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText id="costoTotalIndividual" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAEIndividualesTO.costoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+										</tr>	
+									</h:panelGroup>		
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 20}">
+										<tr>													
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.tramo2}" escape="false"/></td>
+											<td class="textos2 align_centro">
+												<h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.dividendo}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText>
+												<h:inputHidden id="dividendoNetoIndividualPagaMitad" name="dividendoNetoIndividualPagaMitad" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.dividendo}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+											</td>
+											<td class="align_centro">
+												<h:inputHidden id="primaSeguroIncendioBasicoPagaMitad" name="primaSeguroIncendioBasicoPagaMitad" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaOfertaMinima}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+												<h:inputHidden id="primaSeguroIncendioFullPagaMitad" name="primaSeguroIncendioFullPagaMitad" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaOfertaMaxima}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+												<span id="primaIncendioPagaMitad"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaOfertaMinima}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></span>
+											</td>
+											<td class="align_centro">
+												<h:inputHidden id="primaSeguroDesgravamenBasicoPagaMitad" name="primaSeguroDesgravamenBasicoPagaMitad" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaSeguroDesgravamenBasico}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+												<h:inputHidden id="primaSeguroDesgravamenPlusPagaMitad" name="primaSeguroDesgravamenPlusPagaMitad" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaSeguroDesgravamenPlus}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+												<h:inputHidden id="primaSeguroDesgravamenFullPagaMitad" name="primaSeguroDesgravamenFullPagaMitad" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaSeguroDesgravamenFull}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+											    <span id="primaDesgravamenPagaMitad"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaSeguroDesgravamenBasico}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></span>
+											</td>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+												<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+												<h:inputHidden id="primaSegurosAdicionalesIndividualPagaMitad" name="primaSegurosAdicionalesIndividualPagaMitad" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+											</h:panelGroup>
+											<td class="align_centro"><span id="dividendoTotalUfIndividualPagaMitad"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.dividendoTotalConIndividuales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></span></td>
+											<td class="align_centro"><span id="dividendoTotalPesosIndividualPagaMitad"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.dividendoTotalPesosConIndividuales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></span></td>
+											<td class="align_centro"><h:outputText id="tasaCaeMitad" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAEIndividualesTO.tasaCAE}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText id="costoTotalMitad" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAEIndividualesTO.costoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 21 or simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+										<tr>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+												<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.tramo1}" escape="false"/></td>
+											</h:panelGroup>	
+											<td class="textos2 align_centro">
+										    	<h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.dividendo}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText>
+										    	<h:inputHidden id="dividendoNetoIndividualPesos" name="dividendoNetoIndividualPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.dividendo}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+										    </td>
+											<td class="align_centro">
+												<h:inputHidden id="primaSeguroIncendioBasicoPesos" name="primaSeguroIncendioBasicoPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaOfertaMinima}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+												<h:inputHidden id="primaSeguroIncendioFullPesos" name="primaSeguroIncendioFullPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaOfertaMaxima}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+												<span id="primaIncendioPesos"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaOfertaMinima}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></span>
+											</td>
+											<td class="align_centro">
+												<h:inputHidden id="primaSeguroDesgravamenBasicoPesos" name="primaSeguroDesgravamenBasico" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenBasico}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+												<h:inputHidden id="primaSeguroDesgravamenPlusPesos" name="primaSeguroDesgravamenPlus" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenPlus}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+												<h:inputHidden id="primaSeguroDesgravamenFullPesos" name="primaSeguroDesgravamenFull" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenFull}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+											    <span id="primaDesgravamenPesos"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenBasico}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></span>
+											</td>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+												<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionalesPesos}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+												<h:inputHidden id="primaSegurosAdicionalesIndividualPesos" name="primaSegurosAdicionalesIndividualPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionalesPesos}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+											</h:panelGroup>
+											<td class="align_centro"><span id="dividendoTotalUfIndividualPesos"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.dividendoTotalConIndividuales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></span></td>
+											<td class="align_centro"><span id="dividendoTotalPesosIndividualPesos"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.dividendoTotalPesosConIndividuales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></span></td>
+											<td class="align_centro"><h:outputText id="tasaCaeIndividualPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAEIndividualesTO.tasaCAE}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText id="costoTotalIndividualPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAEIndividualesTO.costoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+										<tr>
+											<td class="titch align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.tramo2}" escape="false"/></td>
+											<td class="textos2 align_centro">
+												<h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.dividendo}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText>
+												<h:inputHidden id="dividendoNetoIndividualMitadPesos" name="dividendoNetoIndividualMitadPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.dividendo}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+											</td>
+											<td class="align_centro">
+												<h:inputHidden id="primaSeguroIncendioBasicoMitadPesos" name="primaSeguroIncendioBasicoMitadPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaOfertaMinima}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+												<h:inputHidden id="primaSeguroIncendioFullMitadPesos" name="primaSeguroIncendioFullMitadPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaOfertaMaxima}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+												<span id="primaIncendioMitadPesos"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaOfertaMinima}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></span>
+											</td>
+											<td class="align_centro">
+												<h:inputHidden id="primaSeguroDesgravamenBasicoMitadPesos" name="primaSeguroDesgravamenBasicoMitadPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaSeguroDesgravamenBasico}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+												<h:inputHidden id="primaSeguroDesgravamenPlusMitadPesos" name="primaSeguroDesgravamenPlusMitadPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaSeguroDesgravamenPlus}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+												<h:inputHidden id="primaSeguroDesgravamenFullMitadPesos" name="primaSeguroDesgravamenFullMitadPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaSeguroDesgravamenFull}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+											    <span id="primaDesgravamenMitadPesos"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.primaSeguroDesgravamenBasico}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></span>
+											</td>
+											<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+												<td class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionalesPesos}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+												<h:inputHidden id="primaSegurosAdicionalesIndividualMitadPesos" name="primaSegurosAdicionalesIndividualPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionalesPesos}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:inputHidden>
+											</h:panelGroup>
+											<td class="align_centro"><span id="dividendoTotalUfIndividualMitadPesos"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.dividendoTotalConIndividuales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></span></td>
+											<td class="align_centro"><span id="dividendoTotalPesosIndividualMitadPesos"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosPagaLaMitadIndividualesTO.dividendoTotalPesosConIndividuales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></span></td>
+											<td class="align_centro"><h:outputText id="tasaCaeMitadPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAEIndividualesTO.tasaCAE}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+											<td class="align_centro"><h:outputText id="costoTotalMitadPesos" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.calculoCAEIndividualesTO.costoTotal}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+										</tr>
+									</h:panelGroup>					
+								</table>
+							</h:panelGroup>
+							<h:inputHidden id="dividendoTotalRecalculoIndividual" name="dividendoTotalRecalculoIndividual" value="#{simulacionCreditoHipotecarioBackingMB.dividendoTotalUFPDF}"></h:inputHidden>			
+							<h:inputHidden id="dividendoTotalPesosRecalculoIndividual" name="dividendoTotalPesosRecalculoIndividual" value="#{simulacionCreditoHipotecarioBackingMB.dividendoTotalPesosPDF}"></h:inputHidden>
+							<h:inputHidden id="dividendoTotalPagaMitadRecalculoIndividual" name="dividendoTotalPagaMitadRecalculoIndividual" value="#{simulacionCreditoHipotecarioBackingMB.dividendoTotalPagaMitadPDF}"></h:inputHidden>			
+							<h:inputHidden id="dividendoTotalPesosPagaMitadRecalculoIndividual" name="dividendoTotalPesosPagaMitadRecalculoIndividual" value="#{simulacionCreditoHipotecarioBackingMB.dividendoTotalPesosPagaMitadPDF}"></h:inputHidden>
+								<!-- Fin Seccion Simulacion Individual -->
+							<br/>
+							<!-- Sección Detalle Tasas,Gastos operacionales y Seguros -->
+							<h:inputHidden id="unidadFomento" name="unidadFomento" value="#{simulacionCreditoHipotecarioModelMB.configuracionSimuladorTO.valorUF}"></h:inputHidden>
+							<table width="100%" border="0" cellSpacing="0" cellPadding="0">
+								<tr>
+									<td width="300" class="mitad-iz">
+										<h:panelGroup id="tablaTasas">
+											<table width="100%" id="grilla44-der" border="0" cellSpacing="0" cellPadding="0"> 
+												<tr>
+													<th align="center" class="tit2 align_centro" colSpan="9"><h:outputText value="#{msgSimulacionCreditoHipotecario.tasas}" escape="false"/></th>
+												</tr>
+												<tr>
+													<th class="tit align_izquierda"><h:outputText value="#{msgSimulacionCreditoHipotecario.tasasUf}" escape="false"/></th>
+													<th width="100" class="tit align_centro tasasTam"><h:outputText value="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.descripcion}" escape="false"/></th>
+												</tr>
+												<tr>
+													<td height="22" class="align_izquierda"><h:outputText value="#{msgSimulacionCreditoHipotecario.costoFondo}" escape="false"/></td>
+													<td>
+														<h:inputText name="tmpCostoFondo" id="tmpCostoFondo" class="caja70 floatRight" style="display:none;" value="#{simulacionCreditoHipotecarioBackingMB.tasaCostoFondo}" onblur="simchip_validaMontoUF(this)"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputText>
+														<div id="uf1"><h:outputText id="costoFondoTasas" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.tasaBase}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></div>
+														<h:inputHidden id="tasaCostoFondo" name="tasaCostoFondo" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.tasaBase}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+													</td>											
+												</tr>
+												<tr>
+													<th height="22" class="align_izquierda"><h:outputText value="#{msgSimulacionCreditoHipotecario.comisionSpread}" escape="false"/></th>
+													<th>
+														<h:inputText name="tmpComision" id="tmpComision" class="caja70 floatRight" style="display:none;" value="#{simulacionCreditoHipotecarioBackingMB.tasaComision}" onblur="simchip_validaMontoUF(this)"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputText>
+														<div id="uf3"><h:outputText id="comisionTasas" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.tasaSpread}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></div>
+														<h:inputHidden id="tasaComision" name="tasaComision" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.tasaSpread}"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:inputHidden>
+													</th>											
+												</tr>
+												<tr>
+													<td height="22" class="align_izquierda"><span id="seguroIncendio"><h:outputText value="#{msgSimulacionCreditoHipotecario.seguroIncendioSismo}" escape="false"/></span></td>
+													<td>
+														<div id="uf5"><h:outputText id="seguroIncendioTasas" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.tasaIncendio}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="5"/></h:outputText></div>
+													</td>											
+												</tr>
+												<tr>
+													<th height="22" class="align_izquierda"><h:outputText value="#{msgSimulacionCreditoHipotecario.seguroDesgravamenColectivo}" escape="false"/></th>
+													<th >
+														<div id="uf7"><h:outputText id="seguroDesgravamenTasas" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosTO.tasaDesgravamen}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="5"/></h:outputText></div>
+													</th>											
+												</tr>
+												<tr>
+													<td class="desgTam align_izquierda" colSpan="3">
+														<div id="btuf">
+															<h:outputLink styleClass="btn-mas enlaceEst" onclick="modificar('uno');" value="javascript:;"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.modificar}" escape="false"/></b></h:outputLink>
+														</div>
+														<div id="cbtuf" style="display: none;" class="divBotones">
+															<h:commandButton id="cancelar" styleClass="boton botonCancelar" onclick="modificar('dos');" type="button" value="Cancelar"/>
+															<h:commandButton id="recalcular" styleClass="boton botonRecalcular" onclick="modificar('tres');" type="button" value="Recalcular" />
+														</div>
+													</td>
+												</tr>
+											</table>
+										</h:panelGroup>
+										<h:commandButton id="recalcularTasas" actionListener="#{simulacionCreditoHipotecarioBackingMB.recalculaSimulacion}" style="display:none;" styleClass="botonRecalcularTasas" onclick="setSegDesgravamen();setSegIncendio();activarMataAngustia();">
+											<f:ajax execute="tmpCostoFondo tmpComision" render="tablaSimulacionNormal tablaSimulacionComparacion tablaSimulacionIndividual tablaTasas tasa"></f:ajax>
+										</h:commandButton>
+										<table width="100%" border="0" id="grilla44-der" cellSpacing="0" cellPadding="0">
+											<tr>
+												<th align="center" class="tit2 align_centro" colSpan="9"><h:outputText value="#{msgSimulacionCreditoHipotecario.detalleGastos}" escape="false"/></th>											
+											</tr>
+											<tr>
+												<th width="180" class="tit align_izquierda"><h:outputText value="#{msgSimulacionCreditoHipotecario.concepto}" escape="false"/></th>
+												<th width="40%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></th>
+												<th width="40%" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></th>
+											</tr>
+											<tr>
+												<td height="22" class="align_izquierda"><h:outputText value="#{msgSimulacionCreditoHipotecario.tasacion}" escape="false"/></td>
+												<td>
+													<h:inputText maxlength="9" id="tmpTasacion" class="caja70 floatRight" name="tmpTasacion" style="display:block;" onblur="simchip_convertirUF2Pesos(this,'tmpTasacionPesos');simchip_validaMontoUF(this);" value="#{simulacionCreditoHipotecarioBackingMB.tasacion}" >
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/>
+													</h:inputText>
+												</td>
+												<td>
+													<h:inputText maxlength="12" id="tmpTasacionPesos" class="caja70 floatRight" name="tmpTasacionPesos" style="display:block;" onblur="simchip_convertirPesos2UF(this,'tmpTasacion');simchip_validaMontoPesos(this)"  value="#{simulacionCreditoHipotecarioBackingMB.tasacionPesos}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/>
+													</h:inputText>
+												</td>
+											</tr>
+											<tr>
+												<th height="22" class="align_izquierda"><h:outputText value="#{msgSimulacionCreditoHipotecario.estudioTitulos}" escape="false"/></th>
+												<th>
+													<h:inputText maxlength="9" id="tmpEstudioTitulos" class="caja70 floatRight" name="tmpEstudioTitulos" style="display:block;" onblur="simchip_convertirUF2Pesos(this,'tmpEstudioTitulosPesos');simchip_validaMontoUF(this);" value="#{simulacionCreditoHipotecarioBackingMB.estudioTitulos}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/>
+													</h:inputText>
+												</th>
+												<th>
+													<h:inputText maxlength="12" id="tmpEstudioTitulosPesos" class="caja70 floatRight" name="tmpEstudioTitulosPesos" style="display:block;" onblur="simchip_convertirPesos2UF(this,'tmpEstudioTitulos');simchip_validaMontoPesos(this)" value="#{simulacionCreditoHipotecarioBackingMB.estudioTitulosPesos}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/>
+													</h:inputText>
+												</th>
+											</tr>
+											<tr>
+												<td height="22" class="align_izquierda"><h:outputText value="#{msgSimulacionCreditoHipotecario.borradorEscritura}" escape="false"/></td>
+												<td>
+													<h:inputText maxlength="9" id="tmpBorradorEscritura" class="caja70 floatRight" name="tmpBorradorEscritura" style="display:block;" onblur="simchip_convertirUF2Pesos(this,'tmpBorradorEscrituraPesos');simchip_validaMontoUF(this);" value="#{simulacionCreditoHipotecarioBackingMB.borradorEscritura}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/>
+													</h:inputText>
+												</td>
+												<td>
+													<h:inputText maxlength="12" id="tmpBorradorEscrituraPesos" class="caja70 floatRight" name="tmpBorradorEscrituraPesos" style="display:block;" onblur="simchip_convertirPesos2UF(this,'tmpBorradorEscritura');simchip_validaMontoPesos(this)" value="#{simulacionCreditoHipotecarioBackingMB.borradorEscrituraPesos}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/>
+													</h:inputText>
+												</td>
+											</tr>
+											<tr>
+												<th height="22" class="align_izquierda"><h:outputText value="#{msgSimulacionCreditoHipotecario.notaria}" escape="false"/></th>
+												<th>
+													<h:inputText maxlength="9" id="tmpNotaria" class="caja70 floatRight" name="tmpNotaria" style="display:block;" onblur="simchip_convertirUF2Pesos(this,'tmpNotariaPesos');simchip_validaMontoUF(this);" value="#{simulacionCreditoHipotecarioBackingMB.notaria}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/>
+													</h:inputText>
+												</th>
+												<th>
+													<h:inputText maxlength="12" id="tmpNotariaPesos" class="caja70 floatRight" name="tmpNotariaPesos" style="display:block;" onblur="simchip_convertirPesos2UF(this,'tmpNotaria');simchip_validaMontoPesos(this)" value="#{simulacionCreditoHipotecarioBackingMB.notariaPesos}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/>
+													</h:inputText>
+												</th>
+											</tr>
+											<tr>
+												<td height="22" class="align_izquierda"><h:outputText value="#{msgSimulacionCreditoHipotecario.impuesto}" escape="false"/></td>
+												<td>
+													<h:inputText maxlength="9" id="tmpImpuesto" class="caja70 floatRight" name="tmpImpuesto" style="display:block;" onblur="simchip_convertirUF2Pesos(this,'tmpImpuestoPesos');simchip_validaMontoUF(this);" value="#{simulacionCreditoHipotecarioBackingMB.impuestoUF}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/>
+													</h:inputText>
+												</td>
+												<td>
+													<h:inputText maxlength="12" id="tmpImpuestoPesos" class="caja70 floatRight" name="tmpImpuestoPesos" style="display:block;" onblur="simchip_convertirPesos2UF(this,'tmpImpuesto');simchip_validaMontoPesos(this)" value="#{simulacionCreditoHipotecarioBackingMB.impuestoPesos}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/>
+													</h:inputText>
+												</td>
+											</tr>
+											<tr>
+												<th height="22" class="align_izquierda"><h:outputText value="#{msgSimulacionCreditoHipotecario.conservadorBienesRaices}" escape="false"/></th>
+												<th>
+													<h:inputText maxlength="9" id="tmpImpuestoCBR" class="caja70 floatRight" name="tmpImpuestoCBR" style="display:block;" onblur="simchip_convertirUF2Pesos(this,'tmpImpuestoCBRPesos');simchip_validaMontoUF(this);" value="#{simulacionCreditoHipotecarioBackingMB.conservadorBRUF}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/>
+													</h:inputText>
+												</th>
+												<th>
+													<h:inputText maxlength="12" id="tmpImpuestoCBRPesos" class="caja70 floatRight" name="tmpImpuestoCBRPesos" style="display:block;" onblur="simchip_convertirPesos2UF(this,'tmpImpuestoCBR');simchip_validaMontoPesos(this)"  value="#{simulacionCreditoHipotecarioBackingMB.conservadorBRUFPesos}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/>
+													</h:inputText>
+												</th>
+											</tr>
+											<tr>
+												<td height="22" class="align_izquierda"><h:outputText value="#{msgSimulacionCreditoHipotecario.gestoria}" escape="false"/></td>
+												<td>
+													<h:inputText maxlength="9" id="tmpGestoria" class="caja70 floatRight" name="tmpGestoria" style="display:block;" onblur="simchip_convertirUF2Pesos(this,'tmpGestoriaPesos');simchip_validaMontoUF(this);" value="#{simulacionCreditoHipotecarioBackingMB.gestoria}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/>
+													</h:inputText>
+												</td>
+												<td>
+													<h:inputText maxlength="12" id="tmpGestoriaPesos" class="caja70 floatRight" name="tmpGestoriaPesos" style="display:block;" onblur="simchip_convertirPesos2UF(this,'tmpGestoria');simchip_validaMontoPesos(this)" value="#{simulacionCreditoHipotecarioBackingMB.gestoriaPesos}">
+														<f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/>
+													</h:inputText>
+												</td>
+											</tr>
+											<tr>
+												<td height="22" class="align_izquierda"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.totalGastosOperacionales}" escape="false"/></b></td>
+												<td>
+													<b><span id="lblTotal" style="display: block;"></span></b>
+												</td>
+												<td>
+													<b><span id="lblTotalPesos" style="display: block;"></span></b>
+												</td>
+											</tr>
+											<tr>
+												<h:panelGroup  styleClass="align_centro" layout="block" rendered="#{simulacionCreditoHipotecarioBackingMB.dfl2 == '1'}">
+													<td colSpan="3">
+														<div id="comentarios" class="margenComentarios">
+															<h:outputText value="#{msgSimulacionCreditoHipotecario.adventencia}" escape="false"/>
+															<p><h:outputText value="#{msgSimulacionCreditoHipotecario.informacion2}" escape="false"/></p>
+														</div>
+													</td>
+												</h:panelGroup>
+											</tr>
+										</table>
+										<br></br>
+										<table width="100%" border="0" cellSpacing="0" cellPadding="0">
+											<tr align="center">
+												<td>
+													<h:commandButton styleClass="boton" id="botonVolver" name="botonVolver" value="Volver" action="#{simulacionCreditoHipotecarioBackingMB.volverPasoUno}">
+													</h:commandButton>
+													<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+													<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+													<h:commandButton styleClass="boton" id="botonConfirmar" name="botonConfirmar" type="button" value="Imprimir Simulación" onclick="simchip_validaGastosOperacionales()"/>
+													<h:commandLink styleClass="botonConfirmar" target="_blank" style="display:none" actionListener="#{simulacionCreditoHipotecarioBackingMB.generarPDFSimulacion}"/>
+													<h:outputText
+														value="#{msgSimulacionCreditoHipotecario.espacio}"
+														escape="false" /> 
+													<h:outputText
+														value="#{msgSimulacionCreditoHipotecario.espacio}"
+														escape="false" /> 
+													<h:commandButton styleClass="boton"														
+														id="botonAceptarOferta" name="botonAceptarOferta"
+														type="submit" value="#{msgSimulacionCreditoHipotecario.botonAceptar}"
+														action="#{simulacionCreditoHipotecarioBackingMB.iniciarGeneracionInstanciaProcesoCHIP}" />													
+												</td>
+											</tr>
+										</table>
+									</td>
+									<td class="mitad-der">
+										<h:panelGroup rendered="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales>0}">
+											<table width="100%" id="grilla44-der" border="0" cellSpacing="0" cellPadding="0">
+												<tr>
+													<th align="center" class="tit2 align_centro" colSpan="4"><h:outputText value="#{msgSimulacionCreditoHipotecario.segurosAdicionalesEscogidos}" escape="false"/></th>
+												</tr>
+												<tr>
+													<th width="50%" class="tit" rowSpan="2">
+														<center><h:outputText value="#{msgSimulacionCreditoHipotecario.seguroAdicional}" escape="false"/></center>
+													</th>
+													<th width="10%" class="tit" rowSpan="2">
+														<center><h:outputText value="#{msgSimulacionCreditoHipotecario.escogido}" escape="false"/></center>
+													</th>
+													<th width="40%" class="tit" colSpan="2">
+														<center><h:outputText value="#{msgSimulacionCreditoHipotecario.primaMensual}" escape="false"/></center>
+													</th>
+												</tr>
+												<tr>
+													<th width="20%" class="tit">
+														<div align="center"><h:outputText value="#{msgSimulacionCreditoHipotecario.UF}" escape="false"/></div>
+													</th>
+													<th width="20%" class="tit">
+														<div align="center"><h:outputText value="#{msgSimulacionCreditoHipotecario.peso}" escape="false"/></div>
+													</th>
+												</tr>
+												<ui:repeat var="seguroAdicional" value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.segurosAdicionalesTO}">
+													<tr>
+														<td height="22" class="align_izquierda"><h:outputText value="#{seguroAdicional.producto}" escape="false"/></td>
+														<td>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{seguroAdicional.estado == '1'}">
+																<img width="7" height="8" src="/resources/simuladorhipotecario/images/icono_feriados.gif" complete="complete"/>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{seguroAdicional.estado == '0'}">
+																<h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false"/>
+															</h:panelGroup>
+														</td>
+														<td align="center"><h:outputText value="#{seguroAdicional.prima}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></td>
+														<td align="center"><h:outputText value="#{seguroAdicional.prima * simulacionCreditoHipotecarioModelMB.configuracionSimuladorTO.valorUF}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></td>
+													</tr>
+												</ui:repeat>
+												<tr>
+													<td height="22" class="align_izquierda" colSpan="2">
+														<b><h:outputText value="#{msgSimulacionCreditoHipotecario.totalPrimaSeguros}" escape="false"/></b>
+													</td>
+													<td height="22" class="align_derecha">
+														<b><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionales}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></b>
+													</td>
+													<td height="22" class="align_derecha">
+														<b><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.totalPrimaSegurosAdicionalesPesos}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></b>
+													</td>
+												</tr>
+											</table>
+										</h:panelGroup>
+											<table width="100%" id="grilla44-der" border="0" cellSpacing="0" cellPadding="0">
+												<tr>
+													<th class="tit2 align_centro" colspan="2"><h:outputText value="#{msgSimulacionCreditoHipotecario.tituloSegurosIndividuales}" escape="false"/></th>
+												</tr>
+												<tr>
+													<th width="130" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.seguroDesgravamenIndividual}" escape="false"/></th>
+													<th width="130" class="tit align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.seguroIncendioSismoIndividual}" escape="false"/></th>
+													<h:inputHidden id="seguroIndividualDesgravamen" name="seguroIndividualDesgravamen" value="#{simulacionCreditoHipotecarioBackingMB.seguroIndividualDesgravamen}"/>
+										            <h:inputHidden id="seguroIndividualIncendio" name="seguroIndividualIncendio" value="#{simulacionCreditoHipotecarioBackingMB.seguroIndividualIncendio}"/>									            	
+												</tr>
+												<tr>
+													<td class="tdSeguroIndividual">
+														<table width="100%" id="grilla44-der" border="0" cellSpacing="0" cellPadding="0">
+															<ui:repeat var="seguroIndividual" value="#{simulacionCreditoHipotecarioBackingMB.segurosIndividualesTO}" varStatus="status">
+																<h:panelGroup layout="block" rendered="#{seguroIndividual.tipo == 'D'}">
+																	<tr>
+																		<td class="align_izquierda">
+																			<p class="p-simchip">
+																				<input name="seguroDesgravamen" value="#{seguroIndividual.codigo}" type="checkbox" onclick="simchip_checkSegIndividualDesgravamen(this)"/>
+																				<h:outputText value="#{seguroIndividual.nombre}" escape="false"/>
+																			</p>
+																		</td>
+																	</tr>
+																</h:panelGroup>
+															</ui:repeat>																												
+														</table>
+														<script>setSegDesgravamen();</script>
+										            </td>
+										            <td class="tdSeguroIndividual">
+										            	<table width="100%" id="grilla44-der" border="0" cellSpacing="0" cellPadding="0">									            		
+											            	<ui:repeat var="seguroIndividual" value="#{simulacionCreditoHipotecarioBackingMB.segurosIndividualesTO}" varStatus="status">
+																<h:panelGroup layout="block" rendered="#{seguroIndividual.tipo == 'IS'}">
+																	<tr>
+																		<td class="align_izquierda">	
+																			<p class="p-simchip">
+																				<input name="seguroIncendio" value="#{seguroIndividual.codigo}" type="checkbox" onclick="simchip_checkSegIndividualIncendio(this)"/>
+																				<h:outputText value="#{seguroIndividual.nombre}" escape="false"/>
+																			</p>
+																		</td>
+																	</tr>
+																</h:panelGroup>
+															</ui:repeat>	
+															<td height="20px"><h:outputText value="#{msgSimulacionCreditoHipotecario.espacio}" escape="false" /></td>														
+														</table>
+														<script>setSegIncendio();</script>
+										            </td>
+												</tr>
+												<tr>
+													<td class="align_derecha" colSpan="2">
+														<div id="cbtuf2">
+															<h:commandButton value="Recalcular" type="button" onclick="actualizaIndividuales();" styleClass="boton"/>
+															<h:commandButton id="recalcularIndividuales" actionListener="#{simulacionCreditoHipotecarioBackingMB.recalculaIndividuales}" style="display:none;" styleClass="botonRecalcularIndividuales">
+																<f:ajax execute="seguroIndividualDesgravamen seguroIndividualIncendio" render="tasaCaeIndividual costoTotalIndividual tasaCaeMitad costoTotalMitad"></f:ajax>
+															</h:commandButton>
+															<h:commandButton id="recalcularIndividualesPesos" actionListener="#{simulacionCreditoHipotecarioBackingMB.recalculaIndividuales}" style="display:none;" styleClass="botonRecalcularIndividualesPesos">
+																<f:ajax execute="seguroIndividualDesgravamen seguroIndividualIncendio" render="tasaCaeIndividualPesos costoTotalIndividualPesos tasaCaeMitadPesos costoTotalMitadPesos"></f:ajax>
+															</h:commandButton>
+														</div>
+													</td>
+												</tr>
+											</table>
+										<br></br>
+										
+										<!--  Coberturas Individuales: Inicio -->
+										<table border="0" cellpadding="0" cellspacing="0" width="100%">
+											<td height="22" class="textoCoberturas"><h:outputText value="#{msgSimulacionCreditoHipotecario.textoCoberturas}" escape="false"/></td>
+										</table>
+										<br/>
+										<table width="100%" id="grilla44-der" border="0" cellSpacing="0" cellPadding="0">
+											<tr>
+												<th class="tit2 align_centro" colSpan="4">
+													<h:outputText value="#{msgSimulacionCreditoHipotecario.coberturaSegurosIndividuales}" escape="false"/>
+													<h:commandButton id="botonCoberturas" styleClass="boton botonCoberturas" type="button" value="+" onclick="mostrarCobertura();"/>
+												</th>
+											</tr>
+										</table>
+										<div id="divCoberturasIndividuales" style="display:none;">
+											<table width="100%" id="grilla44-der" border="0" cellSpacing="0" cellPadding="0">
+												<tr>
+													<th class="tit align_centro" rowSpan="1" colSpan="7"><h:outputText value="#{msgSimulacionCreditoHipotecario.informeComparativo}" escape="false"/></th>
+												</tr>
+												<tr>
+													<th class="tit align_izquierda" width="280" colSpan="4"><h:outputText value="#{msgSimulacionCreditoHipotecario.coberturaIncendioSismo}" escape="false"/></th>
+													<th class="tit align_centro tasasTam" width="40"><h:outputText value="#{msgSimulacionCreditoHipotecario.colectivoLicitado}" escape="false"/></th>
+													<th class="tit align_centro tasasTam" width="40"><h:outputText value="#{msgSimulacionCreditoHipotecario.individualBasico}" escape="false"/></th>
+													<th class="tit align_centro tasasTam" width="40"><h:outputText value="#{msgSimulacionCreditoHipotecario.individualHogarSeguro}" escape="false"/></th>
+												</tr>
+									            <tr>
+									            	<td height="22" vAlign="top" class="align_izquierda tdCoberturas" rowSpan="22" >
+									            		<b>
+									            			<h:outputText value="#{msgSimulacionCreditoHipotecario.coberturas}" escape="false"/>
+									            		</b>
+									            	</td>
+									            	<td height="22" class="align_izquierda" rowSpan="1" colSpan="6">
+									            		<b>
+									            		    <h:outputText value="#{msgSimulacionCreditoHipotecario.coberturasEdificio}" escape="false"/>
+									            		</b>									            		
+									            	</td>
+									            </tr>
+									             <ui:repeat var="coberturaSeguro" value="#{simulacionCreditoHipotecarioBackingMB.coberturasSeguros}" varStatus="status">													
+													<h:panelGroup styleClass="align_centro" layout="block" rendered="#{status.index>=0 and coberturaSeguro.inicioFinIncendio>status.index}">
+													    <tr>															
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.subDescripcionCobertura == '' and coberturaSeguro.incendioAdicional == 0}">	
+																	<td height="22" colSpan="3" class="align_izquierda"><h:outputText value="#{coberturaSeguro.descripcionCobertura}" escape="false"/></td>	
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioColectivoLicitado == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioColectivoLicitado == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualBasico == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualBasico == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualHogar == 1}">
+																	<th colSpan="2"><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualHogar == 0}">
+																	<th colSpan="2"><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+														</tr>
+													</h:panelGroup>													
+												</ui:repeat>
+									            <tr>
+													<td height="22" class="align_izquierda" colspan="6"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.coberturasContenido}" escape="false"/></b></td>
+												</tr>
+									            <ui:repeat var="coberturaSeguro" value="#{simulacionCreditoHipotecarioBackingMB.coberturasSeguros}" varStatus="status">
+													<h:panelGroup styleClass="align_centro" layout="block" rendered="#{status.index>=coberturaSeguro.inicioFinIncendio and coberturaSeguro.inicioFinIncendioContenido>status.index}">
+													    <tr>	
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.subDescripcionCobertura == '' and coberturaSeguro.incendioAdicional == 0}">	
+																	<td height="22" colSpan="3" class="align_izquierda"><h:outputText value="#{coberturaSeguro.descripcionCobertura}" escape="false"/></td>	
+															</h:panelGroup>	
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioColectivoLicitado == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioColectivoLicitado == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualBasico == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualBasico == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualHogar == 1}">
+																	<th colSpan="2"><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualHogar == 0}">
+																	<th colSpan="2"><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+														</tr>
+													</h:panelGroup>													
+												</ui:repeat>
+												<tr>
+													<td height="22" class="align_izquierda" valign="top" rowspan="11"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.exclusiones}" escape="false"/></b></td>
+													<td height="22" class="align_izquierda" colspan="6"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.exclusionesEdificio}" escape="false"/></b></td>
+												</tr>
+												<ui:repeat var="coberturaSeguro" value="#{simulacionCreditoHipotecarioBackingMB.coberturasSeguros}" varStatus="status">
+													<h:panelGroup styleClass="align_centro" layout="block" rendered="#{status.index>=coberturaSeguro.inicioFinIncendioContenido and coberturaSeguro.inicioFinExclusionIncendio>status.index}">
+														<tr>	
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.subDescripcionCobertura == '' and coberturaSeguro.incendioAdicional == 0}">	
+																	<td height="22" colSpan="3" class="align_izquierda"><h:outputText value="#{coberturaSeguro.descripcionCobertura}" escape="false"/></td>	
+															</h:panelGroup>	
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioColectivoLicitado == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioColectivoLicitado == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualBasico == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualBasico == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualHogar == 1}">
+																	<th colSpan="2"><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualHogar == 0}">
+																	<th colSpan="2"><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+														</tr>	
+													</h:panelGroup>													
+												</ui:repeat>
+												<tr>
+													<td height="22" style="text-align: left" colspan="6"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.exclusionesContenido}" escape="false"/></b></td>
+												</tr>
+												<ui:repeat var="coberturaSeguro" value="#{simulacionCreditoHipotecarioBackingMB.coberturasSeguros}" varStatus="status">
+													<h:panelGroup styleClass="align_centro" layout="block" rendered="#{status.index>=coberturaSeguro.inicioFinExclusionIncendio and coberturaSeguro.inicioFinExclusionContenido>status.index}">
+														<tr>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.subDescripcionCobertura == '' and coberturaSeguro.incendioAdicional == 0}">	
+																	<td height="22" colSpan="3" class="align_izquierda"><h:outputText value="#{coberturaSeguro.descripcionCobertura}" escape="false"/></td>	
+															</h:panelGroup>	
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioColectivoLicitado == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioColectivoLicitado == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.na}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualBasico == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualBasico == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.na}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualHogar == 1}">
+																	<th colSpan="2"><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.incendioIndividualHogar == 0}">
+																	<th colSpan="2"><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+														</tr>	
+													</h:panelGroup>													
+												</ui:repeat>
+												<tr>
+													<td height="22" class="align_izquierda"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.comisionIntermediacion}" escape="false"/></b></td>
+													<td height="22" class="align_izquierda" colSpan="3"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.bciSeguros}" escape="false"/></b></td>
+													<ui:repeat var="coberturaSeguro" value="#{simulacionCreditoHipotecarioBackingMB.coberturasSeguros}" varStatus="status">
+														<h:panelGroup styleClass="align_centro" layout="block" rendered="#{status.index==0}">
+														 	<th><div class="align_centro"><h:outputText value="#{coberturaSeguro.porcentajeIncendioColectivoLicitado}" escape="false"/></div></th>
+															<th><div class="align_centro"><h:outputText value="#{coberturaSeguro.porcentajeIncendioIndividualBasico}" escape="false"/></div></th>
+															<th><div class="align_centro"><h:outputText value="#{coberturaSeguro.porcentajeIncendioIndividualHogar}" escape="false"/></div></th>
+														</h:panelGroup>
+													</ui:repeat>
+												</tr>
+												<tr>
+													
+													<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 21 and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 22}">
+														<td height="22" class="align_izquierda tit" colspan="4" ><b><h:outputText value="#{msgSimulacionCreditoHipotecario.primaTotalMensualUf}" escape="false"/></b></td>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.montoSegIncSis}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></div></th>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaOfertaMinima}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></div></th>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaOfertaMaxima}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></div></th>
+													</h:panelGroup>
+													<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 21 or simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+														<td height="22" class="align_izquierda tit" colspan="4" ><b><h:outputText value="#{msgSimulacionCreditoHipotecario.primaTotalMensualPesos}" escape="false"/></b></td>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.montoSegIncSis}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></div></th>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaOfertaMinima}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></div></th>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaOfertaMaxima}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></div></th>
+													</h:panelGroup>
+												</tr>
+											 </table>	
+											 <br></br>
+											<table border="0" cellpadding="0" cellspacing="0" id="grilla44-der" width="100%">
+												<tr>
+													<th class="tit align_izquierda" colspan="3"><h:outputText value="#{msgSimulacionCreditoHipotecario.segurosDesgravamenBci}" escape="false"/></th>
+													<th class="tit align_centro tasasTam"  width="40"><h:outputText value="#{msgSimulacionCreditoHipotecario.desgravamenIndividualFull}" escape="false"/></th>
+													<th class="tit align_centro tasasTam"  width="40"><h:outputText value="#{msgSimulacionCreditoHipotecario.desgravamenIndividualPlus}" escape="false"/></th>
+													<th class="tit align_centro tasasTam"  width="40"><h:outputText value="#{msgSimulacionCreditoHipotecario.desgravamenIndividualBasico}" escape="false"/></th>
+													<th class="tit align_centro tasasTam"  width="40"><h:outputText value="#{msgSimulacionCreditoHipotecario.desgravamenColectivoLicitado}" escape="false"/></th>
+												</tr>
+											    <tr>
+											    	<td class="align_izquierda" valign="top" rowspan="5">
+											    		<b>
+											    			<h:outputText value="#{msgSimulacionCreditoHipotecario.coberturas}" escape="false"/>
+											    		</b>
+											    	</td>											    	
+											    </tr> 
+											    <ui:repeat var="coberturaSeguro" value="#{simulacionCreditoHipotecarioBackingMB.coberturasSeguros}" varStatus="status">													
+													<h:panelGroup styleClass="align_centro" layout="block" rendered="#{status.index>=coberturaSeguro.inicioFinExclusionContenido and coberturaSeguro.inicioFinDesgravamen>status.index}">
+													    <tr>
+													        <h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.subDescripcionCobertura == ''}">	
+																	<td height="22" colSpan="2" class="align_izquierda"><h:outputText value="#{coberturaSeguro.descripcionCobertura}" escape="false"/></td>	
+															</h:panelGroup>			
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.subDescripcionCobertura != ''}">	
+																	<td height="22" colSpan="1" class="align_izquierda"><h:outputText value="#{coberturaSeguro.descripcionCobertura}" escape="false"/></td>	
+																	<td height="22" colSpan="1" class="align_izquierda"><h:outputText value="#{coberturaSeguro.subDescripcionCobertura}" escape="false"/></td>	
+															</h:panelGroup>									
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenIndividualFull == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenIndividualFull == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenIndividualPlus == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenIndividualPlus == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenIndividualBasico == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenIndividualBasico == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenColectivoLicitado == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenColectivoLicitado == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+														</tr>
+													</h:panelGroup>													
+												</ui:repeat>
+												<tr>
+											    	<td class="align_izquierda" valign="top" rowspan="10">
+											    		<b>
+											    			<h:outputText value="#{msgSimulacionCreditoHipotecario.exclusiones}" escape="false"/>
+											    		</b>
+											    	</td>											    	
+											    </tr> 
+											    <ui:repeat var="coberturaSeguro" value="#{simulacionCreditoHipotecarioBackingMB.coberturasSeguros}" varStatus="status">													
+													<h:panelGroup styleClass="align_centro" layout="block" rendered="#{status.index>=coberturaSeguro.inicioFinDesgravamen and coberturaSeguro.inicioFinExclusionDesgravamen>status.index}">
+													    <tr>
+													    	<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.subDescripcionCobertura == ''}">	
+																	<td height="22" colSpan="2" class="align_izquierda"><h:outputText value="#{coberturaSeguro.descripcionCobertura}" escape="false"/></td>	
+															</h:panelGroup>													
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenIndividualFull == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenIndividualFull == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenIndividualPlus == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenIndividualPlus == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenIndividualBasico == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenIndividualBasico == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenColectivoLicitado == 1}">
+																	<th><div class="align_centro"><img src="/resources/simuladorhipotecario/images/icono_feriados.gif" width="7" height="8" /></div></th>
+															</h:panelGroup>
+															<h:panelGroup styleClass="align_centro" layout="block" rendered="#{coberturaSeguro.desgravamenColectivoLicitado == 0}">
+																	<th><div class="align_centro"><h:outputText value="#{msgSimulacionCreditoHipotecario.no}" escape="false"/></div></th>
+															</h:panelGroup>
+														</tr>	
+													</h:panelGroup>													
+												</ui:repeat>
+												<tr>
+													<td height="22" class="align_izquierda"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.comisionIntermediacion}" escape="false"/></b></td>
+													<td height="22" class="align_izquierda" colSpan="2"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.bciSeguros}" escape="false"/></b></td>
+													<ui:repeat var="coberturaSeguro" value="#{simulacionCreditoHipotecarioBackingMB.coberturasSeguros}" varStatus="status">
+														<h:panelGroup styleClass="align_centro" layout="block" rendered="#{status.index==0}">
+														 	<th><div class="align_centro"><h:outputText value="#{coberturaSeguro.porcentajeDesgravamenIndividualFull}" escape="false"/></div></th>
+															<th><div class="align_centro"><h:outputText value="#{coberturaSeguro.porcentajeDesgravamenIndividualPlus}" escape="false"/></div></th>
+															<th><div class="align_centro"><h:outputText value="#{coberturaSeguro.porcentajeDesgravamenIndividualBasico}" escape="false"/></div></th>
+															<th><div class="align_centro"><h:outputText value="#{coberturaSeguro.porcentajeDesgravamenColectivoLicitado}" escape="false"/></div></th>
+														</h:panelGroup>
+													</ui:repeat>
+												</tr>
+												<tr>													
+													<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 21 and simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto != 22}">
+														<td height="22" class="align_izquierda tit" colspan="3"><b><h:outputText value="#{msgSimulacionCreditoHipotecario.primaTotalMensualUf}" escape="false"/></b></td>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenFull}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></div></th>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenPlus}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></div></th>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenBasico}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></div></th>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.montoSegDesg}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" minFractionDigits="2" maxFractionDigits="2"/></h:outputText></div></th>
+													</h:panelGroup>
+													<h:panelGroup rendered="#{simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 21 or simulacionCreditoHipotecarioBackingMB.productoSeleccionado.codProducto == 22}">
+														<td height="22" class="align_izquierda tit" colspan="3" ><b><h:outputText value="#{msgSimulacionCreditoHipotecario.primaTotalMensualPesos}" escape="false"/></b></td>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenFull}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></div></th>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenPlus}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></div></th>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.primaSeguroDesgravamenBasico}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></div></th>
+														<th class="tit"><div class="align_centro"><h:outputText value="#{simulacionCreditoHipotecarioModelMB.resultadoSimulacionTO.simulacionPlazosIndividualesTO.montoSegDesg}" escape="false"><f:convertNumber currencySymbol="" type="currency" locale="es_CL" maxFractionDigits="0"/></h:outputText></div></th>
+													</h:panelGroup>
+												</tr>
+											</table>
+										</div>
+									<!-- Coberturas Individuales: Fin-->
+									</td>
+								</tr>
+							</table>
+							<br></br>
+							<!-- Fin Sección Detalle Tasas,Gastos operacionales y Seguros -->
+						</td>
+					</tr>
+				</table>
+				<script>setGastosOperacionales()</script>
+			</h:form> 
+			<h:panelGroup id="mensajes_validacion" layout="block" styleClass="mensaje_activar_ttff" rendered="#{not empty facesContext.messageList}" >
+			 	<table class="tabla_mensajes_error">
+					<ui:repeat value="#{facesContext.messageList}" var="facesMessage">
+						<tr>
+							<td><h:outputText value="#{facesMessage.detail}" escape="false" /></td>
+						</tr>
+					</ui:repeat>
+			    </table>
+			 </h:panelGroup>					
+		</h:panelGroup>
+		<!--END PASO 2-->
+	 </div>
+	<iframe width="174" height="189" name="gToday:normal" id="gToday:normal:gfPop3:plugins.js" src="/resources/simuladorhipotecario/js/ipopeng.htm" scrolling="no" frameborder="0" style="visibility:visible;z-index:999;position:absolute;left:-500px;top:0px;"/>
+	</h:body>	
+</html>
+
+<!--
+/***************************************************************************************************************
+* Archivo:          vistaSimuladorHipotecario.xhtml
+* Descripción       Este xhtml tiene la funcionalidad de desplegar las pantallas del simulador Bci Home.
+* Path              /cl/bci/aplicaciones/productos/colocaciones/simulacion/hipotecario/vista/
+* "Todos los derechos reservados por Banco de Credito e Inversiones."
+*          
+* Historial Cambios
+*
+* versión   fecha         autor                        cambios
+* =======   ==========    =====================        =========================================================
+* 1.0       30/11/2013    Nicole Sanhueza.             version inicial.
+* 1.1       06/01/2015    Nicole Sanhueza.             Se agrega logica para despliegue de productos en pesos y
+*													   productos paga la mitad en paso 2, se elimina valor por 
+*													   defecto en campos de credito del paso 1.				
+* 1.2       21/04/2015    Nicole Sanhueza (Sermaluc) - Harold Mora (Ing. BCI)      Se agrega logica para despliegue de texto "Tipo Vivienda"
+*													   en vista de resultado para cuando la vivienda sea usada,
+*													   tambien se agrega texto para Departamento Usado.				
+* 1.3		07/04/2015	  Jose Palma (TINet), Eduardo Mascayano (TINet) - Patricio Candia (Ing. Soft BCI)	Se agrega logica para generar instancias de proceso chip sus mensajes de errores. 
+* 1.4		26/05/2015	  Alfredo Parra (Sermaluc Ltda.) - Alfonso Sanchez (Ing. BCI). Se agrega logica para 
+* 1.3	    04/06/2015	  Nicole Sanhueza (Sermaluc Ltda.) - Alfonso Sanchez (Ing. BCI). Se agregan hidden para dividendos totales y poder desplegarlos correctamente en la impresion.
+****************************************************************************************************************/
+ -->

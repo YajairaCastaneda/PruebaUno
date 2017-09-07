@@ -1,0 +1,182 @@
+productospesos;valor=21#22;
+omitirCanal100;valor=2#3#4#6#13#17#26;
+omitirCanal110;valor=2#3#4#6#13#17#26;
+omitirCanal150;valor=2#3#4#6#17#26;
+omitirCanal151;valor=2#3#4#6#17#26;
+omitirCanal800;valor=15#18#26;
+detalleSimuladorPDF;xsl110=xsl/detalleSimulacionPDF.xsl;xsl800=xsl/NovadetalleSimulacionPDF.xsl;xsl100=xsl/detalleSimulacionPDF.xsl;
+detalleSimuladorHTML;xsl110=xsl/detalleSimulacionHTML.xsl;xsl800=xsl/NovadetalleSimulacionHTML.xsl;xsl100=xsl/detalleSimulacionHTML.xsl;
+mailHipotecario;Desc110=leadchip@bci.cl;Desc800=bcihome@bcinova.cl;Desc100=chipclienteTbanc@bci.cl,chipnoclienteTbanc@bci.cl;subjectAsesoria=Credito Hipotecario: Solicitud de Asesoria;DescNova=leadbcihome@bci.cl;
+logo;url110=img/logoBci.jpg;url800=img/logoNova.jpg;url100=extras/chiphipotecario/logo_tbanc.gif;
+productoOcultaControles;producto20=id_trReprogramacion##id_trSitioTerreno##id_trLocalOficina;
+productoDescarte;items=3:20;
+canalDefault;codigo=150;
+################# Valores añadidos para la omisión según el objetivo del crédito #########
+omitirObjetivo2;valor=11;
+MONTO_CONTENIDO_0;PRIMA=0-0.00,1-0.00,2-0.00,3-0.00;MONTO_ROBO=0;
+MONTO_CONTENIDO_300;PRIMA=0-0.09,1-0.21,2-0.15,3-0.26;MONTO_ROBO=120;
+MONTO_CONTENIDO_500;PRIMA=0-0.15,1-0.26,2-0.23,3-0.34;MONTO_ROBO=200;
+MONTO_CONTENIDO_800;PRIMA=0-0.21,1-0.36,2-0.34,3-0.49;MONTO_ROBO=320;
+MONTO_CONTENIDO_1000;PRIMA=0-0.26,1-0.41,2-0.42,3-0.57;MONTO_ROBO=400;
+
+CANALES_PRODUCTOS_NUEVOS;LISTADO_CANALES=150,151,153;
+
+### ayuda para etapas de hipotecario
+ayudaEtapa0;ayuda=Mensaje de Ayuda Parametrico Etapa 0 : INVALIDO;
+ayudaEtapa1;ayuda=Simulación, Aprobación Comercial y Tasación: Le informamos que se ha realizado la tasación de su propiedad y en base a ésta y a sus antecedentes comerciales, nuestro departamento de riesgo ha dado visto bueno a su operación. Por tanto ésta se encuentra aprobada y en proceso de envío al departamento de Operaciones Hipotecarias, donde se realizará la revisión de todos los antecedentes legales necesarios para pasar a la etapa siguiente que es el Informe de Estudio de Títulos.;
+ayudaEtapa2;ayuda=Recopilación de Antecedentes Cliente: Su operación se encuentra ingresada al departamento de Operaciones Hipotecarias y en proceso de recolección de antecedentes faltantes. En esta etapa la operación quedará detenida hasta la recepción o recolección de éstos.  Por tanto será importante que usted haga llegar los documentos faltantes a la brevedad posible y si ha contratado Gestoría de Documentos, cuente con nuestra rápida gestión.;
+ayudaEtapa3;ayuda=Informe de Tasación: Le informamos que se ha realizado la tasación de su propiedad y en base a ésta y a sus antecedentes comerciales, nuestro departamento de riesgo ha dado visto bueno a su operación. Por tanto ésta se encuentra aprobada y en proceso de envío al departamento de Operaciones Hipotecarias, donde se realizará la revisión de todos los antecedentes legales necesarios para pasar a la etapa siguiente que es el Informe de Estudio de Títulos.;
+ayudaEtapa4;ayuda=Informe de Estudio de Títulos: Los antecedentes legales de la propiedad se encuentran en proceso de revisión por nuestros abogados.  En caso de requerir algún documento usted será contactado y pasaremos a la etapa siguiente "Antecedentes Pendientes" o de lo contrario pasará directamente a la etapa de Confección Borrador de Escritura.;
+ayudaEtapa5;ayuda=Antecedentes Pendientes Cliente: Revisados los antecedentes legales de la propiedad, nuestros abogados han determinado que falta adjuntar documentos. Por tanto en esta etapa es importante que usted los haga llegar a la brevedad posible y si ha contratado Gestoría de Documentos, cuente con nuestra rápida gestión.;
+ayudaEtapa6;ayuda=Exámenes Pendientes: Exámenes Pendientes;
+ayudaEtapa7;ayuda=Aprobación Seguro Desgravamen: Informamos a usted que su incorporación al Seguro de Desgravamen (seguro contra accidente y muerte) ha sido aprobada por la Compañía de Seguros.;
+ayudaEtapa8;ayuda=Confección Borrador de Escritura: La confección de su Borrador de Escritura se encuentra en proceso. Una vez terminado le será remitido a su mail para que usted lo revise y nos envíe su ratificación.;
+ayudaEtapa9;ayuda=Reparos al Borrador de Escritura: Las observaciones enviadas por usted están siendo analizadas por nuestros abogados.  A la brevedad posible le será remitido el Borrador indicando cuales de sus observaciones han sido incorporadas.;
+ayudaEtapa10;ayuda=Firma Escritura Cliente: Le recordamos firmar a la brevedad su escritura para seguir con el proceso siguiente.;
+ayudaEtapa11;ayuda=Firma Escritura Vendedor: Estimado cliente le agradeceríamos coordinar con el vendedor de su propiedad la pronta firma de su escritura para seguir con el proceso siguiente.;
+ayudaEtapa12;ayuda=Envío de Carta de Resguardo a institución Alzante: Informamos a usted que hemos ingresado la Carta de Resguardo (es un documento que el Banco emite asegurando el pago de su deuda hipotecaria) y la Escritura de su Crédito Hipotecario a la institución alzante, es decir la institución en la que actualmente la garantía presenta deuda.  Es necesario que la institución alzante firme la Escritura a la brevedad, es por eso que lo invitamos a colaborar con nosotros y apoyarnos en agilizar este proceso.;
+ayudaEtapa13;ayuda=Carta de Resguardo firmada: Informamos a usted que su escritura ha sido firmada por la institución alzante (es decir la institución donde actualmente presenta deuda la garantía). Nota: La Carta de Resguardo es un documento que el Banco emite asegurando el pago de su deuda hipotecaria a la institución donde actualmente tiene el crédito hipotecario (institución alzante).;
+ayudaEtapa14;ayuda=Cierre del Proceso de Creación de Escritura: Su Escritura se encuentra lista para ser ingresada al Conservador de Bienes Raíces que inscribirá la propiedad a su nombre.  La siguiente etapa es el ingreso físico de su Escritura al Conservador Correspondiente.;
+ayudaEtapa15;ayuda=Ingreso al Conservador de Bienes Raíces: Su escritura ha ingresado al Conservador de Bienes Raíces y se encuentra en proceso de Inscripción.  El Conservador analizará su escritura y realizará la gestión necesaria para inscribirlo como propietario. En esta etapa dependemos de los tiempos que tome el Conservador de Bienes Raíces, pero estaremos constantemente revisando el avance de su inscripción para informarle una vez que esté finalizado. Nota : (1) Los Conservadores de Bienes Raíces de Santiago y San Miguel permiten que usted mismo pueda hacer seguimiento de la inscripción a través de Internet. (2) Con el número de ingreso al Conservador podrá revisar el avance, por favor contacte a su Ejecutivo Hipotecario para obtenerlo.;
+ayudaEtapa16;ayuda=Pago Operación: Informamos a usted que estamos en condiciones de efectuar el pago de su operación.  Por lo que ya  se están realizando las tareas necesarias para ejecutar esta actividad.;
+ayudaEtapa17;ayuda=Inscripción Conservador Bienes Raíces: Informamos a usted que la inscripción de su propiedad se encuentra debidamente finalizada y a su nombre. En la etapa siguiente le enviaremos su carpeta hipotecaria, acto con el que finalizaremos su proceso hipotecario.;
+ayudaEtapa18;ayuda=Envío Escritura para entrega Cliente: En estos momentos estamos preparando su carpeta hipotecaria la cual contendrá toda la información de su operación, entre ellas la Copia Legalizada de su Escritura inscrita en el Conservador de Bienes Raíces. A la brevedad usted será contactado para coordinar la dirección y fecha de envío de su carpeta hipotecaria.;
+ayudaEtapa19;ayuda=Mensaje de Ayuda Parametrico Etapa 0 : INVALIDO;
+### tiempo de ciclo para etapas de hipotecario
+cicloEtapa0;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa1;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa2;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa3;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa4;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa5;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa6;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa7;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa8;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa9;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa10;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa11;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa12;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa13;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa14;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa15;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa16;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa17;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+cicloEtapa18;ciclo_1=7;ciclo_2=7;ciclo_3=7;ciclo_4=7;ciclo_5=7;ciclo_6=7;ciclo_7=7;ciclo_8=7;ciclo_9=7;ciclo_10=7;ciclo_11=7;ciclo_12=7;ciclo_13=7;ciclo_14=7;ciclo_15=7;ciclo_16=7;ciclo_17=7;ciclo_18=7;
+### correo de consultas de hipotecario
+correoConsulta;valor=dividendomail@bci.cl;
+###Producto mutuo hipotecario universal
+productoMutuoHipotecarioUniversal;anoMinimo=15;anoMaximo=30;montoMinimoUF=1000;montoMaximoUF=5000; codigoProducto=29;indExclusion=NO;indGracia=NO;maxMesesGracia=2;
+### Validaciones Credito Universal
+cae100;plazos=15#16#17#18#19#20#21#22#23#24#25#26#27#28#29#30;prodCAE=1#8#9#10#11#12#13#20#21#22#23#24#29;max=5000;min=1000;mesesGracia=2;textoLegal=13.  CAE y el CTC, se calcula utilizando las f&oacute&rmulas previstas para los Cr&eacute&ditos Universales, contenidas en el D.S. N°1.512 publicado en el Diario Oficial con fecha 27/04/2011.;
+cae110;plazos=15#16#17#18#19#20#21#22#23#24#25#26#27#28#29#30;prodCAE=1#8#9#10#11#12#13#20#21#22#23#24#29;max=5000;min=1000;mesesGracia=2;textoLegal=13.  CAE y el CTC, se calcula utilizando las f&oacute&rmulas previstas para los Cr&eacute&ditos Universales, contenidas en el D.S. N°1.512 publicado en el Diario Oficial con fecha 27/04/2011.;
+cae800;plazos=16#17#18#19#20;prodCAE=1#8#9#10#11#12#13#16#20#21#22#23#24#30;max=1500;min=800;mesesGracia=2;textoLegal=13.  CAE y el CTC, se calcula utilizando las f&oacute&rmulas previstas para los Cr&eacute&ditos Universales, contenidas en el D.S. N°1.512 publicado en el Diario Oficial con fecha 27/04/2011.;
+cae151;plazos=15#16#17#18#19#20#21#22#23#24#25#26#27#28#29#30;prodCAE=1#8#9#10#11#12#13#20#21#22#23#24#29;max=5000;min=1000;mesesGracia=2;textoLegal=13.  CAE y el CTC, se calcula utilizando las f&oacute&rmulas previstas para los Cr&eacute&ditos Universales, contenidas en el D.S. N°1.512 publicado en el Diario Oficial con fecha 27/04/2011.;
+cae150;plazos=15#16#17#18#19#20#21#22#23#24#25#26#27#28#29#30;prodCAE=1#8#9#10#11#12#13#16#20#21#22#23#24#29;max=5000;min=1000;mesesGracia=2;textoLegal=13.  CAE y el CTC, se calcula utilizando las f&oacute&rmulas previstas para los Cr&eacute&ditos Universales, contenidas en el D.S. N°1.512 publicado en el Diario Oficial con fecha 27/04/2011.;
+cae153;plazos=15#16#17#18#19#20#21#22#23#24#25#26#27#28#29#30;prodCAE=1#8#9#10#11#12#13#20#21#22#23#24#29;max=5000;min=1000;mesesGracia=2;textoLegal=13.  CAE y el CTC, se calcula utilizando las f&oacute&rmulas previstas para los Cr&eacute&ditos Universales, contenidas en el D.S. N°1.512 publicado en el Diario Oficial con fecha 27/04/2011.;
+
+
+
+
+################# Disponibilidad de los servicios al realizar migracion ###################
+############### servicio Web = WEB ; servicio Tuxedo = TUX #############################
+
+HipCalcSimulTot;servicio=WEB;
+HipCalSimNegTot;servicio=WEB;
+BPCertHipSin;servicio=WEB;
+HipBuscaOpeXRut;servicio=WEB;
+HipCalComple;servicio=WEB;
+HipCalcSegVinc;servicio=WEB;
+HipCalMixto;servicio=WEB;
+HipConDivImpago;servicio=WEB;
+HipConNumDivImp;servicio=WEB;
+HipConPrepTotal;servicio=WEB;
+HipConsEstCred;servicio=WEB;
+HipDatImpCertIn;servicio=WEB;
+HipDetComple;servicio=WEB;
+HipDetMixto;servicio=WEB;
+HipImpCerDivDFL;servicio=WEB;
+HipOpeXRut;servicio=WEB;
+HipPagDividendo;servicio=WEB;
+
+ActDirHipo;servicio=WEB;
+ConsDirHipo;servicio=WEB;
+HipCerDFL2Per;servicio=WEB;
+HipCerDisPer;servicio=WEB;
+HipCerIntPer;servicio=WEB;
+HipConAviVenDiv;servicio=WEB;
+HipConDivCanFe2;servicio=WEB;
+HipConDivCanFec;servicio=WEB;
+HipPagDivVerPAC;servicio=WEB;
+
+HipCalcGtosOp;servicio=WEB;
+HipCalcSimCae;servicio=WEB;
+HipCalcSimulac;servicio=WEB;
+HipCalcSimuProm;servicio=WEB;
+HipCalSimMon;servicio=WEB;
+HipCalSimNeg;servicio=WEB;
+HipCalSimProy;servicio=WEB;
+HipConEstSolic;servicio=WEB;
+HipGetDatProNeg;servicio=WEB;
+
+HipGetDetProd;servicio=WEB;
+HipGetProdByCan;servicio=WEB;
+
+HipGetListaCod;servicio=WEB;
+HipGetOpeRut;servicio=WEB;
+
+HipGetTasas;servicio=WEB;
+HipGetTasSegDes;servicio=WEB;
+HipGetTasSegInc;servicio=WEB;
+HipGetVencProd;servicio=WEB;
+HipIngSimulac;servicio=WEB;
+HipIngSolicitud;servicio=WEB;
+HipIngSolNeg;servicio=WEB;
+
+##########URL Certificacion
+#URL.VALIDAR_HIPOTECARIO;url=http://b2bcert.bci.cl:9050/servicios/colocaciones/creditos/HipotecarioProxyService?wsdl;timeoutSeconds=5;sistema=hipoteca;
+
+##############URL Produccion
+URL.VALIDAR_HIPOTECARIO;url=http://alsb.bci.cl/esb/intranet/colocaciones/creditos/HipotecarioService?wsdl;timeoutSeconds=5;sistema=hipoteca;
+
+canalesDespliegueTotal;VALOR=150,151,153;
+
+############### Seguimiento Online #############################
+CodServicio;DetallaCHIP=CONSULTA_ESTADO_SOLICITUD;SolicitudCHIP=CONSULTA_OPERACIONES_POR_RUT;
+codFirma;desc=4;
+labelSelectCredito;desc=Crédito N°;
+
+### WSDL del webservice de servSolicitudChip: INTEGRACION (Descomentar solo para integración)   
+#servSolicitudChip;url=http://161.131.184.123:9050/esb/personas/productos/servicios/colocaciones/creditos/ServicioHipotecarioService?wsdl;
+
+### WSDL del webservice de servSolicitudChip: CERTIFICACION (Descomentar solo para certificación) 
+#servSolicitudChip;url=http://161.131.140.137:9050/esb/personas/productos/servicios/colocaciones/creditos/ServicioHipotecarioService?wsdl;
+
+### WSDL del webservice de servSolicitudChip: PRODUCCION   
+servSolicitudChip;url=http://alsb.bci.cl/esb/personas/productos/servicios/colocaciones/creditos/ServicioHipotecarioService?wsdl;
+
+codigosJournal;eventoSegCHIP=CNS;subEventoSegCHIP=SOLIC;idProductoSegCHIP=HIP;estadoEventoOk=P;estadoEventoERR=R;campoVariableOk=OK;campoVariableNok=NOK;
+CANAL_BLOQUEO_OFICINAS;VALOR=151#153;
+BLOQUEO_OFICINAS_MENSAJE;MENSAJE=Estimados, <br/> Este simulador ya no se encuentra vigente, favor ingresar a Simulador Hipotecario 2.0.;
+
+#Desarrollo
+#BLOQUEO_OFICINAS;CODIGOS=090#293;
+
+#Integracion
+#BLOQUEO_OFICINAS;CODIGOS=090#293;
+
+#Certificacion
+#BLOQUEO_OFICINAS;CODIGOS=090#293;
+#Produccion
+BLOQUEO_OFICINAS;CODIGOS=350#083#554#555#090#127#104#082#084#365#054#041#144#025#369#122#173#292#297#274#016#017#018#019#024#028#029#030#031#032#035#037#038#039#045#048#049#050#051#052#053#055#057#059#073#076#080#085#092#093#098#100#101#102#103#104#107#108#118#120#123#125#126#128#129#131#132#137#138#139#142#143#146#147#148#152#155#161#162#165#166#167#174#247#254#256#257#258#259#265#266#268#271#275#277#278#291#296#298#311#313#314#316#318#319#320#323#324#325#330#331#332#333#334#335#352#353#357#358#359#360#361#364#367#370#371#372#373#376#378#379#383#386#393#394#398#400#401#402#405#407#415#416#424#426#490#491#559#010#011#012#013#014#015#020#021#022#026#033#034#036#040#042#043#046#047#065#069#072#075#081#086#088#089#105#110#134#141#157#163#169#171#253#262#272#299#315#344#354#363#368#374#375#377#380#381#382#384#388#392#397#411#552;
+
+151;Desc=Everest;
+110;Desc=Web;
+
+### WSDL del webservice de AutomatizacionCHIPBeanPS: INTEGRACION
+#URL.INSTANCIA_CHIP;url=http://161.131.184.123:9101/NEGOCIO/Productos/Colocaciones/Hipotecario/Proceso/AutomatizacionCHIPBeanPS?wsdl
+
+### WSDL del webservice de AutomatizacionCHIPBeanPS: CERTIFICACION
+#URL.INSTANCIA_CHIP;url=http://161.131.140.23:9101/NEGOCIO/Productos/Colocaciones/Hipotecario/Proceso/AutomatizacionCHIPBeanPS?wsdl
+
+### WSDL del webservice de AutomatizacionCHIPBeanPS: PRODUCCION
+URL.INSTANCIA_CHIP;url=http://alsb.bci.cl/NEGOCIO/Productos/Colocaciones/Hipotecario/Proceso/AutomatizacionCHIPBeanPS?wsdl
